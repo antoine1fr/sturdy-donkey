@@ -269,6 +269,7 @@ int main()
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
     SDL_GL_SwapWindow(window);
   }
+
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;
