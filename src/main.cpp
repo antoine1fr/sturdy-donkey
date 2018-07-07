@@ -230,6 +230,8 @@ int main()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
       GL_STATIC_DRAW);
 
+  glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+
   auto last_time = std::chrono::high_resolution_clock::now();
 
   while (run)
@@ -247,7 +249,6 @@ int main()
         run = false;
     }
 
-    glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // setup everything
