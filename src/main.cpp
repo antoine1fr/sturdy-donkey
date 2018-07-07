@@ -1,5 +1,7 @@
 #include <GL/gl3w.h>
 #include <SDL.h>
+#include <SDL_image.h>
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -74,8 +76,64 @@ SDL_Window* setup_video()
   return window;
 }
 
+GLenum sdl_to_gl_pixel_format(SDL_PixelFormat* format)
+{
+  uint32_t r_mask = format->Rmask;
+  uint8_t bpp = format->BitsPerPixel;
+
+  if (bpp == 32)
+  {
+    if (r_mask == 0x0000ff00)
+      return GL_RGBA;
+    else if (r_mask == 0xff000000)
+      return GL_BGRA;
+    std::cerr << "Sorry, we only support RGB, RGBA, BGR and BGRA images.\n";
+    assert(false);
+  }
+  if (r_mask == 0x00ff0000)
+    return GL_BGR;
+  else if (r_mask == 0x000000ff)
+    return GL_RGB;
+  std::cerr << "Sorry, we only support RGB, RGBA, BGR and BGRA images.\n";
+  assert(false);
+}
+
+GLenum sdl_to_gl_pixel_type(SDL_PixelFormat* format)
+{
+  switch (format->BitsPerPixel)
+  {
+    case 24:
+    case 32:
+      return GL_UNSIGNED_BYTE;
+    default:
+      std::cerr << "Sorry, we only support 24- and 32-bit images.";
+      assert(false);
+  }
+}
+
+GLuint load_texture(const std::string& path)
+{
+  SDL_Surface* img_surface = IMG_Load(path.c_str());
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  GLenum format = sdl_to_gl_pixel_format(img_surface->format);
+  GLenum type = sdl_to_gl_pixel_type(img_surface->format);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_surface->w, img_surface->h,
+      0, format, type, nullptr);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, img_surface->w, img_surface->h,
+      format, type, img_surface->pixels);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  SDL_FreeSurface(img_surface);
+  return texture;
+}
+
 int main()
 {
+  IMG_Init(IMG_INIT_PNG);
   SDL_Window* window = setup_video();
   bool run = true;
   SDL_Event event;

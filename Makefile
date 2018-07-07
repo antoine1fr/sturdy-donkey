@@ -24,12 +24,12 @@ CXXFLAGS = \
 					 -Wall \
 					 -Werror \
 					 -pedantic \
-					`pkg-config --cflags sdl2`
+					`pkg-config --cflags sdl2 SDL2_image`
 
 LDFLAGS = \
 					-g3 -O0 \
 					 -framework OpenGL \
-					`pkg-config --libs sdl2`
+					`pkg-config --libs sdl2 SDL2_image`
 
 C_SOURCES = \
 							lib/gl3w/GL/gl3w.c
