@@ -153,6 +153,7 @@ GLuint load_texture(const std::string& path)
 
 int main()
 {
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   IMG_Init(IMG_INIT_PNG);
   SDL_Window* window = setup_video();
   bool run = true;
