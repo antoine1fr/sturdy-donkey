@@ -37,6 +37,18 @@ GLuint build_fragment_shader(const std::string& sources)
   return build_shader(GL_FRAGMENT_SHADER, sources);
 }
 
+template <GLenum type>
+GLuint load_shader(const std::string& path)
+{
+  std::ifstream stream(path);
+  stream.seekg(0, std::ios_base::end);
+  size_t length = stream.tellg();
+  stream.seekg(0, std::ios_base::beg);
+  std::string sources(length, '\0');
+  stream.read(&sources[0], length);
+  return build_shader(type, sources);
+}
+
 GLuint link_gpu_program(GLuint vertex_shader, GLuint fragment_shader)
 {
   GLuint gpu_program = glCreateProgram();
@@ -56,6 +68,14 @@ GLuint link_gpu_program(GLuint vertex_shader, GLuint fragment_shader)
   else
     std::cout << "GPU program linked.\n";
   return gpu_program;
+}
+
+GLuint build_gpu_program(const std::string& vs_path,
+    const std::string& fs_path)
+{
+  GLuint vertex_shader = load_shader<GL_VERTEX_SHADER>(vs_path);
+  GLuint fragment_shader = load_shader<GL_FRAGMENT_SHADER>(fs_path);
+  return link_gpu_program(vertex_shader, fragment_shader);
 }
 
 SDL_Window* setup_video()
