@@ -1,7 +1,12 @@
 #include <GL/gl3w.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <chrono>
 #include <fstream>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include <iostream>
 #include <string>
 
@@ -158,9 +163,84 @@ int main()
   SDL_Window* window = setup_video();
   bool run = true;
   SDL_Event event;
+  int width, height;
+  SDL_GL_GetDrawableSize(window, &width, &height);
+  float ratio = static_cast<float>(width) / static_cast<float>(height);
+  glm::mat4 projection = glm::perspective(glm::radians(45.0f),
+      ratio, 0.1f, 100.0f);
+  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 model = glm::mat4(1.0f);
+  glm::mat4 light_model = glm::mat4(1.0f);
+  float positions[] = {
+    -0.5f, -0.5f, 0.0f,
+    -0.5f, 0.5f, 0.0f,
+    0.5f, 0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f
+  };
+  float uvs[] = {
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 1.0f,
+    1.0f, 0.0f
+  };
+  uint8_t indices[] = {0, 1, 2, 0, 2, 3};
+  GLuint diffuse_map = load_texture("textures/quad-diffuse.png");
+  GLuint normal_map = load_texture("textures/quad-normal.png");
+
+  GLuint gpu_program = build_gpu_program("shaders/simple-vs.glsl",
+      "shaders/simple-fs.glsl");
+  glUseProgram(gpu_program);
+  GLint position_location = glGetAttribLocation(gpu_program, "position");
+  GLint uv_location = glGetAttribLocation(gpu_program, "vertex_uv");
+  GLint model_location = glGetUniformLocation(gpu_program, "model");
+  GLint light_model_location =
+    glGetUniformLocation(gpu_program, "light_model");
+  GLint projection_location = glGetUniformLocation(gpu_program, "projection");
+  GLint view_location = glGetUniformLocation(gpu_program, "view");
+  GLint diffuse_map_location = glGetUniformLocation(gpu_program,
+      "diffuse_map");
+  GLint normal_map_location = glGetUniformLocation(gpu_program,
+      "normal_map");
+
+  GLuint vertex_array;
+  glGenVertexArrays(1, &vertex_array);
+  glBindVertexArray(vertex_array);
+
+  GLuint position_buffer;
+  glGenBuffers(1, &position_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(positions), nullptr, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(positions), positions);
+  glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glEnableVertexAttribArray(position_location);
+
+  GLuint uv_buffer;
+  glGenBuffers(1, &uv_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(uvs), nullptr, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(uvs), uvs);
+  glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glEnableVertexAttribArray(uv_location);
+
+  GLuint index_buffer;
+  glGenBuffers(1, &index_buffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+      GL_STATIC_DRAW);
+
+  auto last_time = std::chrono::high_resolution_clock::now();
 
   while (run)
   {
+    auto time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> delta_time = time - last_time;
+    last_time = time;
+    light_model = glm::rotate(light_model,
+        delta_time.count() * glm::radians(30.f),
+        glm::vec3(0.0f, 0.0f, 1.0f));
+
     while (SDL_PollEvent(&event))
     {
       if (event.type == SDL_QUIT)
@@ -169,6 +249,23 @@ int main()
 
     glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // setup everything
+    glUniform1i(diffuse_map_location, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, diffuse_map);
+    glUniform1i(normal_map_location, 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, normal_map);
+    glUseProgram(gpu_program);
+    glUniformMatrix4fv(light_model_location, 1, GL_FALSE,
+        &(light_model[0][0]));
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, &(model[0][0]));
+    glUniformMatrix4fv(view_location, 1, GL_FALSE, &(view[0][0]));
+    glUniformMatrix4fv(projection_location, 1, GL_FALSE, &(projection[0][0]));
+
+    // draw
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
     SDL_GL_SwapWindow(window);
   }
   SDL_DestroyWindow(window);
