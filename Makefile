@@ -35,6 +35,7 @@ C_SOURCES = \
 							lib/gl3w/GL/gl3w.c
 
 CXX_SOURCES = \
+							$(SRC_DIR)Demo.cpp \
 							$(SRC_DIR)ResourceManager.cpp \
 							$(SRC_DIR)Scene.cpp \
 							$(SRC_DIR)main.cpp
