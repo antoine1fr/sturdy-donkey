@@ -36,13 +36,13 @@ inline void check_gl_framebuffer(GLenum target)
 struct GpuProgram
 {
   GLuint handle;
-  GLuint model_location;
-  GLuint view_location;
-  GLuint projection_location;
-  GLuint position_location;
-  GLuint uv_location;
-  GLuint diffuse_texture_location;
-  GLuint normal_map_location;
+  GLint model_location;
+  GLint view_location;
+  GLint projection_location;
+  GLint position_location;
+  GLint uv_location;
+  GLint diffuse_texture_location;
+  GLint normal_map_location;
 };
 
 struct RenderTarget
