@@ -123,17 +123,19 @@ void Demo::initialize(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       screen_mesh_id, rt1_material_id);
+
   scene_.create_mesh_node(1,
       glm::vec3(static_cast<float>(width) / 2.0f,
         0.0f,
         0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       screen_mesh_id, rt2_material_id);
+
   scene_.create_mesh_node(1,
-      glm::vec3(0.0f,
-        static_cast<float>(height) / 2.0f, 0.0f),
+      glm::vec3(0.0f, static_cast<float>(height) / 2.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       screen_mesh_id, rt3_material_id);
+
   scene_.create_ortho_camera_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -181,7 +183,8 @@ void Demo::render_mesh_node_(const RenderPass& render_pass,
   glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f),
       glm::radians(mesh_node.angles.y),
       glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), glm::radians(mesh_node.angles.z),
+  glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f),
+      glm::radians(mesh_node.angles.z),
       glm::vec3(0.0f, 0.0f, 1.0f));
   glm::mat4 translate = glm::translate(glm::mat4(1.0f), mesh_node.position);
   model = translate * rotate_z * rotate_y * rotate_x * model;
