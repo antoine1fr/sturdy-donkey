@@ -36,6 +36,7 @@ C_SOURCES = \
 
 CXX_SOURCES = \
 							$(SRC_DIR)Demo.cpp \
+							$(SRC_DIR)Material.cpp \
 							$(SRC_DIR)ResourceManager.cpp \
 							$(SRC_DIR)Scene.cpp \
 							$(SRC_DIR)main.cpp

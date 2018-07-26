@@ -73,14 +73,38 @@ void Demo::initialize(int width, int height)
       normal_rt_id, depth_rt_id);
 
   // create materials
-  uint32_t quad_material_id = resource_manager_.create_material(quad_diffuse,
-      quad_normal, gbuffer_program_id);
-  uint32_t rt1_material_id = resource_manager_.create_material(albedo_rt_id,
-      0, simple_program_id);
-  uint32_t rt2_material_id = resource_manager_.create_material(normal_rt_id,
-      0, simple_program_id);
-  uint32_t rt3_material_id = resource_manager_.create_material(depth_rt_id,
-      0, simple_program_id);
+  uint32_t quad_material_id;
+  {
+    Material material(resource_manager_, gbuffer_program_id);
+    material.register_slot("diffuse_texture", quad_diffuse, 0);
+    material.register_slot("normal_map", quad_normal, 1);
+    quad_material_id =
+      resource_manager_.register_material(std::move(material));
+  }
+
+  uint32_t rt1_material_id;
+  {
+    Material material(resource_manager_, simple_program_id);
+    material.register_slot("diffuse_texture", albedo_rt_id, 0);
+    rt1_material_id =
+      resource_manager_.register_material(std::move(material));
+  }
+
+  uint32_t rt2_material_id;
+  {
+    Material material(resource_manager_, simple_program_id);
+    material.register_slot("diffuse_texture", normal_rt_id, 0);
+    rt2_material_id =
+      resource_manager_.register_material(std::move(material));
+  }
+
+  uint32_t rt3_material_id;
+  {
+    Material material(resource_manager_, simple_program_id);
+    material.register_slot("diffuse_texture", depth_rt_id, 0);
+    rt3_material_id =
+      resource_manager_.register_material(std::move(material));
+  }
 
   // create first pass' scene nodes
   float ratio = static_cast<float>(width) / static_cast<float>(height);
@@ -143,15 +167,8 @@ void Demo::render_mesh_node_(const RenderPass& render_pass,
     resource_manager_.get_gpu_program(material.program_id);
   glUseProgram(program.handle);
 
-  glUniform1i(program.diffuse_texture_location, 0);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D,
-      resource_manager_.get_texture(material.diffuse_texture_id));
 
-  glUniform1i(program.normal_map_location, 1);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D,
-      resource_manager_.get_texture(material.normal_map_id));
+  material.bind_slots();
 
   // compute model matrix
   glm::mat4 model = glm::lookAt(

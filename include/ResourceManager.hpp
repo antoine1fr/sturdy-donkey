@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include "common.hpp"
+#include "Material.hpp"
 
 class ResourceManager
 {
@@ -38,8 +39,8 @@ class ResourceManager
     uint32_t create_mesh(const std::vector<float>& positions,
       const std::vector<float>& uvs,
       const std::vector<uint32_t>& indices);
-    uint32_t create_material(uint32_t diffuse_texture, uint32_t normal_map,
-        uint32_t gpu_program);
+    uint32_t create_material(uint32_t gpu_program);
+    uint32_t register_material(Material&& material);
     uint32_t create_texture(int width, int height, GLenum format,
         GLenum internal_format, GLenum component_type);
     uint32_t create_framebuffer(uint32_t albedo_rt_id, uint32_t normal_rt_id,

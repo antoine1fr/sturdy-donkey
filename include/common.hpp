@@ -41,8 +41,6 @@ struct GpuProgram
   GLint projection_location;
   GLint position_location;
   GLint uv_location;
-  GLint diffuse_texture_location;
-  GLint normal_map_location;
 };
 
 struct RenderTarget
@@ -58,13 +56,6 @@ struct RenderPass
   GLint clear_bits;
   glm::vec3 clear_color;
   bool depth_test;
-};
-
-struct Material
-{
-  uint32_t diffuse_texture_id;
-  uint32_t normal_map_id;
-  uint32_t program_id;
 };
 
 struct Mesh

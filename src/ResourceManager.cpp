@@ -101,10 +101,6 @@ uint32_t ResourceManager::load_gpu_program_from_file(const std::string& vs_path,
   program.model_location = glGetUniformLocation(program_id, "model");
   program.view_location = glGetUniformLocation(program_id, "view");
   program.projection_location = glGetUniformLocation(program_id, "projection");
-  program.diffuse_texture_location =
-    glGetUniformLocation(program_id, "diffuse_texture");
-  program.normal_map_location =
-    glGetUniformLocation(program_id, "normal_map");
   program.position_location = glGetAttribLocation(program_id, "position");
   program.uv_location = glGetAttribLocation(program_id, "uv");
 
@@ -208,11 +204,10 @@ uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
   return id;
 }
 
-uint32_t ResourceManager::create_material(uint32_t diffuse_texture,
-    uint32_t normal_map, uint32_t gpu_program)
+uint32_t ResourceManager::create_material(uint32_t gpu_program)
 {
   uint32_t id = materials_.size();
-  materials_.push_back({diffuse_texture, normal_map, gpu_program});
+  materials_.push_back(Material(*this, gpu_program));
   return id;
 }
 
@@ -272,4 +267,11 @@ const Material& ResourceManager::get_material(uint32_t id) const
 GLuint ResourceManager::get_framebuffer(uint32_t id) const
 {
   return framebuffers_[id];
+}
+
+uint32_t ResourceManager::register_material(Material&& material)
+{
+  uint32_t id = materials_.size();
+  materials_.push_back(material);
+  return id;
 }
