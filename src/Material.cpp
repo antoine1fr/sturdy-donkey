@@ -21,6 +21,8 @@ Material::Material(const ResourceManager& resource_manager,
   model_location = glGetUniformLocation(program.handle, "model");
   view_location = glGetUniformLocation(program.handle, "view");
   projection_location = glGetUniformLocation(program.handle, "projection");
+  projection_inverse_location = glGetUniformLocation(program.handle,
+    "projection_inverse");
 }
 
 DEFINE_REGISTER_SCALAR(float, float)

@@ -189,7 +189,11 @@ void Demo::render_mesh_node_(const RenderPass& render_pass,
   glm::mat4 translate = glm::translate(glm::mat4(1.0f), mesh_node.position);
   model = translate * rotate_z * rotate_y * rotate_x * model;
 
+  // compute the projection's inverse
+  glm::mat4 projection_inverse = glm::inverse(camera_node.projection);
   // upload matrices
+  material.bind_scalar(material.projection_inverse_location,
+      projection_inverse);
   material.bind_scalar(material.model_location, model);
   material.bind_scalar(material.view_location, camera_node.view);
   material.bind_scalar(material.projection_location, camera_node.projection);

@@ -38,6 +38,7 @@ class Material
     int model_location;
     int view_location;
     int projection_location;
+    int projection_inverse_location;
 
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);
