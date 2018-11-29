@@ -42,6 +42,7 @@ class Material
 
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);
+
     void bind_slots() const;
 
     DECLARE_REGISTER_SCALAR(float)

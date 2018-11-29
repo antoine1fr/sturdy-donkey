@@ -169,7 +169,6 @@ void Demo::render_mesh_node_(const RenderPass& render_pass,
     resource_manager_.get_gpu_program(material.program_id);
   glUseProgram(program.handle);
 
-
   material.bind_slots();
 
   // compute model matrix
