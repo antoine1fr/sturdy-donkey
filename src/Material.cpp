@@ -19,11 +19,12 @@ void Material::bind_slots() const
   }
 }
 
-void Material::register_slot(const std::string& name,
+void Material::register_texture_slot(const std::string& name,
     uint32_t texture_id,
     int texture_unit)
 {
   const GpuProgram& program = resource_manager_.get_gpu_program(program_id);
   int location = glGetUniformLocation(program.handle, name.c_str());
-  slots_.push_back({location, texture_id, texture_unit});
+  texture_slots_.push_back(TextureMaterialSlot(location, texture_id,
+    texture_unit));
 }

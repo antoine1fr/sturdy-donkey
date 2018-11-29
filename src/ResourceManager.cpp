@@ -272,6 +272,6 @@ GLuint ResourceManager::get_framebuffer(uint32_t id) const
 uint32_t ResourceManager::register_material(Material&& material)
 {
   uint32_t id = materials_.size();
-  materials_.push_back(material);
+  materials_.push_back(std::move(material));
   return id;
 }

@@ -2,20 +2,16 @@
 
 #include <GL/gl3w.h>
 #include <vector>
+#include <string>
+#include "TextureMaterialSlot.hpp"
 
-struct MaterialSlot
-{
-  GLint location;
-  uint32_t texture_id;
-  int texture_unit;
-};
 
 class ResourceManager;
 
 class Material
 {
   private:
-    std::vector<MaterialSlot> slots_;
+    std::vector<TextureMaterialSlot> texture_slots_;
     const ResourceManager& resource_manager_;
 
   public:
@@ -24,7 +20,7 @@ class Material
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);
     void bind_slots() const;
-    void register_slot(const std::string& name,
+    void register_texture_slot(const std::string& name,
         uint32_t texture_id,
         int texture_unit);
 };

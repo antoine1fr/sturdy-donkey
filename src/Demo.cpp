@@ -76,8 +76,8 @@ void Demo::initialize(int width, int height)
   uint32_t quad_material_id;
   {
     Material material(resource_manager_, gbuffer_program_id);
-    material.register_slot("diffuse_texture", quad_diffuse, 0);
-    material.register_slot("normal_map", quad_normal, 1);
+    material.register_texture_slot("diffuse_texture", quad_diffuse, 0);
+    material.register_texture_slot("normal_map", quad_normal, 1);
     quad_material_id =
       resource_manager_.register_material(std::move(material));
   }
@@ -85,7 +85,7 @@ void Demo::initialize(int width, int height)
   uint32_t rt1_material_id;
   {
     Material material(resource_manager_, simple_program_id);
-    material.register_slot("diffuse_texture", albedo_rt_id, 0);
+    material.register_texture_slot("diffuse_texture", albedo_rt_id, 0);
     rt1_material_id =
       resource_manager_.register_material(std::move(material));
   }
@@ -93,7 +93,7 @@ void Demo::initialize(int width, int height)
   uint32_t rt2_material_id;
   {
     Material material(resource_manager_, simple_program_id);
-    material.register_slot("diffuse_texture", normal_rt_id, 0);
+    material.register_texture_slot("diffuse_texture", normal_rt_id, 0);
     rt2_material_id =
       resource_manager_.register_material(std::move(material));
   }
@@ -101,7 +101,7 @@ void Demo::initialize(int width, int height)
   uint32_t rt3_material_id;
   {
     Material material(resource_manager_, simple_program_id);
-    material.register_slot("diffuse_texture", depth_rt_id, 0);
+    material.register_texture_slot("diffuse_texture", depth_rt_id, 0);
     rt3_material_id =
       resource_manager_.register_material(std::move(material));
   }
