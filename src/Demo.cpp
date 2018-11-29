@@ -190,11 +190,9 @@ void Demo::render_mesh_node_(const RenderPass& render_pass,
   model = translate * rotate_z * rotate_y * rotate_x * model;
 
   // upload matrices
-  glUniformMatrix4fv(program.model_location, 1, GL_FALSE, &(model[0][0]));
-  glUniformMatrix4fv(program.view_location, 1, GL_FALSE,
-      &(camera_node.view[0][0]));
-  glUniformMatrix4fv(program.projection_location, 1, GL_FALSE,
-      &(camera_node.projection[0][0]));
+  material.bind_scalar(material.model_location, model);
+  material.bind_scalar(material.view_location, camera_node.view);
+  material.bind_scalar(material.projection_location, camera_node.projection);
 
   // bind geometry
   glBindVertexArray(mesh.vertex_array);

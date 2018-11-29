@@ -40,6 +40,7 @@ CXX_SOURCES = \
 							$(SRC_DIR)ResourceManager.cpp \
 							$(SRC_DIR)Scene.cpp \
 							$(SRC_DIR)TextureMaterialSlot.cpp \
+							$(SRC_DIR)ScalarMaterialSlot.cpp \
 							$(SRC_DIR)main.cpp
 
 C_OBJECTS=$(C_SOURCES:.c=.o)
