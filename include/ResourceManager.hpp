@@ -7,7 +7,8 @@
 #include <vector>
 #include <iostream>
 #include "common.hpp"
-#include "Material.hpp"
+
+class Material;
 
 class ResourceManager
 {

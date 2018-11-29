@@ -5,6 +5,7 @@
 #include <array>
 #include "common.hpp"
 #include "Demo.hpp"
+#include "Material.hpp"
 
 void Demo::initialize(int width, int height)
 {

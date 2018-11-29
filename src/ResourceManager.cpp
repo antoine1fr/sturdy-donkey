@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL_image.h>
+#include "Material.hpp"
 #include "ResourceManager.hpp"
 
 ResourceManager::ResourceManager()
