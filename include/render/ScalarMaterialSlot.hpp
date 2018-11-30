@@ -1,11 +1,12 @@
 #pragma once
 
-#include "IMaterialSlot.hpp"
+namespace render
+{
 
 class ResourceManager;
 
 template <class Storage_>
-class ScalarMaterialSlot: public IMaterialSlot
+class ScalarMaterialSlot
 {
   public:
     typedef Storage_ Storage;
@@ -16,7 +17,9 @@ class ScalarMaterialSlot: public IMaterialSlot
 
   public:
     ScalarMaterialSlot(int location, const Storage& storage);
-    virtual void bind(const ResourceManager& resource_manager);
+    void bind(const ResourceManager& resource_manager);
 };
+
+}
 
 #include "ScalarMaterialSlot.inl"

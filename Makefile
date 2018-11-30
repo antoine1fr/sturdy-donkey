@@ -36,11 +36,13 @@ C_SOURCES = \
 
 CXX_SOURCES = \
 							$(SRC_DIR)Demo.cpp \
-							$(SRC_DIR)Material.cpp \
-							$(SRC_DIR)ResourceManager.cpp \
 							$(SRC_DIR)Scene.cpp \
-							$(SRC_DIR)TextureMaterialSlot.cpp \
-							$(SRC_DIR)ScalarMaterialSlot.cpp \
+							$(SRC_DIR)render/Material.cpp \
+							$(SRC_DIR)render/ResourceManager.cpp \
+							$(SRC_DIR)render/FramePacket.cpp \
+							$(SRC_DIR)render/TextureMaterialSlot.cpp \
+							$(SRC_DIR)render/ScalarMaterialSlot.cpp \
+							$(SRC_DIR)render/DeferredRenderer.cpp \
 							$(SRC_DIR)main.cpp
 
 C_OBJECTS=$(C_SOURCES:.c=.o)

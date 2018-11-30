@@ -1,5 +1,8 @@
 #include <GL/gl3w.h>
-#include "ScalarMaterialSlot.hpp"
+#include "render/ScalarMaterialSlot.hpp"
+
+namespace render
+{
 
 template <>
 void ScalarMaterialSlot<float>::bind(const ResourceManager&)
@@ -89,4 +92,6 @@ template <>
 void ScalarMaterialSlot<glm::tvec4<unsigned int>>::bind(const ResourceManager&)
 {
   glUniform4uiv(location, 1, &(storage[0]));
+}
+
 }

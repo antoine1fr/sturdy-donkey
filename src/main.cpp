@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 
+#include "common.hpp"
 #include "Demo.hpp"
 
 SDL_Window* setup_video()
@@ -37,29 +38,30 @@ int main()
   SDL_Window* window = setup_video();
   bool run = true;
   SDL_Event event;
-  Demo demo;
   int width, height;
   SDL_GL_GetDrawableSize(window, &width, &height);
-  demo.initialize(width, height);
-
-  auto last_time = std::chrono::high_resolution_clock::now();
-
-  while (run)
   {
-    auto time = std::chrono::high_resolution_clock::now();
-    last_time = time;
+    Demo demo(width, height);
+    auto last_time = Clock::now();
 
-    while (SDL_PollEvent(&event))
+    while (run)
     {
-      if (event.type == SDL_QUIT)
-        run = false;
-    }
+      auto time = Clock::now();
+      Duration elapsed_time = time - last_time;
+      last_time = time;
 
-    demo.render();
-    SDL_GL_SwapWindow(window);
+      while (SDL_PollEvent(&event))
+      {
+        if (event.type == SDL_QUIT)
+          run = false;
+      }
+
+      demo.update(elapsed_time);
+      demo.render();
+      SDL_GL_SwapWindow(window);
+    }
   }
 
-  demo.cleanup();
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;

@@ -5,6 +5,10 @@
 #include <glm/vec3.hpp>
 #include <forward_list>
 #include "common.hpp"
+#include "Scene.hpp"
+
+namespace render
+{
 
 struct SceneNode
 {
@@ -18,6 +22,13 @@ struct SceneNode
     pass_num(pass_num),
     position(position),
     angles(angles)
+  {
+  }
+
+  SceneNode(const ::SceneNode& node):
+    pass_num(node.pass_num),
+    position(node.position),
+    angles(node.angles)
   {
   }
 };
@@ -35,6 +46,13 @@ struct MeshNode: public SceneNode
     SceneNode(pass_num, position, angles),
     mesh_id(mesh_id),
     material_id(material_id)
+  {
+  }
+
+  MeshNode(const ::MeshNode& node):
+    SceneNode(node),
+    mesh_id(node.mesh_id),
+    material_id(node.material_id)
   {
   }
 };
@@ -66,15 +84,29 @@ struct CameraNode: public SceneNode
     far_plane(far_plane)
   {
   }
+
+  CameraNode(const ::CameraNode& node):
+    SceneNode(node),
+    projection(node.projection),
+    view(node.view),
+    viewport_position(node.viewport_position),
+    viewport_size(node.viewport_size),
+    near_plane(node.near_plane),
+    far_plane(node.far_plane)
+  {
+  }
 };
 
-class Scene
+class FramePacket
 {
   private:
     std::forward_list<MeshNode> mesh_nodes_;
     std::forward_list<CameraNode> camera_nodes_;
 
   public:
+    FramePacket(std::forward_list<::MeshNode> mesh_nodes,
+        std::forward_list<::CameraNode> camerea_nodes);
+
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
         const glm::vec3& angles,
@@ -96,4 +128,21 @@ class Scene
     const std::forward_list<CameraNode>& get_camera_nodes() const;
     std::forward_list<MeshNode>& get_mesh_nodes();
     std::forward_list<CameraNode>& get_camera_nodes();
+
+  private:
+    template <typename T, typename U>
+      void copy_nodes_(const std::forward_list<T>& source_nodes,
+          std::forward_list<U>& destination_nodes);
 };
+
+template <typename T, typename U>
+void FramePacket::copy_nodes_(const std::forward_list<T>& source_nodes,
+    std::forward_list<U>& destination_nodes)
+{
+  for (const T& node: source_nodes)
+  {
+    destination_nodes.push_front(node);
+  }
+}
+
+}

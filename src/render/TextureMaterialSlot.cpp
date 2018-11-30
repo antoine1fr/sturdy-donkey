@@ -1,6 +1,9 @@
 #include <GL/gl3w.h>
-#include "ResourceManager.hpp"
-#include "TextureMaterialSlot.hpp"
+#include "render/ResourceManager.hpp"
+#include "render/TextureMaterialSlot.hpp"
+
+namespace render
+{
 
 TextureMaterialSlot::TextureMaterialSlot(int location, uint32_t texture_id,
   int texture_unit):
@@ -16,4 +19,6 @@ void TextureMaterialSlot::bind(const ResourceManager& resource_manager)
   glUniform1i(location, texture_unit);
   glActiveTexture(GL_TEXTURE0 + texture_unit);
   glBindTexture(GL_TEXTURE_2D, texture);
+}
+
 }

@@ -1,7 +1,10 @@
 #include <iostream>
 #include <SDL_image.h>
-#include "Material.hpp"
-#include "ResourceManager.hpp"
+#include "render/Material.hpp"
+#include "render/ResourceManager.hpp"
+
+namespace render
+{
 
 ResourceManager::ResourceManager()
 {
@@ -275,4 +278,6 @@ uint32_t ResourceManager::register_material(Material&& material)
   uint32_t id = materials_.size();
   materials_.push_back(std::move(material));
   return id;
+}
+
 }

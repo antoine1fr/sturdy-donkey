@@ -7,8 +7,11 @@
 #include "TextureMaterialSlot.hpp"
 #include "ScalarMaterialSlot.hpp"
 
-#define DECLARE_REGISTER_SCALAR(x) \
-  void register_scalar(const std::string& name, const x& storage);
+#define DECLARE_REGISTER_SCALAR_SLOT(x) \
+  void register_scalar_slot(const std::string& name, const x& storage);
+
+namespace render
+{
 
 class ResourceManager;
 
@@ -39,27 +42,33 @@ class Material
     int view_location;
     int projection_location;
     int projection_inverse_location;
+    int projection_params_location;
+    int ambient_location;
+    int light_dir_location;
+    int light_diffuse_location;
+    int light_specular_location;
+    int camera_direction_location;
 
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);
 
     void bind_slots() const;
 
-    DECLARE_REGISTER_SCALAR(float)
-    DECLARE_REGISTER_SCALAR(glm::vec2)
-    DECLARE_REGISTER_SCALAR(glm::vec3)
-    DECLARE_REGISTER_SCALAR(glm::vec4)
-    DECLARE_REGISTER_SCALAR(glm::mat2)
-    DECLARE_REGISTER_SCALAR(glm::mat3)
-    DECLARE_REGISTER_SCALAR(glm::mat4)
-    DECLARE_REGISTER_SCALAR(int)
-    DECLARE_REGISTER_SCALAR(glm::tvec2<int>)
-    DECLARE_REGISTER_SCALAR(glm::tvec3<int>)
-    DECLARE_REGISTER_SCALAR(glm::tvec4<int>)
-    DECLARE_REGISTER_SCALAR(unsigned int)
-    DECLARE_REGISTER_SCALAR(glm::tvec2<unsigned int>)
-    DECLARE_REGISTER_SCALAR(glm::tvec3<unsigned int>)
-    DECLARE_REGISTER_SCALAR(glm::tvec4<unsigned int>)
+    DECLARE_REGISTER_SCALAR_SLOT(float)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::vec2)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::vec3)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::vec4)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::mat2)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::mat3)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::mat4)
+    DECLARE_REGISTER_SCALAR_SLOT(int)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec2<int>)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec3<int>)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec4<int>)
+    DECLARE_REGISTER_SCALAR_SLOT(unsigned int)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec2<unsigned int>)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec3<unsigned int>)
+    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec4<unsigned int>)
 
     void register_texture_slot(const std::string& name,
         uint32_t texture_id,
@@ -68,5 +77,7 @@ class Material
     template <class Storage>
       void bind_scalar(int location, const Storage& storage) const;
 };
+
+}
 
 #include "Material.inl"

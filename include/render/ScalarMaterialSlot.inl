@@ -7,10 +7,15 @@
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 
+namespace render
+{
+
 template <class Storage>
 ScalarMaterialSlot<Storage>::ScalarMaterialSlot(int location,
   const Storage& storage):
   location(location),
   storage(storage)
 {
+}
+
 }

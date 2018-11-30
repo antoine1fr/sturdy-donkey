@@ -1,8 +1,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
-#include "Scene.hpp"
 
-MeshNode& Scene::create_mesh_node(uint32_t pass_num,
+#include "render/FramePacket.hpp"
+
+namespace render
+{
+
+FramePacket::FramePacket(std::forward_list<::MeshNode> mesh_nodes,
+    std::forward_list<::CameraNode> camera_nodes)
+{
+  copy_nodes_(mesh_nodes, mesh_nodes_);
+  copy_nodes_(camera_nodes, camera_nodes_);
+}
+
+//void FramePacket::copy_mesh_nodes_(const std::forward_list<::MeshNode>&)
+//{
+//}
+
+MeshNode& FramePacket::create_mesh_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     uint32_t mesh_id,
@@ -12,7 +27,7 @@ MeshNode& Scene::create_mesh_node(uint32_t pass_num,
   return mesh_nodes_.front();
 }
 
-CameraNode& Scene::create_perspective_camera_node(uint32_t pass_num,
+CameraNode& FramePacket::create_perspective_camera_node(uint32_t pass_num,
     float fov, float ratio,
     float near_plane, float far_plane, const glm::vec3& position,
     const glm::vec3& angles,
@@ -38,7 +53,7 @@ CameraNode& Scene::create_perspective_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-CameraNode& Scene::create_ortho_camera_node(uint32_t pass_num,
+CameraNode& FramePacket::create_ortho_camera_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     const glm::tvec2<int> viewport_position,
@@ -69,22 +84,24 @@ CameraNode& Scene::create_ortho_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-const std::forward_list<MeshNode>& Scene::get_mesh_nodes() const
+const std::forward_list<MeshNode>& FramePacket::get_mesh_nodes() const
 {
   return mesh_nodes_;
 }
 
-const std::forward_list<CameraNode>& Scene::get_camera_nodes() const
+const std::forward_list<CameraNode>& FramePacket::get_camera_nodes() const
 {
   return camera_nodes_;
 }
 
-std::forward_list<MeshNode>& Scene::get_mesh_nodes()
+std::forward_list<MeshNode>& FramePacket::get_mesh_nodes()
 {
   return mesh_nodes_;
 }
 
-std::forward_list<CameraNode>& Scene::get_camera_nodes()
+std::forward_list<CameraNode>& FramePacket::get_camera_nodes()
 {
   return camera_nodes_;
+}
+
 }

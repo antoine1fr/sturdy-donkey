@@ -1,7 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include "IMaterialSlot.hpp"
+
+namespace render
+{
+
+class ResourceManager;
 
 class TextureMaterialSlot
 {
@@ -14,3 +18,5 @@ class TextureMaterialSlot
     TextureMaterialSlot(int location, uint32_t texture_id, int texture_unit);
     void bind(const ResourceManager& resource_manager);
 };
+
+}

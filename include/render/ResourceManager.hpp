@@ -6,7 +6,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
 #include "common.hpp"
+#include "render/GpuProgram.hpp"
+#include "render/Mesh.hpp"
+
+namespace render
+{
 
 class Material;
 
@@ -65,4 +71,6 @@ GLuint ResourceManager::load_shader_(const std::string& path)
   std::string sources(length, '\0');
   stream.read(&sources[0], length);
   return build_shader_(type, sources);
+}
+
 }

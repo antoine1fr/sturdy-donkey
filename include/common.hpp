@@ -4,6 +4,10 @@
 #include <glm/vec3.hpp>
 #include <vector>
 #include <iostream>
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::duration<float> Duration;
 
 #define CHECK_GL_ERROR assert(glGetError() == GL_NO_ERROR)
 #define CHECK_GL_FRAMEBUFFER_ERROR(x) \
@@ -32,38 +36,3 @@ inline void check_gl_framebuffer(GLenum target)
       assert(false);
   }
 }
-
-struct GpuProgram
-{
-  GLuint handle;
-  GLint model_location;
-  GLint view_location;
-  GLint projection_location;
-  GLint position_location;
-  GLint uv_location;
-};
-
-struct RenderTarget
-{
-  GLenum format;
-  GLsizei width;
-  GLsizei height;
-};
-
-struct RenderPass
-{
-  uint32_t framebuffer_id;
-  GLint clear_bits;
-  glm::vec3 clear_color;
-  bool depth_test;
-};
-
-struct Mesh
-{
-  GLuint position_buffer;
-  GLuint uv_buffer;
-  GLuint index_buffer;
-  size_t index_count;
-  GLenum index_type;
-  GLuint vertex_array;
-};
