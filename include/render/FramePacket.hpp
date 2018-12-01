@@ -139,6 +139,7 @@ template <typename T, typename U>
 void FramePacket::copy_nodes_(const std::list<T>& source_nodes,
     std::vector<U>& destination_nodes)
 {
+  destination_nodes.reserve(source_nodes.size());
   for (const T& node: source_nodes)
   {
     destination_nodes.push_back(node);
