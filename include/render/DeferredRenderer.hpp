@@ -43,6 +43,7 @@ class DeferredRenderer
         const glm::vec3& camera_direction) const;
     void bind_mesh_uniforms_(const Material& material,
         const MeshNode& mesh_node) const;
+    void output_debug_info_() const;
 
   public:
     DeferredRenderer(Window& window);

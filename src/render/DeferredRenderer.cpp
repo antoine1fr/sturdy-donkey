@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <array>
+#include <iostream>
 
 #include "render/DeferredRenderer.hpp"
 #include "render/Material.hpp"
@@ -21,6 +22,7 @@ DeferredRenderer::DeferredRenderer(Window& window):
   render_frame_index(0)
 {
   gl3wInit();
+  output_debug_info_();
   render_thread_ = new std::thread([this](){ this->render(); });
 }
 
@@ -32,6 +34,14 @@ DeferredRenderer::~DeferredRenderer()
     delete render_thread_;
   }
   resource_manager_.cleanup();
+}
+
+void DeferredRenderer::output_debug_info_() const
+{
+  std::cout << "GL renderer: " << glGetString(GL_VENDOR) << '\n';
+  std::cout << "GL vendor: " << glGetString(GL_VERSION) << '\n';
+  std::cout << "GL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
+    << '\n';
 }
 
 void DeferredRenderer::bind_mesh_uniforms_(const Material& material,
