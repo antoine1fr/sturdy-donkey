@@ -2,6 +2,7 @@ CC = clang
 CXX = clang++
 OBJC = clang++
 RM = rm -f
+AR = ar
 
 TARGET = libengine.a
 
