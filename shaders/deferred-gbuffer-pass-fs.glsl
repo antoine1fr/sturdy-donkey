@@ -1,4 +1,4 @@
-#version 400 core
+#version 410 core
 
 uniform sampler2D diffuse_texture;
 uniform sampler2D normal_map;

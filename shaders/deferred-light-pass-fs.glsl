@@ -1,4 +1,4 @@
-#version 400 core
+#version 410 core
 
 uniform sampler2D albedo_tex;
 uniform sampler2D normals_tex; // normals in view space
