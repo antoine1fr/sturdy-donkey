@@ -1,8 +1,14 @@
 #pragma once
 
+#include <thread>
+#include <condition_variable>
+#include <atomic>
+#include <SDL.h>
+
 #include "render/FramePacket.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
+#include "render/Window.hpp"
 
 namespace render
 {
@@ -12,6 +18,16 @@ class DeferredRenderer
   private:
     ResourceManager resource_manager_;
     std::vector<RenderPass> render_passes_;
+    std::atomic_bool run_;
+    Window& window_;
+    SDL_GLContext render_context_;
+    std::thread* render_thread_;
+
+  public:
+    std::condition_variable condition_variable;
+    std::mutex mutex;
+    std::atomic_uint32_t frame_count;
+    std::atomic_uint32_t render_frame_index;
 
   private:
     void render_mesh_node_(const RenderPass& render_pass,
@@ -29,11 +45,13 @@ class DeferredRenderer
         const MeshNode& mesh_node) const;
 
   public:
+    DeferredRenderer(Window& window);
     ~DeferredRenderer();
-    void render(const FramePacket& frame_packet) const;
+    void render();
     ResourceManager& get_resource_manager();
     void add_render_pass(const RenderPass& render_pass);
     void add_render_pass(RenderPass&& render_pass);
+    void notify_exit();
 };
 
 }

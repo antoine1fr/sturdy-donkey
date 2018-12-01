@@ -7,8 +7,25 @@
 #include "render/ResourceManager.hpp"
 #include "render/Material.hpp"
 #include "Demo.hpp"
+#include "Buffer.hpp"
+#include "BufferPool.hpp"
 
-Demo::Demo(int width, int height)
+Demo::Demo():
+  window_("Pipelined rendering demo", 800, 720),
+  renderer_(window_),
+  render_context_(window_.get_ancillary_context())
+{
+  window_.make_current(render_context_);
+  initialize_resources_(window_.get_width(), window_.get_height());
+  BufferPool::add_instance();
+  BufferPool::add_instance();
+}
+
+Demo::~Demo()
+{
+}
+
+void Demo::initialize_resources_(int width, int height)
 {
   render::ResourceManager& resource_manager = renderer_.get_resource_manager();
 
@@ -150,19 +167,27 @@ Demo::Demo(int width, int height)
       true});
 }
 
-Demo::~Demo()
+void Demo::prepare_frame_packet()
 {
+  Buffer& buffer = BufferPool::get_push_head();
+  buffer.reset();
+  void* ptr = buffer.allocate(sizeof(render::FramePacket));
+  new (ptr) render::FramePacket(
+      scene_.get_mesh_nodes(),
+      scene_.get_camera_nodes());
+  renderer_.frame_count++;
+  BufferPool::next_push_head();
+  renderer_.condition_variable.notify_one();
 }
 
-void Demo::render() const
+void Demo::notify_exit()
 {
-  render::FramePacket frame_packet(scene_.get_mesh_nodes(),
-      scene_.get_camera_nodes());
-  renderer_.render(frame_packet);
+  renderer_.notify_exit();
 }
 
 void Demo::update(Duration elapsed_time)
 {
+  while (renderer_.frame_count - renderer_.render_frame_index > 1);
   const float rotation_speed = 50.0f;
   for (SceneNode& node: scene_.get_mesh_nodes())
   {

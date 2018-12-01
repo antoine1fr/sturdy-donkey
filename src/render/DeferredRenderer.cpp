@@ -6,12 +6,31 @@
 
 #include "render/DeferredRenderer.hpp"
 #include "render/Material.hpp"
+#include "Buffer.hpp"
+#include "BufferPool.hpp"
 
 namespace render
 {
 
+DeferredRenderer::DeferredRenderer(Window& window):
+  run_(true),
+  window_(window),
+  render_context_(window.get_render_context()),
+  render_thread_(nullptr),
+  frame_count(0),
+  render_frame_index(0)
+{
+  gl3wInit();
+  render_thread_ = new std::thread([this](){ this->render(); });
+}
+
 DeferredRenderer::~DeferredRenderer()
 {
+  if (render_thread_)
+  {
+    render_thread_->join();
+    delete render_thread_;
+  }
   resource_manager_.cleanup();
 }
 
@@ -152,11 +171,27 @@ void DeferredRenderer::execute_pass_(size_t pass_num,
   }
 }
 
-void DeferredRenderer::render(const FramePacket& frame_packet) const
+void DeferredRenderer::render()
 {
-  for (size_t i = 0; i < render_passes_.size(); ++i)
+  window_.make_current(render_context_);
+  while (run_)
   {
-    execute_pass_(i, render_passes_[i], frame_packet);
+    std::unique_lock<std::mutex> frame_lock(mutex);
+    condition_variable.wait(frame_lock,
+        [&, this]
+        {return frame_count > render_frame_index;});
+    Buffer& buffer = BufferPool::get_pop_head();
+    const FramePacket* frame_packet =
+      static_cast<const FramePacket*>(buffer.ptr());;
+
+    for (size_t i = 0; i < render_passes_.size(); ++i)
+    {
+      execute_pass_(i, render_passes_[i], *frame_packet);
+    }
+
+    window_.swap();
+    render_frame_index++;
+    BufferPool::next_pop_head();
   }
 }
 
@@ -173,6 +208,11 @@ void DeferredRenderer::add_render_pass(const RenderPass& render_pass)
 void DeferredRenderer::add_render_pass(RenderPass&& render_pass)
 {
   render_passes_.push_back(render_pass);
+}
+
+void DeferredRenderer::notify_exit()
+{
+  run_ = false;
 }
 
 }
