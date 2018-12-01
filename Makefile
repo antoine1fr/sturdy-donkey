@@ -36,6 +36,7 @@ C_SOURCES = \
 
 CXX_SOURCES = \
 							$(SRC_DIR)Game.cpp \
+							$(SRC_DIR)GameManager.cpp \
 							$(SRC_DIR)Scene.cpp \
 							$(SRC_DIR)Buffer.cpp \
 							$(SRC_DIR)BufferPool.cpp \
