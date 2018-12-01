@@ -84,22 +84,22 @@ CameraNode& FramePacket::create_ortho_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-const std::vector<MeshNode>& FramePacket::get_mesh_nodes() const
+const StackVector<MeshNode>& FramePacket::get_mesh_nodes() const
 {
   return mesh_nodes_;
 }
 
-const std::vector<CameraNode>& FramePacket::get_camera_nodes() const
+const StackVector<CameraNode>& FramePacket::get_camera_nodes() const
 {
   return camera_nodes_;
 }
 
-std::vector<MeshNode>& FramePacket::get_mesh_nodes()
+StackVector<MeshNode>& FramePacket::get_mesh_nodes()
 {
   return mesh_nodes_;
 }
 
-std::vector<CameraNode>& FramePacket::get_camera_nodes()
+StackVector<CameraNode>& FramePacket::get_camera_nodes()
 {
   return camera_nodes_;
 }

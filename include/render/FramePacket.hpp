@@ -3,9 +3,10 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <vector>
+
 #include "common.hpp"
 #include "Scene.hpp"
+#include "StackVector.hpp"
 
 namespace render
 {
@@ -100,8 +101,8 @@ struct CameraNode: public SceneNode
 class FramePacket
 {
   private:
-    std::vector<MeshNode> mesh_nodes_;
-    std::vector<CameraNode> camera_nodes_;
+    StackVector<MeshNode> mesh_nodes_;
+    StackVector<CameraNode> camera_nodes_;
 
   public:
     FramePacket(std::list<::MeshNode> mesh_nodes,
@@ -124,20 +125,20 @@ class FramePacket
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
 
-    const std::vector<MeshNode>& get_mesh_nodes() const;
-    const std::vector<CameraNode>& get_camera_nodes() const;
-    std::vector<MeshNode>& get_mesh_nodes();
-    std::vector<CameraNode>& get_camera_nodes();
+    const StackVector<MeshNode>& get_mesh_nodes() const;
+    const StackVector<CameraNode>& get_camera_nodes() const;
+    StackVector<MeshNode>& get_mesh_nodes();
+    StackVector<CameraNode>& get_camera_nodes();
 
   private:
     template <typename T, typename U>
       void copy_nodes_(const std::list<T>& source_nodes,
-          std::vector<U>& destination_nodes);
+          StackVector<U>& destination_nodes);
 };
 
 template <typename T, typename U>
 void FramePacket::copy_nodes_(const std::list<T>& source_nodes,
-    std::vector<U>& destination_nodes)
+    StackVector<U>& destination_nodes)
 {
   destination_nodes.reserve(source_nodes.size());
   for (const T& node: source_nodes)
