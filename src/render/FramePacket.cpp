@@ -6,14 +6,14 @@
 namespace render
 {
 
-FramePacket::FramePacket(std::forward_list<::MeshNode> mesh_nodes,
-    std::forward_list<::CameraNode> camera_nodes)
+FramePacket::FramePacket(std::list<::MeshNode> mesh_nodes,
+    std::list<::CameraNode> camera_nodes)
 {
   copy_nodes_(mesh_nodes, mesh_nodes_);
   copy_nodes_(camera_nodes, camera_nodes_);
 }
 
-//void FramePacket::copy_mesh_nodes_(const std::forward_list<::MeshNode>&)
+//void FramePacket::copy_mesh_nodes_(const std::list<::MeshNode>&)
 //{
 //}
 

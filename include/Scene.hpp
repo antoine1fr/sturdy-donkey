@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <forward_list>
+#include <list>
 #include "common.hpp"
 
 struct SceneNode
@@ -71,8 +71,8 @@ struct CameraNode: public SceneNode
 class Scene
 {
   private:
-    std::forward_list<MeshNode> mesh_nodes_;
-    std::forward_list<CameraNode> camera_nodes_;
+    std::list<MeshNode> mesh_nodes_;
+    std::list<CameraNode> camera_nodes_;
 
   public:
     MeshNode& create_mesh_node(uint32_t pass_num,
@@ -92,8 +92,8 @@ class Scene
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
 
-    const std::forward_list<MeshNode>& get_mesh_nodes() const;
-    const std::forward_list<CameraNode>& get_camera_nodes() const;
-    std::forward_list<MeshNode>& get_mesh_nodes();
-    std::forward_list<CameraNode>& get_camera_nodes();
+    const std::list<MeshNode>& get_mesh_nodes() const;
+    const std::list<CameraNode>& get_camera_nodes() const;
+    std::list<MeshNode>& get_mesh_nodes();
+    std::list<CameraNode>& get_camera_nodes();
 };

@@ -104,8 +104,8 @@ class FramePacket
     std::vector<CameraNode> camera_nodes_;
 
   public:
-    FramePacket(std::forward_list<::MeshNode> mesh_nodes,
-        std::forward_list<::CameraNode> camerea_nodes);
+    FramePacket(std::list<::MeshNode> mesh_nodes,
+        std::list<::CameraNode> camerea_nodes);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
@@ -131,12 +131,12 @@ class FramePacket
 
   private:
     template <typename T, typename U>
-      void copy_nodes_(const std::forward_list<T>& source_nodes,
+      void copy_nodes_(const std::list<T>& source_nodes,
           std::vector<U>& destination_nodes);
 };
 
 template <typename T, typename U>
-void FramePacket::copy_nodes_(const std::forward_list<T>& source_nodes,
+void FramePacket::copy_nodes_(const std::list<T>& source_nodes,
     std::vector<U>& destination_nodes)
 {
   for (const T& node: source_nodes)

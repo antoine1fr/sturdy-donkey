@@ -69,22 +69,22 @@ CameraNode& Scene::create_ortho_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-const std::forward_list<MeshNode>& Scene::get_mesh_nodes() const
+const std::list<MeshNode>& Scene::get_mesh_nodes() const
 {
   return mesh_nodes_;
 }
 
-const std::forward_list<CameraNode>& Scene::get_camera_nodes() const
+const std::list<CameraNode>& Scene::get_camera_nodes() const
 {
   return camera_nodes_;
 }
 
-std::forward_list<MeshNode>& Scene::get_mesh_nodes()
+std::list<MeshNode>& Scene::get_mesh_nodes()
 {
   return mesh_nodes_;
 }
 
-std::forward_list<CameraNode>& Scene::get_camera_nodes()
+std::list<CameraNode>& Scene::get_camera_nodes()
 {
   return camera_nodes_;
 }
