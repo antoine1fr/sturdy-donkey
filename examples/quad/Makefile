@@ -1,19 +1,10 @@
-CC = clang
 CXX = clang++
-OBJC = clang++
 RM = rm -f
 
 TARGET = quad
 
 SRC_DIR = src/
 LIB_DIR = ../../lib/
-
-CFLAGS = \
-	-g3 \
-	-I../../lib/gl3w \
-	-Wall \
-	-Werror \
-	-pedantic
 
 CXXFLAGS = \
 	-g3 \
@@ -32,9 +23,6 @@ LDFLAGS = \
 	-framework OpenGL \
 	`pkg-config --libs sdl2 SDL2_image` \
 	-L../../ -lengine
-
-C_SOURCES = \
-							../../lib/gl3w/GL/gl3w.c
 
 CXX_SOURCES = \
 							$(SRC_DIR)ResourceLoaderDelegate.cpp \
@@ -63,11 +51,5 @@ re: fclean all
 
 .PHONY: all clean fclean re
 
-%.o: %.c
-	$(CC) -o $@ $(CFLAGS) -c $<
-
 %.o: %.cpp
 	$(CXX) -o $@ $(CXXFLAGS) -c $<
-
-%.o: %.mm
-	$(OBJC) -o $@ $(OBJCFLAGS) -c $<
