@@ -6,11 +6,11 @@
 #include "common.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/Material.hpp"
-#include "Demo.hpp"
+#include "Game.hpp"
 #include "Buffer.hpp"
 #include "BufferPool.hpp"
 
-Demo::Demo():
+Game::Game():
   window_("Pipelined rendering demo", 1280, 720),
   renderer_(window_),
   render_context_(window_.get_ancillary_context())
@@ -21,11 +21,11 @@ Demo::Demo():
   BufferPool::add_instance();
 }
 
-Demo::~Demo()
+Game::~Game()
 {
 }
 
-void Demo::initialize_resources_(int width, int height)
+void Game::initialize_resources_(int width, int height)
 {
   render::ResourceManager& resource_manager = renderer_.get_resource_manager();
 
@@ -151,7 +151,7 @@ void Demo::initialize_resources_(int width, int height)
       true});
 }
 
-void Demo::prepare_frame_packet()
+void Game::prepare_frame_packet()
 {
   Buffer& buffer = BufferPool::get_push_head();
   buffer.reset();
@@ -164,12 +164,12 @@ void Demo::prepare_frame_packet()
   renderer_.condition_variable.notify_one();
 }
 
-void Demo::notify_exit()
+void Game::notify_exit()
 {
   renderer_.notify_exit();
 }
 
-void Demo::update(Duration elapsed_time)
+void Game::update(Duration elapsed_time)
 {
   while (renderer_.frame_count - renderer_.render_frame_index > 1);
   const float rotation_speed = 50.0f;

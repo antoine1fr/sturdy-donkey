@@ -8,7 +8,7 @@
 #include "render/DeferredRenderer.hpp"
 #include "render/Window.hpp"
 
-class Demo
+class Game
 {
   private:
     Scene scene_;
@@ -20,8 +20,8 @@ class Demo
     void initialize_resources_(int width, int height);
 
   public:
-    Demo();
-    ~Demo();
+    Game();
+    ~Game();
     void prepare_frame_packet();
     void update(Duration elapsed_time);
     void notify_exit();

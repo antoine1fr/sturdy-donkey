@@ -10,7 +10,7 @@
 #include <string>
 
 #include "common.hpp"
-#include "Demo.hpp"
+#include "Game.hpp"
 
 int main()
 {
@@ -19,7 +19,7 @@ int main()
   bool run = true;
   SDL_Event event;
   {
-    Demo demo;
+    Game game;
     auto last_time = Clock::now();
 
     while (run)
@@ -33,12 +33,12 @@ int main()
         if (event.type == SDL_QUIT)
         {
           run = false;
-          demo.notify_exit();
+          game.notify_exit();
         }
       }
 
-      demo.update(elapsed_time);
-      demo.prepare_frame_packet();
+      game.update(elapsed_time);
+      game.prepare_frame_packet();
     }
   }
 
