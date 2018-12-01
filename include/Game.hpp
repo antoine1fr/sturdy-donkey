@@ -7,6 +7,7 @@
 #include "Scene.hpp"
 #include "render/DeferredRenderer.hpp"
 #include "render/Window.hpp"
+#include "IResourceLoaderDelegate.hpp"
 
 class Game
 {
@@ -16,11 +17,8 @@ class Game
     render::DeferredRenderer renderer_;
     SDL_GLContext  render_context_;
 
-  private:
-    void initialize_resources_(int width, int height);
-
   public:
-    Game();
+    Game(IResourceLoaderDelegate& resourceLoader);
     ~Game();
     void prepare_frame_packet();
     void update(Duration elapsed_time);

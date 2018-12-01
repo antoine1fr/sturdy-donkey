@@ -3,7 +3,7 @@ CXX = clang++
 OBJC = clang++
 RM = rm -f
 
-TARGET = demo
+TARGET = libengine.a
 
 SRC_DIR = src/
 LIB_DIR = lib/
@@ -26,11 +26,6 @@ CXXFLAGS = \
 					 -pedantic \
 					`pkg-config --cflags sdl2 SDL2_image`
 
-LDFLAGS = \
-					-g3 -O0 \
-					 -framework OpenGL \
-					`pkg-config --libs sdl2 SDL2_image`
-
 C_SOURCES = \
 							lib/gl3w/GL/gl3w.c
 
@@ -46,8 +41,7 @@ CXX_SOURCES = \
 							$(SRC_DIR)render/FramePacket.cpp \
 							$(SRC_DIR)render/TextureMaterialSlot.cpp \
 							$(SRC_DIR)render/ScalarMaterialSlot.cpp \
-							$(SRC_DIR)render/DeferredRenderer.cpp \
-							$(SRC_DIR)main.cpp
+							$(SRC_DIR)render/DeferredRenderer.cpp
 
 C_OBJECTS=$(C_SOURCES:.c=.o)
 CXX_OBJECTS=$(CXX_SOURCES:.cpp=.o)
@@ -58,7 +52,7 @@ OBJECTS = \
 					$(OBJC_OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $(TARGET) $(LDFLAGS)
+	$(AR) -r -s $(TARGET) $(OBJECTS) 
 
 all: $(TARGET)
 
