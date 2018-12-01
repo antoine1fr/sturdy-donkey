@@ -117,7 +117,7 @@ void Demo::initialize_resources_(int width, int height)
       glm::vec3(0.0f, 0.0f, 3.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::tvec2<int>(0, 0),
-      glm::tvec2<GLsizei>(800, 720));
+      glm::tvec2<GLsizei>(width, height));
   scene_.create_mesh_node(0,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
