@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <forward_list>
+#include <vector>
 #include "common.hpp"
 #include "Scene.hpp"
 
@@ -100,8 +100,8 @@ struct CameraNode: public SceneNode
 class FramePacket
 {
   private:
-    std::forward_list<MeshNode> mesh_nodes_;
-    std::forward_list<CameraNode> camera_nodes_;
+    std::vector<MeshNode> mesh_nodes_;
+    std::vector<CameraNode> camera_nodes_;
 
   public:
     FramePacket(std::forward_list<::MeshNode> mesh_nodes,
@@ -124,24 +124,24 @@ class FramePacket
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
 
-    const std::forward_list<MeshNode>& get_mesh_nodes() const;
-    const std::forward_list<CameraNode>& get_camera_nodes() const;
-    std::forward_list<MeshNode>& get_mesh_nodes();
-    std::forward_list<CameraNode>& get_camera_nodes();
+    const std::vector<MeshNode>& get_mesh_nodes() const;
+    const std::vector<CameraNode>& get_camera_nodes() const;
+    std::vector<MeshNode>& get_mesh_nodes();
+    std::vector<CameraNode>& get_camera_nodes();
 
   private:
     template <typename T, typename U>
       void copy_nodes_(const std::forward_list<T>& source_nodes,
-          std::forward_list<U>& destination_nodes);
+          std::vector<U>& destination_nodes);
 };
 
 template <typename T, typename U>
 void FramePacket::copy_nodes_(const std::forward_list<T>& source_nodes,
-    std::forward_list<U>& destination_nodes)
+    std::vector<U>& destination_nodes)
 {
   for (const T& node: source_nodes)
   {
-    destination_nodes.push_front(node);
+    destination_nodes.push_back(node);
   }
 }
 
