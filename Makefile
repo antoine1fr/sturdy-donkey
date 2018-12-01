@@ -37,6 +37,7 @@ C_SOURCES = \
 CXX_SOURCES = \
 							$(SRC_DIR)Demo.cpp \
 							$(SRC_DIR)Scene.cpp \
+							$(SRC_DIR)Buffer.cpp \
 							$(SRC_DIR)render/Material.cpp \
 							$(SRC_DIR)render/ResourceManager.cpp \
 							$(SRC_DIR)render/FramePacket.cpp \
