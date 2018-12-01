@@ -111,22 +111,6 @@ void Demo::initialize_resources_(int width, int height)
       resource_manager.register_material(std::move(material));
   }
 
-  //uint32_t rt2_material_id;
-  //{
-    //Material material(resource_manager, light_program_id);
-    //material.register_texture_slot("diffuse_texture", normal_rt_id, 0);
-    //rt2_material_id =
-      //resource_manager.register_material(std::move(material));
-  //}
-
-  //uint32_t rt3_material_id;
-  //{
-    //Material material(resource_manager, light_program_id);
-    //material.register_texture_slot("diffuse_texture", depth_rt_id, 0);
-    //rt3_material_id =
-      //resource_manager.register_material(std::move(material));
-  //}
-
   // create first pass' scene nodes
   float ratio = static_cast<float>(width) / static_cast<float>(height);
   scene_.create_perspective_camera_node(0, 45.0f, ratio, 0.1f, 100.0f,
