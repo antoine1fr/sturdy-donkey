@@ -11,7 +11,7 @@
 #include "BufferPool.hpp"
 
 Demo::Demo():
-  window_("Pipelined rendering demo", 800, 720),
+  window_("Pipelined rendering demo", 1280, 720),
   renderer_(window_),
   render_context_(window_.get_ancillary_context())
 {
