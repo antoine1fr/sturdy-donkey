@@ -154,22 +154,30 @@ uint32_t ResourceLoaderDelegate::load_mesh_(
       path.c_str());
   // TODO: implement support for sub-meshes.
   std::vector<uint32_t> indices;
-  to_indices_(shapes[0].mesh.indices, indices);
-  return resource_manager.create_mesh(
-      attributes.vertices,
-      attributes.texcoords,
-      indices);
+  std::vector<float> positions;
+  std::vector<float> uvs;
+  consolidate_indices_(
+      attributes,
+      shapes[0].mesh.indices,
+      indices,
+      positions,
+      uvs);
+  return resource_manager.create_mesh(positions, uvs, indices);
 }
 
-void ResourceLoaderDelegate::to_indices_(
-    const std::vector<tinyobj::index_t>& source,
-    std::vector<uint32_t>& destination) const
+void ResourceLoaderDelegate::consolidate_indices_(
+    const tinyobj::attrib_t& attributes,
+    const std::vector<tinyobj::index_t>& tinyobj_indices,
+    std::vector<uint32_t>& indices,
+    std::vector<float>& positions,
+    std::vector<float>& uvs) const
 {
-  // TODO: consolidate vertex, normal and uv indices, instead of just
-  // assuming they are in the same order.
-  destination.reserve(source.size());
-  for (const tinyobj::index_t& index: source)
+  indices.reserve(tinyobj_indices.size());
+  positions = attributes.vertices;
+  uvs.reserve(attributes.texcoords.size());
+  for (const tinyobj::index_t& index: tinyobj_indices)
   {
-    destination.push_back(static_cast<uint32_t>(index.vertex_index));
+    indices.push_back(index.vertex_index);
+    uvs.push_back(attributes.texcoords[index.texcoord_index]);
   }
 }

@@ -16,7 +16,10 @@ class ResourceLoaderDelegate: public IResourceLoaderDelegate
   private:
     uint32_t load_mesh_(render::ResourceManager& resource_manager,
         const std::string& path) const;
-    void to_indices_(
-        const std::vector<tinyobj::index_t>& source,
-        std::vector<uint32_t>& destination) const;
+    void consolidate_indices_(
+        const tinyobj::attrib_t& attributes,
+        const std::vector<tinyobj::index_t>& tinyobj_indices,
+        std::vector<uint32_t>& indices,
+        std::vector<float>& positions,
+        std::vector<float>& uvs) const;
 };
