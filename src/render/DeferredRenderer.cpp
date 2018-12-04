@@ -5,6 +5,7 @@
 #include <glm/gtx/transform.hpp>
 #include <array>
 #include <iostream>
+#include <limits>
 
 #include "render/DeferredRenderer.hpp"
 #include "render/Material.hpp"
@@ -185,15 +186,20 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
     const MeshNode& mesh_node, const CameraNode& camera_node,
     const glm::vec3& camera_direction) const
 {
+  static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
   const Mesh& mesh = resource_manager_.get_mesh(mesh_node.mesh_id);
   const Material& material =
     resource_manager_.get_material(mesh_node.material_id);
   const GpuProgram& program =
     resource_manager_.get_gpu_program(material.program_id);
-  glUseProgram(program.handle);
 
-  // bind user-defined uniforms
-  material.bind_slots();
+  if (last_material_id != mesh_node.material_id)
+  {
+    glUseProgram(program.handle);
+    material.bind_slots();
+    last_material_id = mesh_node.material_id;
+  }
+
   // bind built-in uniforms
   bind_mesh_uniforms_(material, mesh_node);
   bind_camera_uniforms_(material, camera_node, camera_direction);
