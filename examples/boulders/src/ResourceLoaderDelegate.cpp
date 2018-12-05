@@ -1,3 +1,4 @@
+#include <random>
 #include <string>
 #include <vector>
 #include <glm/vec3.hpp>
@@ -91,15 +92,25 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
 
   // create first pass' scene nodes
   float ratio = static_cast<float>(width) / static_cast<float>(height);
-  scene.create_perspective_camera_node(0, 45.0f, ratio, 0.1f, 100.0f,
-      glm::vec3(0.0f, 0.0f, 3.0f),
+  scene.create_perspective_camera_node(0, 45.0f, ratio, 0.1f, 1000.0f,
+      glm::vec3(0.0f, 0.0f, 10.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::tvec2<int>(0, 0),
       glm::tvec2<GLsizei>(width, height));
-  scene.create_mesh_node(0,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      boulder_mesh_id, boulder_material_id);
+
+  std::random_device random_device;
+  std::default_random_engine random_engine(random_device());
+  std::uniform_real_distribution<float> distribution(-100.0f, 100.0f);
+  for (size_t i = 0; i < 4000; ++i)
+  {
+    float x = distribution(random_engine);
+    float y = distribution(random_engine);
+    //float z = distribution(random_engine);
+    scene.create_mesh_node(0,
+        glm::vec3(x, y, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        boulder_mesh_id, boulder_material_id);
+  }
 
   // create second pass' scene nodes
   scene.create_mesh_node(1,

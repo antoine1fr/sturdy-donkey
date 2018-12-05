@@ -17,8 +17,8 @@ Game::Game(IResourceLoaderDelegate& resource_loader):
 {
   window_.make_current(render_context_);
   resource_loader.load(window_, scene_, renderer_);
-  BufferPool::add_instance();
-  BufferPool::add_instance();
+  BufferPool::add_instance(10000000);
+  BufferPool::add_instance(10000000);
 }
 
 Game::~Game()
