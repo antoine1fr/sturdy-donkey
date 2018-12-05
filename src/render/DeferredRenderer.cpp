@@ -199,6 +199,7 @@ void DeferredRenderer::render()
       execute_pass_(i, render_passes_[i], *frame_packet);
     }
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     window_.swap();
     render_frame_index++;
     BufferPool::next_pop_head();
