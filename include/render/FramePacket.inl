@@ -1,12 +1,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "render/FramePacket.hpp"
-
 namespace render
 {
 
-FramePacket::FramePacket(std::list<::MeshNode> mesh_nodes,
+template <template <typename> class Allocator>
+FramePacket<Allocator>::FramePacket(std::list<::MeshNode> mesh_nodes,
     std::list<::CameraNode> camera_nodes)
 {
   copy_nodes_(mesh_nodes, mesh_nodes_);
@@ -17,7 +16,8 @@ FramePacket::FramePacket(std::list<::MeshNode> mesh_nodes,
 //{
 //}
 
-MeshNode& FramePacket::create_mesh_node(uint32_t pass_num,
+template <template <typename> class Allocator>
+MeshNode& FramePacket<Allocator>::create_mesh_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     uint32_t mesh_id,
@@ -27,7 +27,8 @@ MeshNode& FramePacket::create_mesh_node(uint32_t pass_num,
   return mesh_nodes_.front();
 }
 
-CameraNode& FramePacket::create_perspective_camera_node(uint32_t pass_num,
+template <template <typename> class Allocator>
+CameraNode& FramePacket<Allocator>::create_perspective_camera_node(uint32_t pass_num,
     float fov, float ratio,
     float near_plane, float far_plane, const glm::vec3& position,
     const glm::vec3& angles,
@@ -53,7 +54,8 @@ CameraNode& FramePacket::create_perspective_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-CameraNode& FramePacket::create_ortho_camera_node(uint32_t pass_num,
+template <template <typename> class Allocator>
+CameraNode& FramePacket<Allocator>::create_ortho_camera_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     const glm::tvec2<int> viewport_position,
@@ -84,22 +86,26 @@ CameraNode& FramePacket::create_ortho_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-const StackVector<MeshNode>& FramePacket::get_mesh_nodes() const
+template <template <typename> class Allocator>
+const typename FramePacket<Allocator>::template Vector<MeshNode>& FramePacket<Allocator>::get_mesh_nodes() const
 {
   return mesh_nodes_;
 }
 
-const StackVector<CameraNode>& FramePacket::get_camera_nodes() const
+template <template <typename> class Allocator>
+const typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Allocator>::get_camera_nodes() const
 {
   return camera_nodes_;
 }
 
-StackVector<MeshNode>& FramePacket::get_mesh_nodes()
+template <template <typename> class Allocator>
+typename FramePacket<Allocator>::template Vector<MeshNode>& FramePacket<Allocator>::get_mesh_nodes()
 {
   return mesh_nodes_;
 }
 
-StackVector<CameraNode>& FramePacket::get_camera_nodes()
+template <template <typename> class Allocator>
+typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Allocator>::get_camera_nodes()
 {
   return camera_nodes_;
 }

@@ -98,11 +98,16 @@ struct CameraNode: public SceneNode
   }
 };
 
+template <template <typename> class Allocator>
 class FramePacket
 {
+  public:
+    template <typename T>
+      using Vector = std::vector<T, Allocator<T>>;
+
   private:
-    StackVector<MeshNode> mesh_nodes_;
-    StackVector<CameraNode> camera_nodes_;
+    Vector<MeshNode> mesh_nodes_;
+    Vector<CameraNode> camera_nodes_;
 
   public:
     FramePacket(std::list<::MeshNode> mesh_nodes,
@@ -125,26 +130,24 @@ class FramePacket
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
 
-    const StackVector<MeshNode>& get_mesh_nodes() const;
-    const StackVector<CameraNode>& get_camera_nodes() const;
-    StackVector<MeshNode>& get_mesh_nodes();
-    StackVector<CameraNode>& get_camera_nodes();
+    const Vector<MeshNode>& get_mesh_nodes() const;
+    const Vector<CameraNode>& get_camera_nodes() const;
+    Vector<MeshNode>& get_mesh_nodes();
+    Vector<CameraNode>& get_camera_nodes();
 
   private:
     template <typename T, typename U>
       void copy_nodes_(const std::list<T>& source_nodes,
-          StackVector<U>& destination_nodes);
+          Vector<U>& destination_nodes)
+      {
+        destination_nodes.reserve(source_nodes.size());
+        for (const T& node: source_nodes)
+        {
+          destination_nodes.push_back(node);
+        }
+      }
 };
 
-template <typename T, typename U>
-void FramePacket::copy_nodes_(const std::list<T>& source_nodes,
-    StackVector<U>& destination_nodes)
-{
-  destination_nodes.reserve(source_nodes.size());
-  for (const T& node: source_nodes)
-  {
-    destination_nodes.push_back(node);
-  }
 }
 
-}
+#include "FramePacket.inl"

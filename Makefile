@@ -39,7 +39,6 @@ CXX_SOURCES = \
 							$(SRC_DIR)render/Material.cpp \
 							$(SRC_DIR)render/Window.cpp \
 							$(SRC_DIR)render/ResourceManager.cpp \
-							$(SRC_DIR)render/FramePacket.cpp \
 							$(SRC_DIR)render/TextureMaterialSlot.cpp \
 							$(SRC_DIR)render/ScalarMaterialSlot.cpp \
 							$(SRC_DIR)render/DeferredRenderer.cpp
