@@ -7,7 +7,6 @@
 #include <glm/gtx/transform.hpp>
 
 #include <render/Material.hpp>
-
 #include "ResourceLoaderDelegate.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
