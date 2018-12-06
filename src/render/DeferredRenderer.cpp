@@ -26,7 +26,6 @@ DeferredRenderer::DeferredRenderer(Window& window):
 
   gl3wInit();
   output_debug_info_();
-  render_thread_ = new std::thread([this](){ this->render(); });
 
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
@@ -217,54 +216,6 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
   glDrawElements(GL_TRIANGLES, mesh.index_count, mesh.index_type, nullptr);
 }
 
-void DeferredRenderer::execute_pass_(size_t pass_num,
-    const RenderPass& render_pass, const FramePacket& frame_packet) const
-{
-  GLuint framebuffer =
-    resource_manager_.get_framebuffer(render_pass.framebuffer_id);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  check_gl_framebuffer(GL_FRAMEBUFFER);
-
-  if (render_pass.depth_test)
-    glEnable(GL_DEPTH_TEST);
-  else
-    glDisable(GL_DEPTH_TEST);
-
-  for (auto camera_node: frame_packet.get_camera_nodes())
-  {
-    if (camera_node.pass_num != pass_num)
-      continue;
-    glViewport(camera_node.viewport_position.x,
-        camera_node.viewport_position.y,
-        camera_node.viewport_size.x,
-        camera_node.viewport_size.y);
-    glClearColor(render_pass.clear_color.x, render_pass.clear_color.y,
-        render_pass.clear_color.z, 1.0f);
-    if (framebuffer == 0)
-    {
-      glDrawBuffer(GL_BACK);
-      glClear(render_pass.clear_bits);
-    }
-    else
-    {
-      std::array<GLenum, 2> targets {{
-        GL_COLOR_ATTACHMENT0,
-        GL_COLOR_ATTACHMENT1
-      }};
-      glDrawBuffers(targets.size(), &targets[0]);
-      glClear(render_pass.clear_bits);
-    }
-    for (auto mesh_node: frame_packet.get_mesh_nodes())
-    {
-      if (mesh_node.pass_num != pass_num)
-        continue;
-      glm::vec4 camera_direction =
-        camera_node.view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-      render_mesh_node_(render_pass, mesh_node, camera_node,
-          glm::vec3(camera_direction));
-    }
-  }
-}
 
 void DeferredRenderer::render()
 {
@@ -276,13 +227,11 @@ void DeferredRenderer::render()
         [&, this]
         {return frame_count > render_frame_index;});
     Buffer& buffer = BufferPool::get_pop_head();
-    const FramePacket* frame_packet =
-      static_cast<const FramePacket*>(buffer.ptr());;
+    FramePacket<StackAllocator>* gbuffer_frame_packet =
+      static_cast<FramePacket<StackAllocator>*>(buffer.ptr());;
 
-    for (size_t i = 0; i < render_passes_.size(); ++i)
-    {
-      execute_pass_(i, render_passes_[i], *frame_packet);
-    }
+    execute_pass_(0, render_passes_[0], *gbuffer_frame_packet);
+    execute_pass_(1, render_passes_[1], light_frame_packet_);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     window_.swap();

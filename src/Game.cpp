@@ -19,6 +19,7 @@ Game::Game(IResourceLoaderDelegate& resource_loader):
   resource_loader.load(window_, scene_, renderer_);
   BufferPool::add_instance(10000000);
   BufferPool::add_instance(10000000);
+  renderer_.start_render_thread();
 }
 
 Game::~Game()
@@ -29,8 +30,8 @@ void Game::prepare_frame_packet()
 {
   Buffer& buffer = BufferPool::get_push_head();
   buffer.reset();
-  void* ptr = buffer.allocate(sizeof(render::FramePacket));
-  new (ptr) render::FramePacket(
+  void* ptr = buffer.allocate(sizeof(render::FramePacket<StackAllocator>));
+  new (ptr) render::FramePacket<StackAllocator>(
       scene_.get_mesh_nodes(),
       scene_.get_camera_nodes());
   renderer_.frame_count++;

@@ -22,6 +22,7 @@ class DeferredRenderer
     Window& window_;
     SDL_GLContext render_context_;
     std::thread* render_thread_;
+    FramePacket<std::allocator> light_frame_packet_;
     uint32_t light_program_id_;
     uint32_t albedo_rt_id_;
     uint32_t normal_rt_id_;
@@ -69,6 +70,59 @@ class DeferredRenderer
     uint32_t get_albedo_rt_id() const;
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;
+    void start_render_thread();
 };
+
+template <template <typename> class Allocator>
+void DeferredRenderer::execute_pass_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const FramePacket<Allocator>& frame_packet) const
+{
+  GLuint framebuffer =
+    resource_manager_.get_framebuffer(render_pass.framebuffer_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  check_gl_framebuffer(GL_FRAMEBUFFER);
+
+  if (render_pass.depth_test)
+    glEnable(GL_DEPTH_TEST);
+  else
+    glDisable(GL_DEPTH_TEST);
+
+  for (auto camera_node: frame_packet.get_camera_nodes())
+  {
+    if (camera_node.pass_num != pass_num)
+      continue;
+    glViewport(camera_node.viewport_position.x,
+        camera_node.viewport_position.y,
+        camera_node.viewport_size.x,
+        camera_node.viewport_size.y);
+    glClearColor(render_pass.clear_color.x, render_pass.clear_color.y,
+        render_pass.clear_color.z, 1.0f);
+    if (framebuffer == 0)
+    {
+      glDrawBuffer(GL_BACK);
+      glClear(render_pass.clear_bits);
+    }
+    else
+    {
+      std::array<GLenum, 2> targets {{
+        GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1
+      }};
+      glDrawBuffers(targets.size(), &targets[0]);
+      glClear(render_pass.clear_bits);
+    }
+    for (auto mesh_node: frame_packet.get_mesh_nodes())
+    {
+      if (mesh_node.pass_num != pass_num)
+        continue;
+      glm::vec4 camera_direction =
+        camera_node.view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+      render_mesh_node_(render_pass, mesh_node, camera_node,
+          glm::vec3(camera_direction));
+    }
+  }
+}
 
 }
