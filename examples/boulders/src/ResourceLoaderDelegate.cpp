@@ -55,7 +55,7 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
   // create first pass' scene nodes
   float ratio = static_cast<float>(width) / static_cast<float>(height);
   scene.create_perspective_camera_node(0, 45.0f, ratio, 0.1f, 1000.0f,
-      glm::vec3(0.0f, 0.0f, 10.0f),
+      glm::vec3(0.0f, 0.0f, 100.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::tvec2<int>(0, 0),
       glm::tvec2<GLsizei>(width, height));
