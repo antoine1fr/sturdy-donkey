@@ -22,6 +22,12 @@ class DeferredRenderer
     Window& window_;
     SDL_GLContext render_context_;
     std::thread* render_thread_;
+    uint32_t light_program_id_;
+    uint32_t albedo_rt_id_;
+    uint32_t normal_rt_id_;
+    uint32_t depth_rt_id_;
+    uint32_t gbuffer_id_;
+    uint32_t screen_mesh_id_;
 
   public:
     std::condition_variable condition_variable;
@@ -47,6 +53,10 @@ class DeferredRenderer
     void bind_mesh_uniforms_(const Material& material,
         const MeshNode& mesh_node) const;
     void output_debug_info_() const;
+    void create_light_pass_mesh_(int width, int height);
+    void create_gbuffer_(int width, int height);
+    uint32_t create_light_pass_material_();
+    void create_light_pass_frame_packet_(int width, int height);
 
   public:
     DeferredRenderer(Window& window);
@@ -56,6 +66,9 @@ class DeferredRenderer
     void add_render_pass(const RenderPass& render_pass);
     void add_render_pass(RenderPass&& render_pass);
     void notify_exit();
+    uint32_t get_albedo_rt_id() const;
+    uint32_t get_normal_rt_id() const;
+    uint32_t get_depth_rt_id() const;
 };
 
 }

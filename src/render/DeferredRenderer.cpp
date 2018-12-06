@@ -21,9 +21,28 @@ DeferredRenderer::DeferredRenderer(Window& window):
   frame_count(0),
   render_frame_index(0)
 {
+  int width = window.get_width();
+  int height = window.get_height();
+
   gl3wInit();
   output_debug_info_();
   render_thread_ = new std::thread([this](){ this->render(); });
+
+  create_light_pass_mesh_(width, height);
+  create_gbuffer_(width, height);
+  create_light_pass_frame_packet_(width, height);
+  // register gbuffer pass
+  add_render_pass({gbuffer_id_,
+      GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      true,
+      false});
+  // register light accumulation pass
+  add_render_pass({0,
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      true});
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -36,12 +55,78 @@ DeferredRenderer::~DeferredRenderer()
   resource_manager_.cleanup();
 }
 
+void DeferredRenderer::create_light_pass_mesh_(int width, int height)
+{
+  std::vector<float> screen_mesh_positions {
+    0.0f, 0.0f, 0.0f,
+    0.0f, static_cast<float>(height), 0.0f,
+    static_cast<float>(width), static_cast<float>(height), 0.0f,
+    static_cast<float>(width), 0.0f, 0.0f
+  };
+  std::vector<float> screen_mesh_uvs {
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 1.0f,
+    1.0f, 0.0f
+  };
+  std::vector<unsigned int> screen_mesh_indices {0, 1, 2, 0, 2, 3};
+  screen_mesh_id_ =
+    resource_manager_.create_mesh(screen_mesh_positions, screen_mesh_uvs,
+        screen_mesh_indices);
+
+  light_program_id_ = resource_manager_.load_gpu_program_from_file(
+    "../../shaders/simple-vs.glsl",
+    "../../shaders/deferred-light-pass-fs.glsl");
+}
+
+void DeferredRenderer::create_gbuffer_(int width, int height)
+{
+  albedo_rt_id_ =
+    resource_manager_.create_texture(width, height, GL_RGBA8, GL_RGBA,
+        GL_UNSIGNED_BYTE);
+  normal_rt_id_ =
+    resource_manager_.create_texture(width, height, GL_RGBA8, GL_RGBA,
+        GL_UNSIGNED_BYTE);
+  depth_rt_id_ =
+    resource_manager_.create_texture(width, height, GL_DEPTH_COMPONENT24,
+        GL_DEPTH_COMPONENT, GL_FLOAT);
+  gbuffer_id_ = resource_manager_.create_framebuffer(albedo_rt_id_,
+      normal_rt_id_, depth_rt_id_);
+}
+
+uint32_t DeferredRenderer::create_light_pass_material_()
+{
+  render::Material material(resource_manager_, light_program_id_);
+  material.register_texture_slot("albedo_tex", albedo_rt_id_,
+      0);
+  material.register_texture_slot("normals_tex", normal_rt_id_,
+      1);
+  material.register_texture_slot("depth_tex", depth_rt_id_,
+      2);
+  return resource_manager_.register_material(std::move(material));
+}
+
 void DeferredRenderer::output_debug_info_() const
 {
   std::cout << "GL renderer: " << glGetString(GL_VENDOR) << '\n';
   std::cout << "GL vendor: " << glGetString(GL_VERSION) << '\n';
   std::cout << "GL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
     << '\n';
+}
+
+void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
+{
+  // create material for light accumulation pass
+  uint32_t rt1_material_id = create_light_pass_material_();
+  light_frame_packet_.create_mesh_node(1,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      screen_mesh_id_, rt1_material_id);
+  light_frame_packet_.create_ortho_camera_node(1,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::tvec2<int>(0, 0),
+      glm::tvec2<GLsizei>(width, height));
 }
 
 void DeferredRenderer::bind_mesh_uniforms_(const Material& material,

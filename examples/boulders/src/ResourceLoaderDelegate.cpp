@@ -37,42 +37,10 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
   uint32_t boulder_mesh_id = load_mesh_(resource_manager,
       "../../meshes/rock_001.obj");
 
-  // create a quad covering the whole screen, for the second pass
-  std::vector<float> screen_mesh_positions {
-    0.0f, 0.0f, 0.0f,
-    0.0f, static_cast<float>(height), 0.0f,
-    static_cast<float>(width), static_cast<float>(height), 0.0f,
-    static_cast<float>(width), 0.0f, 0.0f
-  };
-  std::vector<float> screen_mesh_uvs {
-    0.0f, 0.0f,
-    0.0f, 1.0f,
-    1.0f, 1.0f,
-    1.0f, 0.0f
-  };
-  std::vector<unsigned int> screen_mesh_indices {0, 1, 2, 0, 2, 3};
-  uint32_t screen_mesh_id =
-    resource_manager.create_mesh(screen_mesh_positions, screen_mesh_uvs,
-        screen_mesh_indices);
-
   // load gpu programs
   uint32_t gbuffer_program_id = resource_manager.load_gpu_program_from_file(
     "../../shaders/deferred-gbuffer-pass-vs.glsl",
     "../../shaders/deferred-gbuffer-pass-fs.glsl");
-  uint32_t light_program_id = resource_manager.load_gpu_program_from_file(
-    "../../shaders/simple-vs.glsl",
-    "../../shaders/deferred-light-pass-fs.glsl");
-
-  // create gbuffer
-  uint32_t albedo_rt_id =
-    resource_manager.create_texture(width, height, GL_RGBA8, GL_RGBA,
-        GL_UNSIGNED_BYTE);
-  uint32_t normal_rt_id =
-    resource_manager.create_texture(width, height, GL_RGBA8, GL_RGBA,
-        GL_UNSIGNED_BYTE);
-  uint32_t depth_rt_id =
-    resource_manager.create_texture(width, height, GL_DEPTH_COMPONENT24,
-        GL_DEPTH_COMPONENT, GL_FLOAT);
 
   // create materials
   uint32_t boulder_material_id;
@@ -81,16 +49,6 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
     material.register_texture_slot("diffuse_texture", boulder_diffuse_id, 0);
     material.register_texture_slot("normal_map", boulder_normal_id, 1);
     boulder_material_id =
-      resource_manager.register_material(std::move(material));
-  }
-
-  uint32_t rt1_material_id;
-  {
-    render::Material material(resource_manager, light_program_id);
-    material.register_texture_slot("albedo_tex", albedo_rt_id, 0);
-    material.register_texture_slot("normals_tex", normal_rt_id, 1);
-    material.register_texture_slot("depth_tex", depth_rt_id, 2);
-    rt1_material_id =
       resource_manager.register_material(std::move(material));
   }
 
