@@ -1,3 +1,4 @@
+#include <sys/kdebug_signpost.h>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -231,6 +232,7 @@ void DeferredRenderer::render()
       static_cast<FramePacket<StackAllocator>*>(buffer.ptr());;
     gbuffer_frame_packet->sort_mesh_nodes();
 
+    kdebug_signpost_start(1, 0, 0, 0, 0);
     execute_pass_(0, render_passes_[0], *gbuffer_frame_packet);
     execute_pass_(1, render_passes_[1], light_frame_packet_);
 
@@ -238,6 +240,7 @@ void DeferredRenderer::render()
     window_.swap();
     render_frame_index++;
     BufferPool::next_pop_head();
+    kdebug_signpost_end(1, 0, 0, 0, 0);
   }
 }
 
