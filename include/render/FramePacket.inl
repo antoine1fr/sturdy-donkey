@@ -5,6 +5,11 @@ namespace render
 {
 
 template <template <typename> class Allocator>
+FramePacket<Allocator>::FramePacket()
+{
+}
+
+template <template <typename> class Allocator>
 FramePacket<Allocator>::FramePacket(std::list<::MeshNode> mesh_nodes,
     std::list<::CameraNode> camera_nodes)
 {

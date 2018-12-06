@@ -110,6 +110,7 @@ class FramePacket
     Vector<CameraNode> camera_nodes_;
 
   public:
+    FramePacket();
     FramePacket(std::list<::MeshNode> mesh_nodes,
         std::list<::CameraNode> camerea_nodes);
 
