@@ -136,6 +136,8 @@ class FramePacket
     Vector<MeshNode>& get_mesh_nodes();
     Vector<CameraNode>& get_camera_nodes();
 
+    void sort_mesh_nodes();
+
   private:
     template <typename T, typename U>
       void copy_nodes_(const std::list<T>& source_nodes,

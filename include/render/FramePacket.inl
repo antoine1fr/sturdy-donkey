@@ -115,4 +115,15 @@ typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Alloca
   return camera_nodes_;
 }
 
+template <template <typename> class Allocator>
+void FramePacket<Allocator>::sort_mesh_nodes()
+{
+  std::sort(mesh_nodes_.begin(), mesh_nodes_.end(),
+    [](const MeshNode& lhs, const MeshNode& rhs) {
+      return (lhs.material_id < rhs.material_id);
+    });
 }
+
+
+}
+

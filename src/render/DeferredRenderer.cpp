@@ -229,6 +229,7 @@ void DeferredRenderer::render()
     Buffer& buffer = BufferPool::get_pop_head();
     FramePacket<StackAllocator>* gbuffer_frame_packet =
       static_cast<FramePacket<StackAllocator>*>(buffer.ptr());;
+    gbuffer_frame_packet->sort_mesh_nodes();
 
     execute_pass_(0, render_passes_[0], *gbuffer_frame_packet);
     execute_pass_(1, render_passes_[1], light_frame_packet_);
