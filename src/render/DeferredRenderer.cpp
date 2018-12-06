@@ -263,4 +263,24 @@ void DeferredRenderer::notify_exit()
   run_ = false;
 }
 
+uint32_t DeferredRenderer::get_albedo_rt_id() const
+{
+  return albedo_rt_id_;
+}
+
+uint32_t DeferredRenderer::get_normal_rt_id() const
+{
+  return normal_rt_id_;
+}
+
+uint32_t DeferredRenderer::get_depth_rt_id() const
+{
+  return depth_rt_id_;
+}
+
+void DeferredRenderer::start_render_thread()
+{
+  render_thread_ = new std::thread([this](){ this->render(); });
+}
+
 }
