@@ -34,7 +34,9 @@ class DeferredRenderer
         const MeshNode& mesh_node, const CameraNode& camera_node,
         const glm::vec3& camera_direction) const;
     template <template <typename> class Allocator>
-      void execute_pass_(size_t pass_num, const RenderPass& render_pass,
+      void execute_pass_(
+          size_t pass_num,
+          const RenderPass& render_pass,
           const FramePacket<Allocator>& frame_packet) const;
     void bind_light_uniforms_(const Material& material,
         const glm::mat4& view) const;
