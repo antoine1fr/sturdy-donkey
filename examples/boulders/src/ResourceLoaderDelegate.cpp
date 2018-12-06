@@ -1,11 +1,16 @@
+#include <algorithm>
+#include <functional>
 #include <random>
 #include <string>
+#include <utility>
 #include <vector>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <unordered_map>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include <hash.hpp>
 #include <render/Material.hpp>
 #include "ResourceLoaderDelegate.hpp"
 
@@ -146,12 +151,83 @@ void ResourceLoaderDelegate::consolidate_indices_(
     std::vector<float>& positions,
     std::vector<float>& uvs) const
 {
-  indices.reserve(tinyobj_indices.size());
-  positions = attributes.vertices;
-  uvs.reserve(attributes.texcoords.size());
+  // 1. expand vertices
+  typedef std::pair<glm::vec3, glm::vec2> Vertex;
+  std::vector<Vertex> vertices;
+  vertices.reserve(tinyobj_indices.size());
   for (const tinyobj::index_t& index: tinyobj_indices)
   {
-    indices.push_back(index.vertex_index);
-    uvs.push_back(attributes.texcoords[index.texcoord_index]);
+    uint32_t vertex_index = index.vertex_index * 3;
+    uint32_t texcoord_index = index.texcoord_index * 2;
+    vertices.push_back({
+      {
+        attributes.vertices[vertex_index + 0],
+        attributes.vertices[vertex_index + 1],
+        attributes.vertices[vertex_index + 2]
+      },
+      {
+        attributes.texcoords[texcoord_index + 0],
+        attributes.texcoords[texcoord_index + 1]
+      }
+    });
+  }
+
+  // 2. index vertices
+  std::unordered_map<Vertex, uint32_t> index;
+  uint32_t max_id = 0;
+  for (const Vertex& vertex: vertices)
+  {
+    if (index.find(vertex) == index.cend())
+    {
+      index.insert({vertex, max_id});
+      max_id += 1;
+    }
+  }
+
+  // 3. map old indices to new indices
+  std::unordered_map<std::pair<uint32_t, uint32_t>, uint32_t> index_map;
+  for (const tinyobj::index_t& old_index: tinyobj_indices)
+  {
+    uint32_t old_vertex_index = old_index.vertex_index * 3;
+    uint32_t old_texcoord_index = old_index.texcoord_index * 2;
+    Vertex vertex = {
+      {
+        attributes.vertices[old_vertex_index + 0],
+        attributes.vertices[old_vertex_index + 1],
+        attributes.vertices[old_vertex_index + 2]
+      },
+      {
+        attributes.texcoords[old_texcoord_index + 0],
+        attributes.texcoords[old_texcoord_index + 1]
+      }
+    };
+    uint32_t new_index = (index.find(vertex))->second;
+    std::pair<uint32_t, uint32_t> key = {
+      old_index.vertex_index,
+      old_index.texcoord_index
+    };
+    index_map[key] = new_index;
+  }
+
+  // 5. copy indices in correct order
+  indices.reserve(tinyobj_indices.size());
+  for (const tinyobj::index_t& old_index: tinyobj_indices)
+  {
+    indices.push_back(index_map[{old_index.vertex_index,
+        old_index.texcoord_index}]);
+  }
+
+  // 6. copy vertex attributes in correct order
+  positions.resize(index.size() * 3);
+  uvs.resize(index.size() * 2);
+  for (const Vertex& vertex: vertices)
+  {
+    // find the vertex' id in the index
+    uint32_t i = (index.find(vertex))->second;
+    positions[i * 3] = vertex.first.x;
+    positions[(i * 3) + 1] = vertex.first.y;
+    positions[(i * 3) + 2] = vertex.first.z;
+    uvs[i * 2] = vertex.second.x;
+    uvs[(i * 2) + 1] = vertex.second.y;
   }
 }
