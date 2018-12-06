@@ -188,4 +188,9 @@ void ResourceLoaderDelegate::consolidate_indices_(
     uvs[i * 2] = vertex.second.x;
     uvs[(i * 2) + 1] = vertex.second.y;
   }
+
+  // debug traces
+  std::cout << "\tpositions: " << positions.size() << '\n';
+  std::cout << "\tuvs: " << uvs.size() << '\n';
+  std::cout << "\tindices: " << indices.size() << '\n';
 }
