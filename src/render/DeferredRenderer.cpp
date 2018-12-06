@@ -225,8 +225,7 @@ void DeferredRenderer::render()
   {
     std::unique_lock<std::mutex> frame_lock(mutex);
     condition_variable.wait(frame_lock,
-        [&, this]
-        {return frame_count > render_frame_index;});
+        [this]{return frame_count > render_frame_index;});
     Buffer& buffer = BufferPool::get_pop_head();
     FramePacket<StackAllocator>* gbuffer_frame_packet =
       static_cast<FramePacket<StackAllocator>*>(buffer.ptr());;
