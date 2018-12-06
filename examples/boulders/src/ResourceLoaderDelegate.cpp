@@ -110,39 +110,14 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
         glm::vec3(0.0f, 0.0f, 0.0f),
         boulder_mesh_id, boulder_material_id);
   }
-
-  // create second pass' scene nodes
-  scene.create_mesh_node(1,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      screen_mesh_id, rt1_material_id);
-
-  scene.create_ortho_camera_node(1,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::tvec2<int>(0, 0),
-      glm::tvec2<GLsizei>(width, height));
-
-  uint32_t gbuffer_id = resource_manager.create_framebuffer(albedo_rt_id,
-      normal_rt_id, depth_rt_id);
-  // register first render pass
-  renderer.add_render_pass({gbuffer_id,
-      GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      true,
-      false});
-  // register second render pass
-  renderer.add_render_pass({0,
-      GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      false,
-      true});
 }
 
 uint32_t ResourceLoaderDelegate::load_mesh_(
     render::ResourceManager& resource_manager,
     const std::string& path) const
 {
+  std::cout << "Loading mesh from file: " << path << '\n';
+
   tinyobj::attrib_t attributes;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
