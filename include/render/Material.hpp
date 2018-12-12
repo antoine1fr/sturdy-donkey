@@ -47,7 +47,7 @@ class Material
     int light_dir_location;
     int light_diffuse_location;
     int light_specular_location;
-    int camera_position;
+    int camera_position_location;
 
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);

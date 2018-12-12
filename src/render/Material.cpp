@@ -36,7 +36,7 @@ Material::Material(const ResourceManager& resource_manager,
     "light_specular");
   ambient_location = glGetUniformLocation(program.handle,
     "ambient");
-  camera_position = glGetUniformLocation(program.handle,
+  camera_position_location = glGetUniformLocation(program.handle,
     "camera_position");
 }
 
