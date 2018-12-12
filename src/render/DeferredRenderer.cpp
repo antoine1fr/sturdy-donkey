@@ -175,7 +175,7 @@ void DeferredRenderer::bind_light_uniforms_(const Material& material,
 }
 
 void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
-    const MeshNode& mesh_node, const CameraNode& camera_node) const
+    const MeshNode& mesh_node, const CameraNode& camera_node)
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
   const Mesh& mesh = resource_manager_.get_mesh(mesh_node.mesh_id);

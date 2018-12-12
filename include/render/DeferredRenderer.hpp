@@ -40,12 +40,12 @@ class DeferredRenderer
 
   private:
     void render_mesh_node_(const RenderPass& render_pass,
-        const MeshNode& mesh_node, const CameraNode& camera_node) const;
+        const MeshNode& mesh_node, const CameraNode& camera_node);
     template <template <typename> class Allocator>
       void execute_pass_(
           size_t pass_num,
           const RenderPass& render_pass,
-          const FramePacket<Allocator>& frame_packet) const;
+          const FramePacket<Allocator>& frame_packet);
     void bind_light_uniforms_(const Material& material,
         const glm::mat4& view) const;
     void bind_camera_uniforms_(
@@ -77,7 +77,7 @@ template <template <typename> class Allocator>
 void DeferredRenderer::execute_pass_(
     size_t pass_num,
     const RenderPass& render_pass,
-    const FramePacket<Allocator>& frame_packet) const
+    const FramePacket<Allocator>& frame_packet)
 {
   GLuint framebuffer;
   uint32_t framebuffer_id = render_pass.framebuffer_id;
