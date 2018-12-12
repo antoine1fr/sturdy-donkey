@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -19,4 +22,5 @@ class TextureMaterialSlot
     void bind(const ResourceManager& resource_manager);
 };
 
+}
 }

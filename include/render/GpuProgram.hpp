@@ -1,5 +1,8 @@
 #pragma once
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -13,4 +16,5 @@ struct GpuProgram
   GLint uv_location;
 };
 
+}
 }

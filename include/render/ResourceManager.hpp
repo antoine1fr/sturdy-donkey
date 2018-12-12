@@ -11,6 +11,9 @@
 #include "render/GpuProgram.hpp"
 #include "render/Mesh.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -73,4 +76,5 @@ GLuint ResourceManager::load_shader_(const std::string& path)
   return build_shader_(type, sources);
 }
 
+}
 }

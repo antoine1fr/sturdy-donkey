@@ -2,6 +2,9 @@
 
 #include "BufferPool.hpp"
 
+namespace donkey
+{
+
 template <typename T>
 struct StackAllocator
 {
@@ -40,3 +43,5 @@ struct StackAllocator
     buffer.set_pointer(pointer);
   }
 };
+
+}

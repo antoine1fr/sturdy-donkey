@@ -2,6 +2,9 @@
 
 #include <vector>
 
+namespace donkey
+{
+
 class Buffer
 {
   public:
@@ -32,4 +35,6 @@ T* Buffer::placement_new()
 {
   void* ptr = allocate(sizeof(T));
   return new (ptr) T;
+}
+
 }

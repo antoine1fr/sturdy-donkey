@@ -10,6 +10,8 @@
 
 #include "render/Mesh.hpp"
 
+namespace donkey
+{
 namespace render
 {
 
@@ -145,4 +147,5 @@ class CommandBucket
     const std::list<SortedCommand>& get_commands() const;
 };
 
+}
 }

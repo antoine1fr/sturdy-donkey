@@ -5,16 +5,16 @@
 #include <IResourceLoaderDelegate.hpp>
 #include <render/ResourceManager.hpp>
 
-class ResourceLoaderDelegate: public IResourceLoaderDelegate
+class ResourceLoaderDelegate: public donkey::IResourceLoaderDelegate
 {
   public:
     virtual void load(
-        render::Window& window,
-        Scene& scene,
-        render::DeferredRenderer& renderer);
+        donkey::render::Window& window,
+        donkey::Scene& scene,
+        donkey::render::DeferredRenderer& renderer);
 
   private:
-    uint32_t load_mesh_(render::ResourceManager& resource_manager,
+    uint32_t load_mesh_(donkey::render::ResourceManager& resource_manager,
         const std::string& path) const;
     void consolidate_indices_(
         const tinyobj::attrib_t& attributes,

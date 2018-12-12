@@ -1,6 +1,9 @@
 #include <GL/gl3w.h>
 #include "render/ScalarMaterialSlot.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -94,4 +97,5 @@ void ScalarMaterialSlot<glm::tvec4<unsigned int>>::bind(const ResourceManager&)
   glUniform4uiv(location, 1, &(storage[0]));
 }
 
+}
 }

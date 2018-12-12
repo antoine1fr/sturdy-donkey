@@ -2,6 +2,9 @@
 
 #include "Game.hpp"
 
+namespace donkey
+{
+
 class GameManager
 {
   public:
@@ -9,3 +12,5 @@ class GameManager
     ~GameManager();
     void run(Game& game);
 };
+
+}

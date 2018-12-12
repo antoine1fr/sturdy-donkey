@@ -1,6 +1,9 @@
 #include <GL/gl3w.h>
 #include "render/Window.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -62,4 +65,5 @@ void Window::swap()
   SDL_GL_SwapWindow(window_);
 }
 
+}
 }

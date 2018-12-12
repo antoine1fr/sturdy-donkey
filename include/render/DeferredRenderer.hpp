@@ -13,6 +13,9 @@
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -133,4 +136,5 @@ void DeferredRenderer::execute_pass_(
   }
 }
 
+}
 }

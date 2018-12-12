@@ -1,5 +1,8 @@
 #include "render/CommandBucket.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -187,4 +190,5 @@ uint64_t CommandBucket::make_sort_key_(Command::Type type)
   return static_cast<uint64_t>(type);
 }
 
+}
 }

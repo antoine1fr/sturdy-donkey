@@ -1,5 +1,8 @@
 #pragma once
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -20,6 +23,7 @@ class ScalarMaterialSlot
     void bind(const ResourceManager& resource_manager);
 };
 
+}
 }
 
 #include "ScalarMaterialSlot.inl"

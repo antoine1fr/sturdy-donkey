@@ -1,5 +1,8 @@
 #include "render/gl/Driver.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 namespace gl
@@ -125,5 +128,6 @@ void Driver::bind_uniform_int(const Command& command)
   glUniform1i(bind_command.location, bind_command.uniform);
 }
 
+}
 }
 }

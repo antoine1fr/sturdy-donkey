@@ -1,6 +1,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -10,14 +13,14 @@ FramePacket<Allocator>::FramePacket()
 }
 
 template <template <typename> class Allocator>
-FramePacket<Allocator>::FramePacket(std::list<::MeshNode> mesh_nodes,
-    std::list<::CameraNode> camera_nodes)
+FramePacket<Allocator>::FramePacket(std::list<::donkey::MeshNode> mesh_nodes,
+    std::list<::donkey::CameraNode> camera_nodes)
 {
   copy_nodes_(mesh_nodes, mesh_nodes_);
   copy_nodes_(camera_nodes, camera_nodes_);
 }
 
-//void FramePacket::copy_mesh_nodes_(const std::list<::MeshNode>&)
+//void FramePacket::copy_mesh_nodes_(const std::list<::donkey::MeshNode>&)
 //{
 //}
 
@@ -126,4 +129,4 @@ void FramePacket<Allocator>::sort_mesh_nodes()
 
 
 }
-
+}

@@ -6,6 +6,9 @@
 #include <iostream>
 #include <chrono>
 
+namespace donkey
+{
+
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::duration<float> Duration;
 
@@ -35,4 +38,6 @@ inline void check_gl_framebuffer(GLenum target)
     default:
       assert(false);
   }
+}
+
 }

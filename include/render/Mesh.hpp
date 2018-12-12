@@ -2,6 +2,9 @@
 
 #include <GL/gl3w.h>
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -15,4 +18,5 @@ struct Mesh
   GLuint vertex_array;
 };
 
+}
 }

@@ -2,6 +2,9 @@
 #include "render/ResourceManager.hpp"
 #include "render/TextureMaterialSlot.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -21,4 +24,5 @@ void TextureMaterialSlot::bind(const ResourceManager& resource_manager)
   glBindTexture(GL_TEXTURE_2D, texture);
 }
 
+}
 }

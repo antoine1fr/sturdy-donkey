@@ -8,6 +8,9 @@
 #include "Scene.hpp"
 #include "StackVector.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -26,7 +29,7 @@ struct SceneNode
   {
   }
 
-  SceneNode(const ::SceneNode& node):
+  SceneNode(const ::donkey::SceneNode& node):
     pass_num(node.pass_num),
     position(node.position),
     angles(node.angles)
@@ -50,7 +53,7 @@ struct MeshNode: public SceneNode
   {
   }
 
-  MeshNode(const ::MeshNode& node):
+  MeshNode(const ::donkey::MeshNode& node):
     SceneNode(node),
     mesh_id(node.mesh_id),
     material_id(node.material_id)
@@ -86,7 +89,7 @@ struct CameraNode: public SceneNode
   {
   }
 
-  CameraNode(const ::CameraNode& node):
+  CameraNode(const ::donkey::CameraNode& node):
     SceneNode(node),
     projection(node.projection),
     view(node.view),
@@ -111,8 +114,8 @@ class FramePacket
 
   public:
     FramePacket();
-    FramePacket(std::list<::MeshNode> mesh_nodes,
-        std::list<::CameraNode> camerea_nodes);
+    FramePacket(std::list<::donkey::MeshNode> mesh_nodes,
+        std::list<::donkey::CameraNode> camerea_nodes);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
@@ -151,6 +154,7 @@ class FramePacket
       }
 };
 
+}
 }
 
 #include "FramePacket.inl"

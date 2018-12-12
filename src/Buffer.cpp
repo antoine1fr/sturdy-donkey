@@ -1,5 +1,8 @@
 #include "Buffer.hpp"
 
+namespace donkey
+{
+
 Buffer::Buffer(Size capacity):
   capacity_(capacity),
   size_(0),
@@ -59,4 +62,6 @@ void* Buffer::ptr() const
 void Buffer::set_pointer(void* ptr)
 {
   ptr_ = static_cast<char*>(ptr);
+}
+
 }

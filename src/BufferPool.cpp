@@ -1,5 +1,8 @@
 #include "BufferPool.hpp"
 
+namespace donkey
+{
+
 std::atomic_size_t BufferPool::push_head_num_(0);
 std::atomic_size_t BufferPool::pop_head_num_(0);
 BufferPool::Vector BufferPool::instances_;
@@ -37,4 +40,6 @@ void BufferPool::next_push_head()
 void BufferPool::next_pop_head()
 {
   pop_head_num_++;
+}
+
 }

@@ -12,6 +12,9 @@
     y ## _slots_.push_back(ScalarMaterialSlot<x>(location, storage)); \
   }
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -92,4 +95,5 @@ void Material::register_texture_slot(const std::string& name,
     texture_unit));
 }
 
+}
 }

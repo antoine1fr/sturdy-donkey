@@ -11,8 +11,13 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
+namespace donkey
+{
+
 template <typename T>
 void hash_combine(std::size_t& seed, const T& x);
+
+}
 
 namespace std
 {
@@ -25,8 +30,8 @@ namespace std
       std::size_t operator () (const glm::vec2& v) const noexcept
       {
         std::size_t seed = 0;
-        hash_combine(seed, v.x);
-        hash_combine(seed, v.y);
+        donkey::hash_combine(seed, v.x);
+        donkey::hash_combine(seed, v.y);
         return seed;
       }
     };
@@ -40,9 +45,9 @@ namespace std
       std::size_t operator () (const glm::vec3& v) const noexcept
       {
         std::size_t seed = 0;
-        hash_combine(seed, v.x);
-        hash_combine(seed, v.y);
-        hash_combine(seed, v.z);
+        donkey::hash_combine(seed, v.x);
+        donkey::hash_combine(seed, v.y);
+        donkey::hash_combine(seed, v.z);
         return seed;
       }
     };
@@ -56,16 +61,21 @@ namespace std
       std::size_t operator () (const std::pair<T, U>& pair) const noexcept
       {
         std::size_t seed = 0;
-        hash_combine<T>(seed, pair.first);
-        hash_combine<U>(seed, pair.second);
+        donkey::hash_combine<T>(seed, pair.first);
+        donkey::hash_combine<U>(seed, pair.second);
         return seed;
       }
     };
 }
+
+namespace donkey
+{
 
 template <typename T>
 void hash_combine(std::size_t& seed, const T& x)
 {
   std::size_t hash = std::hash<T>{}(x);
   seed ^= hash + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 }

@@ -4,6 +4,9 @@
 #include "render/Window.hpp"
 #include "Scene.hpp"
 
+namespace donkey
+{
+
 class IResourceLoaderDelegate
 {
   public:
@@ -12,3 +15,5 @@ class IResourceLoaderDelegate
         Scene& scene,
         render::DeferredRenderer& renderer) = 0;
 };
+
+}

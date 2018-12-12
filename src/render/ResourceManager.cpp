@@ -3,6 +3,9 @@
 #include "render/Material.hpp"
 #include "render/ResourceManager.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -281,4 +284,5 @@ uint32_t ResourceManager::register_material(Material&& material)
   return id;
 }
 
+}
 }

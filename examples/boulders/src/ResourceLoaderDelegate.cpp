@@ -17,10 +17,12 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
-    render::DeferredRenderer& renderer)
+void ResourceLoaderDelegate::load(
+    donkey::render::Window& window,
+    donkey::Scene& scene,
+    donkey::render::DeferredRenderer& renderer)
 {
-  render::ResourceManager& resource_manager = renderer.get_resource_manager();
+  donkey::render::ResourceManager& resource_manager = renderer.get_resource_manager();
   int width = window.get_width();
   int height = window.get_height();
 
@@ -45,7 +47,7 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
   // create materials
   uint32_t boulder_material_id;
   {
-    render::Material material(resource_manager, gbuffer_program_id);
+    donkey::render::Material material(resource_manager, gbuffer_program_id);
     material.register_texture_slot("diffuse_texture", boulder_diffuse_id, 0);
     material.register_texture_slot("normal_map", boulder_normal_id, 1);
     boulder_material_id =
@@ -76,7 +78,7 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
 }
 
 uint32_t ResourceLoaderDelegate::load_mesh_(
-    render::ResourceManager& resource_manager,
+    donkey::render::ResourceManager& resource_manager,
     const std::string& path) const
 {
   std::cout << "Loading mesh from file: " << path << '\n';

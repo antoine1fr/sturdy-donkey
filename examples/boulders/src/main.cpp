@@ -4,9 +4,9 @@
 
 int main()
 {
-  GameManager game_manager;
+  donkey::GameManager game_manager;
   ResourceLoaderDelegate resource_loader;
-  Game game(resource_loader);
+  donkey::Game game(resource_loader);
   game_manager.run(game);
   return 0;
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -10,4 +13,5 @@ struct RenderTarget
   GLsizei height;
 };
 
+}
 }

@@ -2,6 +2,9 @@
 #include <glm/gtx/transform.hpp>
 #include "Scene.hpp"
 
+namespace donkey
+{
+
 MeshNode& Scene::create_mesh_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
@@ -87,4 +90,6 @@ std::list<MeshNode>& Scene::get_mesh_nodes()
 std::list<CameraNode>& Scene::get_camera_nodes()
 {
   return camera_nodes_;
+}
+
 }

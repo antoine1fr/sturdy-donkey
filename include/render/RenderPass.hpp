@@ -1,5 +1,8 @@
 #pragma once
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -12,4 +15,5 @@ struct RenderPass
   bool lighting; // loop through lights if true
 };
 
+}
 }

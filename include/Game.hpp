@@ -9,6 +9,9 @@
 #include "render/Window.hpp"
 #include "IResourceLoaderDelegate.hpp"
 
+namespace donkey
+{
+
 class Game
 {
   private:
@@ -24,3 +27,5 @@ class Game
     void update(Duration elapsed_time);
     void notify_exit();
 };
+
+}

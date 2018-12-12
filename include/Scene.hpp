@@ -6,6 +6,9 @@
 #include <list>
 #include "common.hpp"
 
+namespace donkey
+{
+
 struct SceneNode
 {
   uint32_t pass_num;
@@ -97,3 +100,5 @@ class Scene
     std::list<MeshNode>& get_mesh_nodes();
     std::list<CameraNode>& get_camera_nodes();
 };
+
+}

@@ -13,6 +13,8 @@
 #include "BufferPool.hpp"
 #include "render/CommandBucket.hpp"
 
+namespace donkey
+{
 namespace render
 {
 
@@ -279,4 +281,5 @@ void DeferredRenderer::start_render_thread()
   render_thread_ = new std::thread([this](){ this->render(); });
 }
 
+}
 }

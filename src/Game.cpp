@@ -11,6 +11,9 @@
 #include "Buffer.hpp"
 #include "BufferPool.hpp"
 
+namespace donkey
+{
+
 Game::Game(IResourceLoaderDelegate& resource_loader):
   window_("Pipelined rendering demo", 1280, 720),
   renderer_(window_),
@@ -63,4 +66,6 @@ void Game::update(Duration elapsed_time)
     }
   }
   kdebug_signpost_end(0, 1, 0, 0, 0);
+}
+
 }

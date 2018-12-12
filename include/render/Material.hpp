@@ -10,6 +10,9 @@
 #define DECLARE_REGISTER_SCALAR_SLOT(x) \
   void register_scalar_slot(const std::string& name, const x& storage);
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -78,6 +81,7 @@ class Material
       void bind_scalar(int location, const Storage& storage) const;
 };
 
+}
 }
 
 #include "Material.inl"

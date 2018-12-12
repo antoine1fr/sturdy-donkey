@@ -4,6 +4,9 @@
 
 #include "GameManager.hpp"
 
+namespace donkey
+{
+
 GameManager::GameManager()
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
@@ -39,4 +42,6 @@ void GameManager::run(Game& game)
     game.update(elapsed_time);
     game.prepare_frame_packet();
   }
+}
+
 }

@@ -3,6 +3,9 @@
 #include <vector>
 #include "render/CommandBucket.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 namespace gl
@@ -34,5 +37,6 @@ class Driver
     static void draw_elements_(const Command& command);
 };
 
+}
 }
 }

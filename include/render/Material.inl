@@ -2,6 +2,9 @@
 
 #include "ResourceManager.hpp"
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -12,4 +15,5 @@ void Material::bind_scalar(int location, const Storage& storage) const
   slot.bind(resource_manager_);
 }
 
+}
 }

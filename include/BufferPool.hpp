@@ -3,6 +3,9 @@
 #include <atomic>
 #include "Buffer.hpp"
 
+namespace donkey
+{
+
 class BufferPool
 {
   private:
@@ -23,3 +26,5 @@ class BufferPool
     static void next_pop_head();
 
 };
+
+}

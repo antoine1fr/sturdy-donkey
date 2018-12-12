@@ -3,6 +3,9 @@
 #include <SDL.h>
 #include <string>
 
+namespace donkey
+{
+
 namespace render
 {
 
@@ -26,4 +29,5 @@ class Window
     void swap();
 };
 
+}
 }
