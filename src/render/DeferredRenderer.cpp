@@ -221,7 +221,6 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
   glDrawElements(GL_TRIANGLES, mesh.index_count, mesh.index_type, nullptr);
 }
 
-
 void DeferredRenderer::render()
 {
   window_.make_current(render_context_);
