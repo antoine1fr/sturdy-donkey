@@ -39,7 +39,7 @@ DeferredRenderer::DeferredRenderer(Window& window):
       true,
       false});
   // register light accumulation pass
-  add_render_pass({0,
+  add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,

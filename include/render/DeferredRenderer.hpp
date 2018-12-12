@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <atomic>
 #include <SDL.h>
+#include <limits>
 
 #include "render/FramePacket.hpp"
 #include "render/ResourceManager.hpp"
@@ -78,8 +79,12 @@ void DeferredRenderer::execute_pass_(
     const RenderPass& render_pass,
     const FramePacket<Allocator>& frame_packet) const
 {
-  GLuint framebuffer =
-    resource_manager_.get_framebuffer(render_pass.framebuffer_id);
+  GLuint framebuffer;
+  uint32_t framebuffer_id = render_pass.framebuffer_id;
+  if (framebuffer_id == std::numeric_limits<uint32_t>::max())
+    framebuffer = 0;
+  else
+    framebuffer = resource_manager_.get_framebuffer(framebuffer_id);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
   check_gl_framebuffer(GL_FRAMEBUFFER);
 
