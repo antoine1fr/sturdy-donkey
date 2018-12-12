@@ -2,7 +2,7 @@
 
 uniform sampler2D albedo_tex;
 uniform sampler2D normals_tex; // normals in view space
-uniform sampler2DShadow depth_tex;
+uniform sampler2D depth_tex;
 uniform vec3 camera_position; // Eye's position in view space.
 uniform vec4 ambient;
 uniform vec4 light_dir; // Light's direction in view space in xyz. Material's
@@ -53,10 +53,11 @@ vec4 compute_diffuse_term(Fragment fragment, Light light, Material material)
 
 vec3 unpack_position()
 {
-  float linear_depth = texture(depth_tex, vec3(fragment_uv, 1));
-  float depth = (projection_params.x - projection_params.y) * linear_depth;
-  vec4 position = projection_inverse * vec4(fragment_uv, depth, 0);
-  return position.xyz;
+  float depth = texture(depth_tex, fragment_uv).x;
+  vec4 clip_space_position = vec4(fragment_uv * 2 - 1, depth, 1);
+  vec4 view_space_position = projection_inverse * clip_space_position;
+  vec3 position = view_space_position.xyz / view_space_position.w;
+  return position;
 }
 
 void main()
