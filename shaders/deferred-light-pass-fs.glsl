@@ -3,7 +3,7 @@
 uniform sampler2D albedo_tex;
 uniform sampler2D normals_tex; // normals in view space
 uniform sampler2DShadow depth_tex;
-uniform vec3 camera_direction; // Eye's position in view space.
+uniform vec3 camera_position; // Eye's position in view space.
 uniform vec4 ambient;
 uniform vec4 light_dir; // Light's direction in view space in xyz. Material's
                         // shininess in w.
@@ -35,8 +35,9 @@ struct Fragment
 };
 
 vec4 compute_specular_term(Fragment fragment, Light light, Material material,
-    vec3 camera_direction)
+    vec3 camera_position)
 {
+  vec3 camera_direction = camera_position - fragment.position;
   vec3 highlight = normalize(camera_direction + fragment.position.xyz);
   float n_dot_h = pow(dot(fragment.normal, highlight), material.shininess);
   return n_dot_h * light.specular;
@@ -67,6 +68,6 @@ void main()
   Fragment fragment = Fragment(unpack_position(), normal);
   vec4 diffuse_term = compute_diffuse_term(fragment, light, material);
   vec4 specular_term = compute_specular_term(fragment, light, material,
-      camera_direction);
+      camera_position);
   color = ambient + diffuse_term + specular_term;
 }

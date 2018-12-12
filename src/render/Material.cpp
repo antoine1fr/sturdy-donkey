@@ -36,8 +36,8 @@ Material::Material(const ResourceManager& resource_manager,
     "light_specular");
   ambient_location = glGetUniformLocation(program.handle,
     "ambient");
-  camera_direction_location = glGetUniformLocation(program.handle,
-    "camera_direction");
+  camera_position = glGetUniformLocation(program.handle,
+    "camera_position");
 }
 
 DEFINE_REGISTER_SCALAR_SLOT(float, float)

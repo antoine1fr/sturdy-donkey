@@ -154,8 +154,7 @@ void DeferredRenderer::bind_mesh_uniforms_(const Material& material,
 
 void DeferredRenderer::bind_camera_uniforms_(
     const Material& material,
-    const CameraNode& camera_node,
-    const glm::vec3& camera_direction) const
+    const CameraNode& camera_node) const
 {
   glm::mat4 projection_inverse = glm::inverse(camera_node.projection);
 
@@ -165,7 +164,7 @@ void DeferredRenderer::bind_camera_uniforms_(
       glm::vec2(camera_node.near_plane, camera_node.far_plane));
   material.bind_scalar(material.projection_inverse_location,
       projection_inverse);
-  material.bind_scalar(material.camera_direction_location, camera_direction);
+  material.bind_scalar(material.camera_position, camera_node.position);
 }
 
 void DeferredRenderer::bind_light_uniforms_(const Material& material,
@@ -183,8 +182,7 @@ void DeferredRenderer::bind_light_uniforms_(const Material& material,
 }
 
 void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
-    const MeshNode& mesh_node, const CameraNode& camera_node,
-    const glm::vec3& camera_direction) const
+    const MeshNode& mesh_node, const CameraNode& camera_node) const
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
   const Mesh& mesh = resource_manager_.get_mesh(mesh_node.mesh_id);
@@ -202,7 +200,7 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
 
   // bind built-in uniforms
   bind_mesh_uniforms_(material, mesh_node);
-  bind_camera_uniforms_(material, camera_node, camera_direction);
+  bind_camera_uniforms_(material, camera_node);
   bind_light_uniforms_(material, camera_node.view);
 
   // bind geometry

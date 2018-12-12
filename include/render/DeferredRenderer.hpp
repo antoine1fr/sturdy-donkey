@@ -39,8 +39,7 @@ class DeferredRenderer
 
   private:
     void render_mesh_node_(const RenderPass& render_pass,
-        const MeshNode& mesh_node, const CameraNode& camera_node,
-        const glm::vec3& camera_direction) const;
+        const MeshNode& mesh_node, const CameraNode& camera_node) const;
     template <template <typename> class Allocator>
       void execute_pass_(
           size_t pass_num,
@@ -50,8 +49,7 @@ class DeferredRenderer
         const glm::mat4& view) const;
     void bind_camera_uniforms_(
         const Material& material,
-        const CameraNode& camera_node,
-        const glm::vec3& camera_direction) const;
+        const CameraNode& camera_node) const;
     void bind_mesh_uniforms_(const Material& material,
         const MeshNode& mesh_node) const;
     void output_debug_info_() const;
@@ -118,10 +116,7 @@ void DeferredRenderer::execute_pass_(
     {
       if (mesh_node.pass_num != pass_num)
         continue;
-      glm::vec4 camera_direction =
-        camera_node.view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-      render_mesh_node_(render_pass, mesh_node, camera_node,
-          glm::vec3(camera_direction));
+      render_mesh_node_(render_pass, mesh_node, camera_node);
     }
   }
 }
