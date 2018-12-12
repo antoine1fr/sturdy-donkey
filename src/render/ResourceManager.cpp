@@ -170,6 +170,7 @@ GLuint ResourceManager::load_texture_(const std::string& path)
 
 GLuint ResourceManager::load_texture_from_file(const std::string& path)
 {
+  std::cout << "Loading texture from file: " << path << '\n';
   GLuint texture = load_texture_(path);
   uint32_t id = textures_.size();
   textures_.push_back(texture);
