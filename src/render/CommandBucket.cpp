@@ -17,6 +17,68 @@ BindMeshCommand::BindMeshCommand(const Mesh& mesh, int position_location,
 {
 }
 
+BindUniformFloatCommand::BindUniformFloatCommand(int location, float uniform):
+  Command(Type::kBindUniformFloat),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformIntCommand::BindUniformIntCommand(int location, int uniform):
+  Command(Type::kBindUniformInt),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformVec2Command::BindUniformVec2Command(int location,
+    const glm::vec2& uniform):
+  Command(Type::kBindUniformVec2),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformVec3Command::BindUniformVec3Command(int location,
+    const glm::vec3& uniform):
+  Command(Type::kBindUniformVec3),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformVec4Command::BindUniformVec4Command(int location,
+    const glm::vec4& uniform):
+  Command(Type::kBindUniformVec4),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformMat2Command::BindUniformMat2Command(int location,
+    const glm::mat2& uniform):
+  Command(Type::kBindUniformMat2),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformMat3Command::BindUniformMat3Command(int location,
+    const glm::mat3& uniform):
+  Command(Type::kBindUniformMat3),
+  location(location),
+  uniform(uniform)
+{
+}
+
+BindUniformMat4Command::BindUniformMat4Command(int location,
+    const glm::mat4& uniform):
+  Command(Type::kBindUniformMat4),
+  location(location),
+  uniform(uniform)
+{
+}
+
 DrawElementsCommand::DrawElementsCommand(size_t count, GLenum element_type):
   Command(Type::kDrawElements),
   count(count),
