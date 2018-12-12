@@ -67,9 +67,9 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
   {
     float x = distribution(random_engine);
     float y = distribution(random_engine);
-    //float z = distribution(random_engine);
+    float z = distribution(random_engine);
     scene.create_mesh_node(0,
-        glm::vec3(x, y, 0.0f),
+        glm::vec3(x, y, z),
         glm::vec3(0.0f, 0.0f, 0.0f),
         boulder_mesh_id, boulder_material_id);
   }
