@@ -11,6 +11,7 @@
 #include "render/Material.hpp"
 #include "Buffer.hpp"
 #include "BufferPool.hpp"
+#include "render/CommandBucket.hpp"
 
 namespace render
 {
@@ -196,22 +197,14 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
   bind_camera_uniforms_(material, camera_node);
   bind_light_uniforms_(material, camera_node.view);
 
-  // bind geometry
-  glBindVertexArray(mesh.vertex_array);
-  // vertex positions
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.position_buffer);
-  glVertexAttribPointer(program.position_location, 3, GL_FLOAT, GL_FALSE, 0,
-      nullptr);
-  glEnableVertexAttribArray(program.position_location);
-  // vertex UVs
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.uv_buffer);
-  glVertexAttribPointer(program.uv_location, 2, GL_FLOAT, GL_FALSE, 0,
-      nullptr);
-  glEnableVertexAttribArray(program.uv_location);
-  // indices
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+  CommandBucket render_commands;
 
-  glDrawElements(GL_TRIANGLES, mesh.index_count, mesh.index_type, nullptr);
+  // bind geometry
+  render_commands.bind_mesh(mesh, program.position_location,
+      program.uv_location);
+
+  render_commands.draw_elements(mesh.index_count, mesh.index_type);
+  driver_.execute_commands(render_commands);
 }
 
 void DeferredRenderer::render()

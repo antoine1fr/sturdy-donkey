@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <limits>
 
+#include "render/gl/Driver.hpp"
 #include "render/FramePacket.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
@@ -31,6 +32,7 @@ class DeferredRenderer
     uint32_t depth_rt_id_;
     uint32_t gbuffer_id_;
     uint32_t screen_mesh_id_;
+    gl::Driver driver_;
 
   public:
     std::condition_variable condition_variable;
