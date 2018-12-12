@@ -14,7 +14,7 @@
 Game::Game(IResourceLoaderDelegate& resource_loader):
   window_("Pipelined rendering demo", 1280, 720),
   renderer_(window_),
-  render_context_(window_.get_ancillary_context())
+  render_context_(window_.get_render_context())
 {
   window_.make_current(render_context_);
   resource_loader.load(window_, scene_, renderer_);
