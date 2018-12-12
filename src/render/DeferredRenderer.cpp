@@ -134,21 +134,14 @@ void DeferredRenderer::bind_mesh_uniforms_(const Material& material,
     const MeshNode& mesh_node) const
 {
   // compute model matrix
-  glm::mat4 model = glm::lookAt(
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, -1.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_x = glm::rotate(glm::mat4(1.0f),
-      glm::radians(mesh_node.angles.x),
+  glm::mat4 rotate_x = glm::rotate(glm::radians(mesh_node.angles.x),
       glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f),
-      glm::radians(mesh_node.angles.y),
+  glm::mat4 rotate_y = glm::rotate(glm::radians(mesh_node.angles.y),
       glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f),
-      glm::radians(mesh_node.angles.z),
+  glm::mat4 rotate_z = glm::rotate(glm::radians(mesh_node.angles.z),
       glm::vec3(0.0f, 0.0f, 1.0f));
-  glm::mat4 translate = glm::translate(glm::mat4(1.0f), mesh_node.position);
-  model = translate * rotate_z * rotate_y * rotate_x * model;
+  glm::mat4 translate = glm::translate(mesh_node.position);
+  glm::mat4 model = translate * rotate_z * rotate_y * rotate_x;
   material.bind_scalar(material.model_location, model);
 }
 
