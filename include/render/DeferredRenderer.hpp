@@ -48,12 +48,17 @@ class DeferredRenderer
           size_t pass_num,
           const RenderPass& render_pass,
           const FramePacket<Allocator>& frame_packet);
-    void bind_light_uniforms_(const Material& material,
+    void bind_light_uniforms_(
+        CommandBucket& render_commands,
+        const Material& material,
         const glm::mat4& view) const;
     void bind_camera_uniforms_(
+        CommandBucket& render_commands,
         const Material& material,
         const CameraNode& camera_node) const;
-    void bind_mesh_uniforms_(const Material& material,
+    void bind_mesh_uniforms_(
+        CommandBucket& render_commands,
+        const Material& material,
         const MeshNode& mesh_node) const;
     void output_debug_info_() const;
     void create_light_pass_mesh_(int width, int height);

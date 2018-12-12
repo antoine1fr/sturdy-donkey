@@ -131,7 +131,9 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
       glm::tvec2<GLsizei>(width, height));
 }
 
-void DeferredRenderer::bind_mesh_uniforms_(const Material& material,
+void DeferredRenderer::bind_mesh_uniforms_(
+    CommandBucket& render_commands,
+    const Material& material,
     const MeshNode& mesh_node) const
 {
   // compute model matrix
@@ -143,35 +145,40 @@ void DeferredRenderer::bind_mesh_uniforms_(const Material& material,
       glm::vec3(0.0f, 0.0f, 1.0f));
   glm::mat4 translate = glm::translate(mesh_node.position);
   glm::mat4 model = translate * rotate_z * rotate_y * rotate_x;
-  material.bind_scalar(material.model_location, model);
+  render_commands.bind_uniform(material.model_location, model);
 }
 
 void DeferredRenderer::bind_camera_uniforms_(
+    CommandBucket& render_commands,
     const Material& material,
     const CameraNode& camera_node) const
 {
   glm::mat4 projection_inverse = glm::inverse(camera_node.projection);
 
-  material.bind_scalar(material.view_location, camera_node.view);
-  material.bind_scalar(material.projection_location, camera_node.projection);
-  material.bind_scalar(material.projection_params_location,
+  render_commands.bind_uniform(material.view_location, camera_node.view);
+  render_commands.bind_uniform(material.projection_location,
+      camera_node.projection);
+  render_commands.bind_uniform(material.projection_params_location,
       glm::vec2(camera_node.near_plane, camera_node.far_plane));
-  material.bind_scalar(material.projection_inverse_location,
+  render_commands.bind_uniform(material.projection_inverse_location,
       projection_inverse);
-  material.bind_scalar(material.camera_position, camera_node.position);
+  render_commands.bind_uniform(material.camera_position_location,
+      camera_node.position);
 }
 
-void DeferredRenderer::bind_light_uniforms_(const Material& material,
+void DeferredRenderer::bind_light_uniforms_(
+    CommandBucket& render_commands,
+    const Material& material,
     const glm::mat4& view) const
 {
   // bind light infos
   glm::vec4 light_dir = view * glm::vec4(-1.0f, 1.0f, -1.0f, 10.0f);
-  material.bind_scalar(material.light_dir_location, light_dir);
-  material.bind_scalar(material.ambient_location,
+  render_commands.bind_uniform(material.light_dir_location, light_dir);
+  render_commands.bind_uniform(material.ambient_location,
       glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-  material.bind_scalar(material.light_diffuse_location,
+  render_commands.bind_uniform(material.light_diffuse_location,
       glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-  material.bind_scalar(material.light_specular_location,
+  render_commands.bind_uniform(material.light_specular_location,
       glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
@@ -192,12 +199,12 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
     last_material_id = mesh_node.material_id;
   }
 
-  // bind built-in uniforms
-  bind_mesh_uniforms_(material, mesh_node);
-  bind_camera_uniforms_(material, camera_node);
-  bind_light_uniforms_(material, camera_node.view);
-
   CommandBucket render_commands;
+
+  // bind built-in uniforms
+  bind_mesh_uniforms_(render_commands, material, mesh_node);
+  bind_camera_uniforms_(render_commands, material, camera_node);
+  bind_light_uniforms_(render_commands, material, camera_node.view);
 
   // bind geometry
   render_commands.bind_mesh(mesh, program.position_location,
