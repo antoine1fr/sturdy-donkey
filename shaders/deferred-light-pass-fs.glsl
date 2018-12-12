@@ -70,5 +70,5 @@ void main()
   vec4 diffuse_term = compute_diffuse_term(fragment, light, material);
   vec4 specular_term = compute_specular_term(fragment, light, material,
       camera_position);
-  color = ambient + diffuse_term + specular_term;
+  color = texture(albedo_tex, fragment_uv);
 }
