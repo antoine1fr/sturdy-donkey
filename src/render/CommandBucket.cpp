@@ -110,4 +110,81 @@ const std::list<SortedCommand>& CommandBucket::get_commands() const
   return sorted_commands_;
 }
 
+void CommandBucket::bind_uniform(int location, float uniform)
+{
+  bind_float_commands_.push_back(BindUniformFloatCommand(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformFloat),
+    bind_float_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, int uniform)
+{
+  bind_int_commands_.push_back(BindUniformIntCommand(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformInt),
+    bind_int_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::vec2& uniform)
+{
+  bind_vec2_commands_.push_back(BindUniformVec2Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformVec2),
+    bind_vec2_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::vec3& uniform)
+{
+  bind_vec3_commands_.push_back(BindUniformVec3Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformVec3),
+    bind_vec3_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::vec4& uniform)
+{
+  bind_vec4_commands_.push_back(BindUniformVec4Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformVec4),
+    bind_vec4_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::mat2& uniform)
+{
+  bind_mat2_commands_.push_back(BindUniformMat2Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformMat2),
+    bind_mat4_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::mat3& uniform)
+{
+  bind_mat3_commands_.push_back(BindUniformMat3Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformMat3),
+    bind_mat4_commands_.back()
+  });
+}
+
+void CommandBucket::bind_uniform(int location, const glm::mat4& uniform)
+{
+  bind_mat4_commands_.push_back(BindUniformMat4Command(location, uniform));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindUniformMat4),
+    bind_mat4_commands_.back()
+  });
+}
+
+uint64_t CommandBucket::make_sort_key_(Command::Type type)
+{
+  return static_cast<uint64_t>(type);
+}
+
 }

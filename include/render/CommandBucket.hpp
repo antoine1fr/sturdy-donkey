@@ -118,10 +118,29 @@ class CommandBucket
   private:
     std::list<SortedCommand> sorted_commands_;
     std::list<BindMeshCommand> bind_mesh_commands_;
+    std::list<BindUniformFloatCommand> bind_float_commands_;
+    std::list<BindUniformIntCommand> bind_int_commands_;
+    std::list<BindUniformVec2Command> bind_vec2_commands_;
+    std::list<BindUniformVec3Command> bind_vec3_commands_;
+    std::list<BindUniformVec4Command> bind_vec4_commands_;
+    std::list<BindUniformMat2Command> bind_mat2_commands_;
+    std::list<BindUniformMat3Command> bind_mat3_commands_;
+    std::list<BindUniformMat4Command> bind_mat4_commands_;
     std::list<DrawElementsCommand> draw_elements_commands_;
+
+  private:
+    uint64_t make_sort_key_(Command::Type type);
 
   public:
     void bind_mesh(const Mesh& mesh, int position_location, int uv_location);
+    void bind_uniform(int location, int uniform);
+    void bind_uniform(int location, float uniform);
+    void bind_uniform(int location, const glm::vec2& uniform);
+    void bind_uniform(int location, const glm::vec3& uniform);
+    void bind_uniform(int location, const glm::vec4& uniform);
+    void bind_uniform(int location, const glm::mat2& uniform);
+    void bind_uniform(int location, const glm::mat3& uniform);
+    void bind_uniform(int location, const glm::mat4& uniform);
     void draw_elements(size_t count, GLenum element_type);
     const std::list<SortedCommand>& get_commands() const;
 };
