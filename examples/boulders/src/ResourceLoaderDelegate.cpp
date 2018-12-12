@@ -29,13 +29,13 @@ void ResourceLoaderDelegate::load(render::Window& window, Scene& scene,
 
   // load textures
   uint32_t boulder_diffuse_id =
-    resource_manager.load_texture_from_file("../../textures/rock_001_albedo.png");
+    resource_manager.load_texture_from_file("../../resources/textures/pbr/rusted_iron/albedo.png");
   uint32_t boulder_normal_id =
-    resource_manager.load_texture_from_file("../../textures/rock_001_normal.png");
+    resource_manager.load_texture_from_file("../../resources/textures/pbr/rusted_iron/normal.png");
 
   // create a quad mesh
   uint32_t boulder_mesh_id = load_mesh_(resource_manager,
-      "../../meshes/rock_001.obj");
+      "../../resources/objects/rock/rock.obj");
 
   // load gpu programs
   uint32_t gbuffer_program_id = resource_manager.load_gpu_program_from_file(
