@@ -42,6 +42,7 @@ CXX_SOURCES = \
 							$(SRC_DIR)render/TextureMaterialSlot.cpp \
 							$(SRC_DIR)render/ScalarMaterialSlot.cpp \
 							$(SRC_DIR)render/CommandBucket.cpp \
+							$(SRC_DIR)render/gl/Driver.cpp \
 							$(SRC_DIR)render/DeferredRenderer.cpp
 
 C_OBJECTS=$(C_SOURCES:.c=.o)
