@@ -18,7 +18,8 @@ const std::vector<Driver::RenderFunction> Driver::render_functions_({
   &Driver::bind_uniform_vec4,
   &Driver::bind_uniform_mat2,
   &Driver::bind_uniform_mat3,
-  &Driver::bind_uniform_mat4
+  &Driver::bind_uniform_mat4,
+  &Driver::bind_texture
 });
 
 void Driver::execute_commands(const CommandBucket& commands)
@@ -126,6 +127,17 @@ void Driver::bind_uniform_int(const Command& command)
   const BindUniformIntCommand& bind_command =
     static_cast<const BindUniformIntCommand&>(command);
   glUniform1i(bind_command.location, bind_command.uniform);
+}
+
+void Driver::bind_texture(const Command& command)
+{
+  assert(command.type == Command::Type::kBindTexture);
+  const BindTextureCommand& bind_command =
+    static_cast<const BindTextureCommand&>(command);
+  unsigned int texture_unit = bind_command.texture_unit;
+  glUniform1i(bind_command.location, texture_unit);
+  glActiveTexture(GL_TEXTURE0 + texture_unit);
+  glBindTexture(GL_TEXTURE_2D, bind_command.texture);
 }
 
 }

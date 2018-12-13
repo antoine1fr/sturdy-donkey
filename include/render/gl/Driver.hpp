@@ -34,6 +34,7 @@ class Driver
     static void bind_uniform_mat2(const Command& command);
     static void bind_uniform_mat3(const Command& command);
     static void bind_uniform_mat4(const Command& command);
+    static void bind_texture(const Command& command);
     static void draw_elements_(const Command& command);
 };
 
