@@ -29,7 +29,8 @@ class Command
       kBindUniformVec4,
       kBindUniformMat2,
       kBindUniformMat3,
-      kBindUniformMat4
+      kBindUniformMat4,
+      kBindTexture
     };
 
     Type type;
@@ -102,6 +103,14 @@ struct BindUniformMat4Command: Command
   glm::mat4 uniform;
 };
 
+struct BindTextureCommand: Command
+{
+  BindTextureCommand(int location, unsigned texture_unit, GLint texture);
+  int location;
+  unsigned int texture_unit;
+  GLint texture;
+};
+
 struct DrawElementsCommand: Command
 {
   DrawElementsCommand(size_t count, GLenum element_type);
@@ -128,6 +137,7 @@ class CommandBucket
     std::list<BindUniformMat2Command> bind_mat2_commands_;
     std::list<BindUniformMat3Command> bind_mat3_commands_;
     std::list<BindUniformMat4Command> bind_mat4_commands_;
+    std::list<BindTextureCommand> bind_texture_commands_;
     std::list<DrawElementsCommand> draw_elements_commands_;
 
   private:
@@ -143,6 +153,7 @@ class CommandBucket
     void bind_uniform(int location, const glm::mat2& uniform);
     void bind_uniform(int location, const glm::mat3& uniform);
     void bind_uniform(int location, const glm::mat4& uniform);
+    void bind_texture(int location, unsigned int texture_unit, GLint texture);
     void draw_elements(size_t count, GLenum element_type);
     const std::list<SortedCommand>& get_commands() const;
 };

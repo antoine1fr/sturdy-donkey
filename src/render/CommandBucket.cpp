@@ -82,6 +82,17 @@ BindUniformMat4Command::BindUniformMat4Command(int location,
 {
 }
 
+BindTextureCommand::BindTextureCommand(
+    int location,
+    unsigned int texture_unit,
+    GLint texture):
+  Command(Type::kBindTexture),
+  location(location),
+  texture_unit(texture_unit),
+  texture(texture)
+{
+}
+
 DrawElementsCommand::DrawElementsCommand(size_t count, GLenum element_type):
   Command(Type::kDrawElements),
   count(count),
@@ -188,6 +199,19 @@ void CommandBucket::bind_uniform(int location, const glm::mat4& uniform)
 uint64_t CommandBucket::make_sort_key_(Command::Type type)
 {
   return static_cast<uint64_t>(type);
+}
+
+void CommandBucket::bind_texture(
+    int location,
+    unsigned int texture_unit,
+    GLint texture)
+{
+  bind_texture_commands_.push_back(BindTextureCommand(location, texture_unit,
+        texture));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindTexture),
+    bind_texture_commands_.back()
+  });
 }
 
 }
