@@ -10,6 +10,7 @@
 #include "common.hpp"
 #include "render/GpuProgram.hpp"
 #include "render/gl/Mesh.hpp"
+#include "render/gl/Texture.hpp"
 
 namespace donkey
 {
@@ -24,7 +25,7 @@ class ResourceManager
   private:
     std::vector<GpuProgram> gpu_programs_;
     std::vector<gl::Mesh> meshes_;
-    std::vector<GLuint> textures_;
+    std::vector<gl::Texture> textures_;
     std::vector<Material> materials_;
     std::vector<GLuint> framebuffers_;
 
@@ -58,7 +59,7 @@ class ResourceManager
 
     const GpuProgram& get_gpu_program(uint32_t id) const;
     const Mesh& get_mesh(uint32_t id) const;
-    GLuint get_texture(uint32_t id) const;
+    const gl::Texture& get_texture(uint32_t id) const;
     const Material& get_material(uint32_t id) const;
     GLuint get_framebuffer(uint32_t id) const;
 };

@@ -1,5 +1,6 @@
 #include "render/gl/Driver.hpp"
 #include "render/gl/Mesh.hpp"
+#include "render/gl/Texture.hpp"
 
 namespace donkey
 {
@@ -138,7 +139,8 @@ void Driver::bind_texture(const Command& command)
   unsigned int texture_unit = bind_command.texture_unit;
   glUniform1i(bind_command.location, texture_unit);
   glActiveTexture(GL_TEXTURE0 + texture_unit);
-  glBindTexture(GL_TEXTURE_2D, bind_command.texture);
+  glBindTexture(GL_TEXTURE_2D,
+      static_cast<const Texture&>(bind_command.texture).texture);
 }
 
 }

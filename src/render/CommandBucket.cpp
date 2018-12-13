@@ -85,7 +85,7 @@ BindUniformMat4Command::BindUniformMat4Command(int location,
 BindTextureCommand::BindTextureCommand(
     int location,
     unsigned int texture_unit,
-    GLint texture):
+    const Texture& texture):
   Command(Type::kBindTexture),
   location(location),
   texture_unit(texture_unit),
@@ -203,7 +203,7 @@ uint64_t CommandBucket::make_sort_key_(Command::Type type)
 void CommandBucket::bind_texture(
     int location,
     unsigned int texture_unit,
-    GLint texture)
+    const Texture& texture)
 {
   bind_texture_commands_.push_back(BindTextureCommand(location, texture_unit,
         texture));

@@ -19,7 +19,7 @@ TextureMaterialSlot::TextureMaterialSlot(int location, uint32_t texture_id,
 void TextureMaterialSlot::bind(const ResourceManager& resource_manager,
     CommandBucket& render_commands)
 {
-  GLuint texture = resource_manager.get_texture(texture_id);
+  const Texture& texture = resource_manager.get_texture(texture_id);
   render_commands.bind_texture(location, texture_unit, texture);
 }
 

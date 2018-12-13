@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "render/Mesh.hpp"
+#include "render/Texture.hpp"
 
 namespace donkey
 {
@@ -105,10 +106,11 @@ struct BindUniformMat4Command: Command
 
 struct BindTextureCommand: Command
 {
-  BindTextureCommand(int location, unsigned texture_unit, GLint texture);
+  BindTextureCommand(int location, unsigned texture_unit,
+      const Texture& texture);
   int location;
   unsigned int texture_unit;
-  GLint texture;
+  const Texture& texture;
 };
 
 struct DrawElementsCommand: Command
@@ -152,7 +154,8 @@ class CommandBucket
     void bind_uniform(int location, const glm::mat2& uniform);
     void bind_uniform(int location, const glm::mat3& uniform);
     void bind_uniform(int location, const glm::mat4& uniform);
-    void bind_texture(int location, unsigned int texture_unit, GLint texture);
+    void bind_texture(int location, unsigned int texture_unit,
+       const Texture& texture);
     void draw_elements(size_t count);
     const std::list<SortedCommand>& get_commands() const;
 };

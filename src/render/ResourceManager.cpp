@@ -12,7 +12,7 @@ namespace render
 ResourceManager::ResourceManager()
 {
   framebuffers_.push_back(0);
-  textures_.push_back(0);
+  textures_.push_back(gl::Texture(0));
 }
 
 ResourceManager::~ResourceManager()
@@ -37,9 +37,9 @@ void ResourceManager::cleanup()
     glDeleteBuffers(1, &mesh.index_buffer);
     glDeleteVertexArrays(1, &mesh.vertex_array);
   }
-  for (auto texture: textures_)
+  for (const gl::Texture& texture: textures_)
   {
-    glDeleteTextures(1, &texture);
+    glDeleteTextures(1, &(texture.texture));
   }
 }
 
@@ -176,7 +176,7 @@ GLuint ResourceManager::load_texture_from_file(const std::string& path)
   std::cout << "Loading texture from file: " << path << '\n';
   GLuint texture = load_texture_(path);
   uint32_t id = textures_.size();
-  textures_.push_back(texture);
+  textures_.push_back(gl::Texture(texture));
   return id;
 }
 
@@ -234,7 +234,7 @@ uint32_t ResourceManager::create_texture(GLsizei width, GLsizei height,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   uint32_t id = textures_.size();
-  textures_.push_back(texture);
+  textures_.push_back(gl::Texture(texture));
   return id;
 }
 
@@ -245,11 +245,11 @@ uint32_t ResourceManager::create_framebuffer(uint32_t albedo_rt_id,
   glGenFramebuffers(1, &framebuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-      GL_TEXTURE_2D, get_texture(albedo_rt_id), 0);
+      GL_TEXTURE_2D, get_texture(albedo_rt_id).texture, 0);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-      GL_TEXTURE_2D, get_texture(normal_rt_id), 0);
+      GL_TEXTURE_2D, get_texture(normal_rt_id).texture, 0);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-      GL_TEXTURE_2D, get_texture(depth_rt_id), 0);
+      GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
   check_gl_framebuffer(GL_FRAMEBUFFER);
   uint32_t id = framebuffers_.size();
   framebuffers_.push_back(framebuffer);
@@ -266,7 +266,7 @@ const Mesh& ResourceManager::get_mesh(uint32_t id) const
   return meshes_[id];
 }
 
-GLuint ResourceManager::get_texture(uint32_t id) const
+const gl::Texture& ResourceManager::get_texture(uint32_t id) const
 {
   return textures_[id];
 }
