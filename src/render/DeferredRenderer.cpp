@@ -194,14 +194,14 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
   const GpuProgram& program =
     resource_manager_.get_gpu_program(material.program_id);
 
+  CommandBucket render_commands;
+
   if (last_material_id != mesh_node.material_id)
   {
     glUseProgram(program.handle);
-    material.bind_slots();
+    material.bind_slots(render_commands);
     last_material_id = mesh_node.material_id;
   }
-
-  CommandBucket render_commands;
 
   // bind built-in uniforms
   bind_mesh_uniforms_(render_commands, material, mesh_node);

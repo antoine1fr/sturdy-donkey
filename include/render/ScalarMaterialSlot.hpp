@@ -1,5 +1,7 @@
 #pragma once
 
+#include "render/CommandBucket.hpp"
+
 namespace donkey
 {
 
@@ -20,7 +22,8 @@ class ScalarMaterialSlot
 
   public:
     ScalarMaterialSlot(int location, const Storage& storage);
-    void bind(const ResourceManager& resource_manager);
+    void bind(const ResourceManager& resource_manager,
+        CommandBucket& render_commands);
 };
 
 }

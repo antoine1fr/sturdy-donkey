@@ -48,7 +48,7 @@ class Material
   public:
     Material(const ResourceManager& resource_manager, uint32_t program_id);
 
-    void bind_slots() const;
+    void bind_slots(CommandBucket& render_commands) const;
 
     DECLARE_REGISTER_SCALAR_SLOT(float)
     DECLARE_REGISTER_SCALAR_SLOT(glm::vec2)

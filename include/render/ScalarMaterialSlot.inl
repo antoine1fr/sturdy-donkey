@@ -19,5 +19,13 @@ ScalarMaterialSlot<Storage>::ScalarMaterialSlot(int location,
 {
 }
 
+template <class Storage>
+void ScalarMaterialSlot<Storage>::bind(const ResourceManager& resource_manager,
+    CommandBucket& render_commands)
+{
+  render_commands.bind_uniform(location, storage);
+}
+
+
 }
 }

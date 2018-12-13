@@ -55,10 +55,10 @@ DEFINE_REGISTER_SCALAR_SLOT(int, int)
 #define BIND_SLOTS(x) \
   for (auto slot: x ## _slots_) \
   { \
-    slot.bind(resource_manager_); \
+    slot.bind(resource_manager_, render_commands); \
   }
 
-void Material::bind_slots() const
+void Material::bind_slots(CommandBucket& render_commands) const
 {
   BIND_SLOTS(texture);
   BIND_SLOTS(float)
