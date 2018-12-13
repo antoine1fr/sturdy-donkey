@@ -207,8 +207,12 @@ uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
       &indices[0], GL_STATIC_DRAW);
 
   uint32_t id = meshes_.size();
-  meshes_.push_back({position_buffer, uv_buffer, index_buffer, indices.size(),
-      vertex_array});
+  meshes_.push_back(gl::Mesh(
+    indices.size(),
+    position_buffer,
+    uv_buffer,
+    index_buffer,
+    vertex_array));
   return id;
 }
 

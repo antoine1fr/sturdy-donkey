@@ -9,7 +9,7 @@
 
 #include "common.hpp"
 #include "render/GpuProgram.hpp"
-#include "render/Mesh.hpp"
+#include "render/gl/Mesh.hpp"
 
 namespace donkey
 {
@@ -23,7 +23,7 @@ class ResourceManager
 {
   private:
     std::vector<GpuProgram> gpu_programs_;
-    std::vector<Mesh> meshes_;
+    std::vector<gl::Mesh> meshes_;
     std::vector<GLuint> textures_;
     std::vector<Material> materials_;
     std::vector<GLuint> framebuffers_;

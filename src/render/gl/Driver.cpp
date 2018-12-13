@@ -1,4 +1,5 @@
 #include "render/gl/Driver.hpp"
+#include "render/gl/Mesh.hpp"
 
 namespace donkey
 {
@@ -37,7 +38,7 @@ void Driver::bind_mesh_(const Command& command)
   assert(command.type == Command::Type::kBindMesh);
   const BindMeshCommand& bind_command =
     static_cast<const BindMeshCommand&>(command);
-  const Mesh& mesh = bind_command.mesh;
+  const Mesh& mesh = static_cast<const Mesh&>(bind_command.mesh);
   int position_location = bind_command.position_location;
   int uv_location = bind_command.uv_location;
 
