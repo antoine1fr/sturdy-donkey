@@ -51,13 +51,6 @@ DEFINE_REGISTER_SCALAR_SLOT(glm::mat2, mat2)
 DEFINE_REGISTER_SCALAR_SLOT(glm::mat3, mat3)
 DEFINE_REGISTER_SCALAR_SLOT(glm::mat4, mat4)
 DEFINE_REGISTER_SCALAR_SLOT(int, int)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec2<int>, ivec2)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec3<int>, ivec3)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec4<int>, ivec4)
-DEFINE_REGISTER_SCALAR_SLOT(unsigned int, uint)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec2<unsigned int>, uivec2)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec3<unsigned int>, uivec3)
-DEFINE_REGISTER_SCALAR_SLOT(glm::tvec4<unsigned int>, uivec4)
 
 #define BIND_SLOTS(x) \
   for (auto slot: x ## _slots_) \
@@ -76,13 +69,6 @@ void Material::bind_slots() const
   BIND_SLOTS(mat2)
   BIND_SLOTS(mat4)
   BIND_SLOTS(int)
-  BIND_SLOTS(ivec2)
-  BIND_SLOTS(ivec3)
-  BIND_SLOTS(ivec4)
-  BIND_SLOTS(uint)
-  BIND_SLOTS(uivec2)
-  BIND_SLOTS(uivec3)
-  BIND_SLOTS(uivec4)
 }
 
 void Material::register_texture_slot(const std::string& name,

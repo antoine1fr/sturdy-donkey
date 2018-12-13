@@ -30,13 +30,6 @@ class Material
     std::vector<ScalarMaterialSlot<glm::mat3>> mat3_slots_;
     std::vector<ScalarMaterialSlot<glm::mat4>> mat4_slots_;
     std::vector<ScalarMaterialSlot<int>> int_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec2<int>>> ivec2_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec3<int>>> ivec3_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec4<int>>> ivec4_slots_;
-    std::vector<ScalarMaterialSlot<unsigned int>> uint_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec2<unsigned int>>> uivec2_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec3<unsigned int>>> uivec3_slots_;
-    std::vector<ScalarMaterialSlot<glm::tvec4<unsigned int>>> uivec4_slots_;
     const ResourceManager& resource_manager_;
 
   public:
@@ -65,13 +58,6 @@ class Material
     DECLARE_REGISTER_SCALAR_SLOT(glm::mat3)
     DECLARE_REGISTER_SCALAR_SLOT(glm::mat4)
     DECLARE_REGISTER_SCALAR_SLOT(int)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec2<int>)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec3<int>)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec4<int>)
-    DECLARE_REGISTER_SCALAR_SLOT(unsigned int)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec2<unsigned int>)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec3<unsigned int>)
-    DECLARE_REGISTER_SCALAR_SLOT(glm::tvec4<unsigned int>)
 
     void register_texture_slot(const std::string& name,
         uint32_t texture_id,
