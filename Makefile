@@ -43,6 +43,7 @@ CXX_SOURCES = \
 							$(SRC_DIR)render/CommandBucket.cpp \
 							$(SRC_DIR)render/gl/Driver.cpp \
 							$(SRC_DIR)render/gl/Mesh.cpp \
+							$(SRC_DIR)render/gl/Texture.cpp \
 							$(SRC_DIR)render/Mesh.cpp \
 							$(SRC_DIR)render/DeferredRenderer.cpp
 
