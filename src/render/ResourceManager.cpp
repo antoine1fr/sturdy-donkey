@@ -208,7 +208,7 @@ uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
 
   uint32_t id = meshes_.size();
   meshes_.push_back({position_buffer, uv_buffer, index_buffer, indices.size(),
-      GL_UNSIGNED_INT, vertex_array});
+      vertex_array});
   return id;
 }
 

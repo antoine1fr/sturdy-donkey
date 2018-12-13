@@ -93,10 +93,9 @@ BindTextureCommand::BindTextureCommand(
 {
 }
 
-DrawElementsCommand::DrawElementsCommand(size_t count, GLenum element_type):
+DrawElementsCommand::DrawElementsCommand(size_t count):
   Command(Type::kDrawElements),
-  count(count),
-  element_type(element_type)
+  count(count)
 {
 }
 
@@ -113,9 +112,9 @@ void CommandBucket::bind_mesh(
   sorted_commands_.push_back({0, bind_mesh_commands_.front()});
 }
 
-void CommandBucket::draw_elements(size_t count, GLenum element_type)
+void CommandBucket::draw_elements(size_t count)
 {
-  draw_elements_commands_.push_back(DrawElementsCommand(count, element_type));
+  draw_elements_commands_.push_back(DrawElementsCommand(count));
   sorted_commands_.push_back({1, draw_elements_commands_.front()});
 }
 

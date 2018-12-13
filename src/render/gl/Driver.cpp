@@ -61,7 +61,7 @@ void Driver::draw_elements_(const Command& command)
   assert(command.type == Command::Type::kDrawElements);
   const DrawElementsCommand& draw_command =
     static_cast<const DrawElementsCommand&>(command);
-  glDrawElements(GL_TRIANGLES, draw_command.count, draw_command.element_type,
+  glDrawElements(GL_TRIANGLES, draw_command.count, GL_UNSIGNED_INT,
       nullptr);
 }
 

@@ -212,7 +212,7 @@ void DeferredRenderer::render_mesh_node_(const RenderPass& render_pass,
   render_commands.bind_mesh(mesh, program.position_location,
       program.uv_location);
 
-  render_commands.draw_elements(mesh.index_count, mesh.index_type);
+  render_commands.draw_elements(mesh.index_count);
   driver_.execute_commands(render_commands);
 }
 

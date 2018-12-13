@@ -113,9 +113,8 @@ struct BindTextureCommand: Command
 
 struct DrawElementsCommand: Command
 {
-  DrawElementsCommand(size_t count, GLenum element_type);
+  DrawElementsCommand(size_t count);
   size_t count;
-  GLenum element_type;
 };
 
 struct SortedCommand
@@ -154,7 +153,7 @@ class CommandBucket
     void bind_uniform(int location, const glm::mat3& uniform);
     void bind_uniform(int location, const glm::mat4& uniform);
     void bind_texture(int location, unsigned int texture_unit, GLint texture);
-    void draw_elements(size_t count, GLenum element_type);
+    void draw_elements(size_t count);
     const std::list<SortedCommand>& get_commands() const;
 };
 
