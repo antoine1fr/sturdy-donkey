@@ -1,10 +1,4 @@
-CC = clang
-CXX = clang++
-OBJC = clang++
-RM = rm -f
-AR = ar
-
-TARGET = libengine.a
+TARGET = $(TARGET_PREFIX)engine$(TARGET_SUFFIX)
 
 SRC_DIR = src/
 LIB_DIR = lib/
