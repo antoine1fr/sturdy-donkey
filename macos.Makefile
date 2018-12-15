@@ -6,5 +6,7 @@ AR ?= ar
 TARGET_PREFIX ?= lib
 TARGET_SUFFIX ?= .a
 
+CXXFLAGS += -Ilib/glm
+
 include common.Makefile
 

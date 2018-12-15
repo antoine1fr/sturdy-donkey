@@ -14,7 +14,6 @@ CXXFLAGS += \
 					 -g3 \
 					 -Iinclude \
 					 -Ilib/gl3w \
-					 -Ilib/glm \
 					 -std=c++14 \
 					 -Wall \
 					 -Werror \
