@@ -3,14 +3,14 @@ TARGET = $(TARGET_PREFIX)engine$(TARGET_SUFFIX)
 SRC_DIR = src/
 LIB_DIR = lib/
 
-CFLAGS = \
+CFLAGS += \
 					 -g3 \
 					 -Ilib/gl3w \
 					 -Wall \
 					 -Werror \
 					 -pedantic
 
-CXXFLAGS = \
+CXXFLAGS += \
 					 -g3 \
 					 -Iinclude \
 					 -Ilib/gl3w \
