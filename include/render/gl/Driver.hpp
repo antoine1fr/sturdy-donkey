@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <vector>
+
 #include "render/CommandBucket.hpp"
 
 namespace donkey
