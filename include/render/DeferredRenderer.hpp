@@ -62,7 +62,6 @@ class DeferredRenderer
         CommandBucket& render_commands,
         const Material& material,
         const MeshNode& mesh_node) const;
-    void output_debug_info_() const;
     void create_light_pass_mesh_(int width, int height);
     void create_gbuffer_(int width, int height);
     uint32_t create_light_pass_material_();

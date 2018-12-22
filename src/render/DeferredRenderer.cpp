@@ -30,7 +30,6 @@ DeferredRenderer::DeferredRenderer(Window& window):
   int height = window.get_height();
 
   gl3wInit();
-  output_debug_info_();
 
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
@@ -108,14 +107,6 @@ uint32_t DeferredRenderer::create_light_pass_material_()
   material.register_texture_slot("depth_tex", depth_rt_id_,
       2);
   return resource_manager_.register_material(std::move(material));
-}
-
-void DeferredRenderer::output_debug_info_() const
-{
-  std::cout << "GL renderer: " << glGetString(GL_VENDOR) << '\n';
-  std::cout << "GL vendor: " << glGetString(GL_VERSION) << '\n';
-  std::cout << "GL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
-    << '\n';
 }
 
 void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)

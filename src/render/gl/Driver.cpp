@@ -27,6 +27,16 @@ Driver::Driver():
       std::bind(&Driver::bind_texture_, this, _1),
   })
 {
+  output_debug_info_();
+}
+
+void Driver::output_debug_info_() const
+{
+  const char* string = (const char*)glGetString(GL_VENDOR);
+  std::cout << "GL renderer: " << string << '\n';
+  std::cout << "GL vendor: " << glGetString(GL_VERSION) << '\n';
+  std::cout << "GL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
+    << '\n';
 }
 
 void Driver::execute_commands(const CommandBucket& commands)

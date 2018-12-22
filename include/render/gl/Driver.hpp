@@ -29,6 +29,7 @@ class Driver
     void execute_commands(const CommandBucket& commands);
 
   private:
+    void output_debug_info_() const;
     void bind_mesh_(const Command& command);
     void bind_uniform_float_(const Command& command);
     void bind_uniform_int_(const Command& command);
