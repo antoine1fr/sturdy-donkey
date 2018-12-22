@@ -16,15 +16,15 @@ Driver::Driver():
   render_functions_({
       std::bind(&Driver::bind_mesh_, this, _1),
       std::bind(&Driver::draw_elements_, this, _1),
-      std::bind(&Driver::bind_uniform_float, this, _1),
-      std::bind(&Driver::bind_uniform_int, this, _1),
-      std::bind(&Driver::bind_uniform_vec2, this, _1),
-      std::bind(&Driver::bind_uniform_vec3, this, _1),
-      std::bind(&Driver::bind_uniform_vec4, this, _1),
-      std::bind(&Driver::bind_uniform_mat2, this, _1),
-      std::bind(&Driver::bind_uniform_mat3, this, _1),
-      std::bind(&Driver::bind_uniform_mat4, this, _1),
-      std::bind(&Driver::bind_texture, this, _1),
+      std::bind(&Driver::bind_uniform_float_, this, _1),
+      std::bind(&Driver::bind_uniform_int_, this, _1),
+      std::bind(&Driver::bind_uniform_vec2_, this, _1),
+      std::bind(&Driver::bind_uniform_vec3_, this, _1),
+      std::bind(&Driver::bind_uniform_vec4_, this, _1),
+      std::bind(&Driver::bind_uniform_mat2_, this, _1),
+      std::bind(&Driver::bind_uniform_mat3_, this, _1),
+      std::bind(&Driver::bind_uniform_mat4_, this, _1),
+      std::bind(&Driver::bind_texture_, this, _1),
   })
 {
 }
@@ -72,7 +72,7 @@ void Driver::draw_elements_(const Command& command)
       nullptr);
 }
 
-void Driver::bind_uniform_vec2(const Command& command)
+void Driver::bind_uniform_vec2_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformVec2);
   const BindUniformVec2Command& bind_command =
@@ -80,7 +80,7 @@ void Driver::bind_uniform_vec2(const Command& command)
   glUniform2fv(bind_command.location, 1, &(bind_command.uniform[0]));
 }
 
-void Driver::bind_uniform_vec3(const Command& command)
+void Driver::bind_uniform_vec3_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformVec3);
   const BindUniformVec3Command& bind_command =
@@ -88,7 +88,7 @@ void Driver::bind_uniform_vec3(const Command& command)
   glUniform3fv(bind_command.location, 1, &(bind_command.uniform[0]));
 }
 
-void Driver::bind_uniform_vec4(const Command& command)
+void Driver::bind_uniform_vec4_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformVec4);
   const BindUniformVec4Command& bind_command =
@@ -96,7 +96,7 @@ void Driver::bind_uniform_vec4(const Command& command)
   glUniform4fv(bind_command.location, 1, &(bind_command.uniform[0]));
 }
 
-void Driver::bind_uniform_mat2(const Command& command)
+void Driver::bind_uniform_mat2_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformMat2);
   const BindUniformMat2Command& bind_command =
@@ -104,7 +104,7 @@ void Driver::bind_uniform_mat2(const Command& command)
   glUniformMatrix2fv(bind_command.location, 1, GL_FALSE, &(bind_command.uniform[0][0]));
 }
 
-void Driver::bind_uniform_mat3(const Command& command)
+void Driver::bind_uniform_mat3_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformMat3);
   const BindUniformMat3Command& bind_command =
@@ -112,7 +112,7 @@ void Driver::bind_uniform_mat3(const Command& command)
   glUniformMatrix3fv(bind_command.location, 1, GL_FALSE, &(bind_command.uniform[0][0]));
 }
 
-void Driver::bind_uniform_mat4(const Command& command)
+void Driver::bind_uniform_mat4_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformMat4);
   const BindUniformMat4Command& bind_command =
@@ -120,7 +120,7 @@ void Driver::bind_uniform_mat4(const Command& command)
   glUniformMatrix4fv(bind_command.location, 1, GL_FALSE, &(bind_command.uniform[0][0]));
 }
 
-void Driver::bind_uniform_float(const Command& command)
+void Driver::bind_uniform_float_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformFloat);
   const BindUniformFloatCommand& bind_command =
@@ -128,7 +128,7 @@ void Driver::bind_uniform_float(const Command& command)
   glUniform1f(bind_command.location, bind_command.uniform);
 }
 
-void Driver::bind_uniform_int(const Command& command)
+void Driver::bind_uniform_int_(const Command& command)
 {
   assert(command.type == Command::Type::kBindUniformInt);
   const BindUniformIntCommand& bind_command =
@@ -136,7 +136,7 @@ void Driver::bind_uniform_int(const Command& command)
   glUniform1i(bind_command.location, bind_command.uniform);
 }
 
-void Driver::bind_texture(const Command& command)
+void Driver::bind_texture_(const Command& command)
 {
   assert(command.type == Command::Type::kBindTexture);
   const BindTextureCommand& bind_command =

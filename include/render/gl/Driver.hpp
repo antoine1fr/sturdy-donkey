@@ -28,15 +28,15 @@ class Driver
 
   private:
     void bind_mesh_(const Command& command);
-    void bind_uniform_float(const Command& command);
-    void bind_uniform_int(const Command& command);
-    void bind_uniform_vec2(const Command& command);
-    void bind_uniform_vec3(const Command& command);
-    void bind_uniform_vec4(const Command& command);
-    void bind_uniform_mat2(const Command& command);
-    void bind_uniform_mat3(const Command& command);
-    void bind_uniform_mat4(const Command& command);
-    void bind_texture(const Command& command);
+    void bind_uniform_float_(const Command& command);
+    void bind_uniform_int_(const Command& command);
+    void bind_uniform_vec2_(const Command& command);
+    void bind_uniform_vec3_(const Command& command);
+    void bind_uniform_vec4_(const Command& command);
+    void bind_uniform_mat2_(const Command& command);
+    void bind_uniform_mat3_(const Command& command);
+    void bind_uniform_mat4_(const Command& command);
+    void bind_texture_(const Command& command);
     void draw_elements_(const Command& command);
 };
 
