@@ -150,7 +150,6 @@ class CommandBucket
     uint64_t make_sort_key_(Command::Type type);
 
   public:
-    void bind_mesh(const Mesh& mesh, int position_location, int uv_location);
     void bind_uniform(int location, int uniform);
     void bind_uniform(int location, float uniform);
     void bind_uniform(int location, const glm::vec2& uniform);
@@ -159,8 +158,14 @@ class CommandBucket
     void bind_uniform(int location, const glm::mat2& uniform);
     void bind_uniform(int location, const glm::mat3& uniform);
     void bind_uniform(int location, const glm::mat4& uniform);
-    void bind_texture(int location, unsigned int texture_unit,
-       const Texture& texture);
+    void bind_texture(
+        int location,
+        unsigned int texture_unit,
+        const Texture& texture);
+    void bind_mesh(
+        const Mesh& mesh,
+        int position_location,
+        int uv_location);
     void draw_elements(size_t count);
     const std::list<SortedCommand>& get_commands() const;
 };
