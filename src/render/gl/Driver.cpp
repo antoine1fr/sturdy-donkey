@@ -10,19 +10,24 @@ namespace render
 namespace gl
 {
 
-const std::vector<Driver::RenderFunction> Driver::render_functions_({
-  &Driver::bind_mesh_,
-  &Driver::draw_elements_,
-  &Driver::bind_uniform_float,
-  &Driver::bind_uniform_int,
-  &Driver::bind_uniform_vec2,
-  &Driver::bind_uniform_vec3,
-  &Driver::bind_uniform_vec4,
-  &Driver::bind_uniform_mat2,
-  &Driver::bind_uniform_mat3,
-  &Driver::bind_uniform_mat4,
-  &Driver::bind_texture
-});
+using namespace std::placeholders;
+
+Driver::Driver():
+  render_functions_({
+      std::bind(&Driver::bind_mesh_, this, _1),
+      std::bind(&Driver::draw_elements_, this, _1),
+      std::bind(&Driver::bind_uniform_float, this, _1),
+      std::bind(&Driver::bind_uniform_int, this, _1),
+      std::bind(&Driver::bind_uniform_vec2, this, _1),
+      std::bind(&Driver::bind_uniform_vec3, this, _1),
+      std::bind(&Driver::bind_uniform_vec4, this, _1),
+      std::bind(&Driver::bind_uniform_mat2, this, _1),
+      std::bind(&Driver::bind_uniform_mat3, this, _1),
+      std::bind(&Driver::bind_uniform_mat4, this, _1),
+      std::bind(&Driver::bind_texture, this, _1),
+  })
+{
+}
 
 void Driver::execute_commands(const CommandBucket& commands)
 {
@@ -30,7 +35,7 @@ void Driver::execute_commands(const CommandBucket& commands)
   {
     size_t command_type = sorted_command.sort_key & kCommandTypeMask;
     RenderFunction f = render_functions_[command_type];
-    (*f)(sorted_command.command);
+    (f)(sorted_command.command);
   }
 }
 
