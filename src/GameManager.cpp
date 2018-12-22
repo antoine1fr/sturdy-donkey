@@ -9,8 +9,10 @@ namespace donkey
 
 GameManager::GameManager()
 {
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-  IMG_Init(IMG_INIT_PNG);
+  assert(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0);
+  int img_flags = IMG_INIT_PNG;
+  int bit_mask = IMG_Init(img_flags);
+  assert((bit_mask & img_flags) == img_flags);
 }
 
 GameManager::~GameManager()

@@ -23,6 +23,7 @@ Window::Window(const std::string& title, int width, int height):
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   window_ = SDL_CreateWindow(title.c_str(), 0, 0, width,
     height, SDL_WINDOW_OPENGL);
+  assert(window_ != nullptr);
   render_context_ = SDL_GL_CreateContext(window_);
   ancillary_context_ = SDL_GL_CreateContext(window_);
 }
