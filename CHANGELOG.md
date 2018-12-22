@@ -1,5 +1,24 @@
 # Sturdy Donkey's change log
 
+## Version 0.3.0
+
+Here are the most notable changes:
+
+* Distinguish engine-side versions of render resources from their
+  driver-specific versions. Engine-side render resources are managed
+  by the renderer's resource manager and driver-side resources are managed by
+  the driver's resource manager.
+* From now on, render commands only hold resource IDs and not pointer or
+  references to render resources.
+* DeferredRenderer's `execute_pass_` function is now totally free from calls
+  to OpenGL functions.
+
+For an exhaustive change log, please run the following command:
+
+```
+$ git log --oneline 0.2.0..0.3.0
+```
+
 ## Version 0.2.0
 
 Some advances but still, you can't do anything useful with this engine yet.
