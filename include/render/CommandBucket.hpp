@@ -42,7 +42,10 @@ class Command
 
 struct BindMeshCommand: Command
 {
-  BindMeshCommand(const Mesh& mesh, int position_location, int uv_location);
+  BindMeshCommand(
+      const Mesh& mesh,
+      int position_location,
+      int uv_location);
   const Mesh& mesh;
   int position_location;
   int uv_location;
@@ -106,7 +109,9 @@ struct BindUniformMat4Command: Command
 
 struct BindTextureCommand: Command
 {
-  BindTextureCommand(int location, unsigned texture_unit,
+  BindTextureCommand(
+      int location,
+      unsigned texture_unit,
       const Texture& texture);
   int location;
   unsigned int texture_unit;
