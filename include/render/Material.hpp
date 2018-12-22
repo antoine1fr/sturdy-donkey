@@ -10,7 +10,9 @@
 #define DECLARE_REGISTER_SCALAR_SLOT(x) \
   void register_scalar_slot(const std::string& name, const x& storage);
 
-namespace donkey
+namespace donkey {
+namespace render {
+
 {
 
 namespace render

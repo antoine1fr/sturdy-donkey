@@ -12,11 +12,8 @@
 #include "render/gl/Mesh.hpp"
 #include "render/gl/Texture.hpp"
 
-namespace donkey
-{
-
-namespace render
-{
+namespace donkey {
+namespace render {
 
 class Material;
 

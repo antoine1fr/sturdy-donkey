@@ -2,11 +2,8 @@
 
 #include <cstddef>
 
-namespace donkey
-{
-
-namespace render
-{
+namespace donkey {
+namespace render {
 
 struct Mesh
 {

@@ -1,10 +1,8 @@
 #pragma once
 
-namespace donkey
-{
 
-namespace render
-{
+namespace donkey {
+namespace render {
 
 struct GpuProgram
 {

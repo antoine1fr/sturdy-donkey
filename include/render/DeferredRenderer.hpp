@@ -13,11 +13,8 @@
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
 
-namespace donkey
-{
-
-namespace render
-{
+namespace donkey {
+namespace render {
 
 class DeferredRenderer
 {

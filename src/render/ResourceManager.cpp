@@ -3,11 +3,8 @@
 #include "render/Material.hpp"
 #include "render/ResourceManager.hpp"
 
-namespace donkey
-{
-
-namespace render
-{
+namespace donkey {
+namespace render {
 
 ResourceManager::ResourceManager()
 {
