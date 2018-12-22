@@ -95,8 +95,8 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
         screen_mesh_indices);
 
   light_program_id_ = resource_manager_.load_gpu_program_from_file(
-    "../../shaders/simple-vs.glsl",
-    "../../shaders/deferred-light-pass-fs.glsl");
+    "../../shaders/simple.vert.glsl",
+    "../../shaders/light-pass.frag.glsl");
 }
 
 void DeferredRenderer::create_gbuffer_(int width, int height)

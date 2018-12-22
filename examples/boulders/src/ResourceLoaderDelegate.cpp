@@ -44,8 +44,8 @@ void ResourceLoaderDelegate::load(
 
   // load gpu programs
   uint32_t gbuffer_program_id = resource_manager.load_gpu_program_from_file(
-    "../../shaders/deferred-gbuffer-pass-vs.glsl",
-    "../../shaders/deferred-gbuffer-pass-fs.glsl");
+    "../../shaders/gbuffer-pass.vert.glsl",
+    "../../shaders/gbuffer-pass.frag.glsl");
 
   // create materials
   uint32_t boulder_material_id;
