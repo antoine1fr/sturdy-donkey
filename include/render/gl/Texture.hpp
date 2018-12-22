@@ -7,7 +7,7 @@ namespace donkey {
 namespace render {
 namespace gl {
 
-struct Texture: ::donkey::render::Texture
+struct Texture
 {
   GLuint texture;
 

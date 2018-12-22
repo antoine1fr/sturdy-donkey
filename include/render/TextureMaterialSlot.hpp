@@ -9,8 +9,6 @@ namespace donkey
 namespace render
 {
 
-class ResourceManager;
-
 class TextureMaterialSlot
 {
   public:
@@ -20,8 +18,7 @@ class TextureMaterialSlot
 
   public:
     TextureMaterialSlot(int location, uint32_t texture_id, int texture_unit);
-    void bind(const ResourceManager& resource_manager,
-        CommandBucket& render_commands);
+    void bind(CommandBucket& render_commands);
 };
 
 }

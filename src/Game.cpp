@@ -4,7 +4,7 @@
 
 #include "debug.hpp"
 #include "common.hpp"
-#include "render/ResourceManager.hpp"
+#include "render/AResourceManager.hpp"
 #include "render/Material.hpp"
 #include "Game.hpp"
 #include "Buffer.hpp"

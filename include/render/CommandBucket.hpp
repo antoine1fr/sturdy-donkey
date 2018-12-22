@@ -16,6 +16,8 @@ namespace donkey
 namespace render
 {
 
+class AResourceManager;
+
 class Command
 {
   public:
@@ -43,10 +45,10 @@ class Command
 struct BindMeshCommand: Command
 {
   BindMeshCommand(
-      const Mesh& mesh,
+      uint32_t mesh_id,
       int position_location,
       int uv_location);
-  const Mesh& mesh;
+  uint32_t mesh_id;
   int position_location;
   int uv_location;
 };
@@ -112,10 +114,10 @@ struct BindTextureCommand: Command
   BindTextureCommand(
       int location,
       unsigned texture_unit,
-      const Texture& texture);
+      uint32_t texture_id);
   int location;
   unsigned int texture_unit;
-  const Texture& texture;
+  uint32_t texture_id;
 };
 
 struct DrawElementsCommand: Command
@@ -161,9 +163,9 @@ class CommandBucket
     void bind_texture(
         int location,
         unsigned int texture_unit,
-        const Texture& texture);
+        uint32_t texture_id);
     void bind_mesh(
-        const Mesh& mesh,
+        uint32_t mesh_id,
         int position_location,
         int uv_location);
     void draw_elements(size_t count);

@@ -11,10 +11,12 @@ Command::Command(Type type):
 {
 }
 
-BindMeshCommand::BindMeshCommand(const Mesh& mesh, int position_location,
+BindMeshCommand::BindMeshCommand(
+    uint32_t mesh_id,
+    int position_location,
     int uv_location):
   Command(Type::kBindMesh),
-  mesh(mesh),
+  mesh_id(mesh_id),
   position_location(position_location),
   uv_location(uv_location)
 {
@@ -85,11 +87,11 @@ BindUniformMat4Command::BindUniformMat4Command(int location,
 BindTextureCommand::BindTextureCommand(
     int location,
     unsigned int texture_unit,
-    const Texture& texture):
+    uint32_t texture_id):
   Command(Type::kBindTexture),
   location(location),
   texture_unit(texture_unit),
-  texture(texture)
+  texture_id(texture_id)
 {
 }
 
@@ -100,12 +102,12 @@ DrawElementsCommand::DrawElementsCommand(size_t count):
 }
 
 void CommandBucket::bind_mesh(
-    const Mesh& mesh,
+    uint32_t mesh_id,
     int position_location,
     int uv_location)
 {
   bind_mesh_commands_.push_back(BindMeshCommand(
-    mesh,
+    mesh_id,
     position_location,
     uv_location
   ));
@@ -203,10 +205,12 @@ uint64_t CommandBucket::make_sort_key_(Command::Type type)
 void CommandBucket::bind_texture(
     int location,
     unsigned int texture_unit,
-    const Texture& texture)
+    uint32_t texture_id)
 {
-  bind_texture_commands_.push_back(BindTextureCommand(location, texture_unit,
-        texture));
+  bind_texture_commands_.push_back(BindTextureCommand(
+    location,
+    texture_unit,
+    texture_id));
   sorted_commands_.push_back({
     make_sort_key_(Command::Type::kBindTexture),
     bind_texture_commands_.back()

@@ -22,7 +22,10 @@ void ResourceLoaderDelegate::load(
     donkey::Scene& scene,
     donkey::render::DeferredRenderer& renderer)
 {
-  donkey::render::ResourceManager& resource_manager = renderer.get_resource_manager();
+  donkey::render::ResourceManager& resource_manager =
+    renderer.get_resource_manager();
+  donkey::render::AResourceManager& gpu_resource_manager =
+    renderer.get_gpu_resource_manager();
   int width = window.get_width();
   int height = window.get_height();
 
@@ -47,11 +50,19 @@ void ResourceLoaderDelegate::load(
   // create materials
   uint32_t boulder_material_id;
   {
-    donkey::render::Material material(resource_manager, gbuffer_program_id);
-    material.register_texture_slot("diffuse_texture", boulder_diffuse_id, 0);
-    material.register_texture_slot("normal_map", boulder_normal_id, 1);
-    boulder_material_id =
-      resource_manager.register_material(std::move(material));
+    boulder_material_id = resource_manager.create_material(gbuffer_program_id);
+    const donkey::render::Material& material =
+      resource_manager.get_material(boulder_material_id);
+    donkey::render::AMaterial& gpu_material =
+      gpu_resource_manager.get_material(material.gpu_resource_id);
+    const donkey::render::Texture& diffuse =
+      resource_manager.get_texture(boulder_diffuse_id);
+    const donkey::render::Texture& normal =
+      resource_manager.get_texture(boulder_normal_id);
+    gpu_material.register_texture_slot("diffuse_texture",
+        diffuse.gpu_resource_id, 0);
+    gpu_material.register_texture_slot("normal_map",
+        normal.gpu_resource_id, 1);
   }
 
   // create first pass' scene nodes

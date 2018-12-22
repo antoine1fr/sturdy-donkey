@@ -29,9 +29,11 @@ CXX_SOURCES = \
 							$(SRC_DIR)Scene.cpp \
 							$(SRC_DIR)Buffer.cpp \
 							$(SRC_DIR)BufferPool.cpp \
-							$(SRC_DIR)render/Material.cpp \
+							$(SRC_DIR)render/AMaterial.cpp \
+							$(SRC_DIR)render/gl/Material.cpp \
 							$(SRC_DIR)render/Window.cpp \
 							$(SRC_DIR)render/ResourceManager.cpp \
+							$(SRC_DIR)render/gl/ResourceManager.cpp \
 							$(SRC_DIR)render/TextureMaterialSlot.cpp \
 							$(SRC_DIR)render/CommandBucket.cpp \
 							$(SRC_DIR)render/gl/Driver.cpp \

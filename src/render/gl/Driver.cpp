@@ -1,3 +1,6 @@
+#include <array>
+#include <iostream>
+
 #include "render/gl/Driver.hpp"
 #include "render/gl/Mesh.hpp"
 #include "render/gl/Texture.hpp"
@@ -56,7 +59,8 @@ void Driver::bind_mesh_(const Command& command)
   assert(command.type == Command::Type::kBindMesh);
   const BindMeshCommand& bind_command =
     static_cast<const BindMeshCommand&>(command);
-  const Mesh& mesh = static_cast<const Mesh&>(bind_command.mesh);
+  const Mesh& mesh =
+    resource_manager_.get_mesh(bind_command.mesh_id);
   int position_location = bind_command.position_location;
   int uv_location = bind_command.uv_location;
 
@@ -154,10 +158,16 @@ void Driver::bind_texture_(const Command& command)
   const BindTextureCommand& bind_command =
     static_cast<const BindTextureCommand&>(command);
   unsigned int texture_unit = bind_command.texture_unit;
+  const Texture& texture =
+    resource_manager_.get_texture(bind_command.texture_id);
   glUniform1i(bind_command.location, texture_unit);
   glActiveTexture(GL_TEXTURE0 + texture_unit);
-  glBindTexture(GL_TEXTURE_2D,
-      static_cast<const Texture&>(bind_command.texture).texture);
+  glBindTexture(GL_TEXTURE_2D, texture.texture);
+}
+
+AResourceManager& Driver::get_resource_manager()
+{
+  return resource_manager_;
 }
 
 }

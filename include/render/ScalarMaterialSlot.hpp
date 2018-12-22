@@ -8,8 +8,6 @@ namespace donkey
 namespace render
 {
 
-class ResourceManager;
-
 template <class Storage_>
 class ScalarMaterialSlot
 {
@@ -22,8 +20,7 @@ class ScalarMaterialSlot
 
   public:
     ScalarMaterialSlot(int location, const Storage& storage);
-    void bind(const ResourceManager& resource_manager,
-        CommandBucket& render_commands);
+    void bind(CommandBucket& render_commands);
 };
 
 }

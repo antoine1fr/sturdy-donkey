@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "render/CommandBucket.hpp"
+#include "render/gl/ResourceManager.hpp"
 
 namespace donkey
 {
@@ -24,9 +25,12 @@ class Driver
     typedef std::function<void (const Command&)> RenderFunction;
     const std::vector<RenderFunction> render_functions_;
 
+    ResourceManager resource_manager_;
+
   public:
     Driver();
     void execute_commands(const CommandBucket& commands);
+    AResourceManager& get_resource_manager();
 
   private:
     void output_debug_info_() const;

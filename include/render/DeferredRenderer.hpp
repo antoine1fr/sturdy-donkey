@@ -6,9 +6,13 @@
 #include <atomic>
 #include <SDL.h>
 #include <limits>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 #include "render/gl/Driver.hpp"
 #include "render/FramePacket.hpp"
+#include "render/AResourceManager.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
@@ -24,6 +28,7 @@ class DeferredRenderer
     Window& window_;
     SDL_GLContext render_context_;
     gl::Driver driver_;
+    AResourceManager& gpu_resource_manager_;
     ResourceManager resource_manager_;
     FramePacket<std::allocator> light_frame_packet_;
     std::thread* render_thread_;
@@ -44,12 +49,14 @@ class DeferredRenderer
     void render_mesh_node_(
         const RenderPass& render_pass,
         const MeshNode& mesh_node,
-        const CameraNode& camera_node);
+        const CameraNode& camera_node,
+        CommandBucket& render_commands);
     template <template <typename> class Allocator>
       void execute_pass_(
           size_t pass_num,
           const RenderPass& render_pass,
-          const FramePacket<Allocator>& frame_packet);
+          const FramePacket<Allocator>& frame_packet,
+          CommandBucket& render_commands);
     void bind_light_uniforms_(
         CommandBucket& render_commands,
         const Material& material,
@@ -72,6 +79,7 @@ class DeferredRenderer
     ~DeferredRenderer();
     void render();
     ResourceManager& get_resource_manager();
+    AResourceManager& get_gpu_resource_manager();
     void add_render_pass(const RenderPass& render_pass);
     void add_render_pass(RenderPass&& render_pass);
     void notify_exit();
@@ -85,7 +93,8 @@ template <template <typename> class Allocator>
 void DeferredRenderer::execute_pass_(
     size_t pass_num,
     const RenderPass& render_pass,
-    const FramePacket<Allocator>& frame_packet)
+    const FramePacket<Allocator>& frame_packet,
+    CommandBucket& render_commands)
 {
   GLuint framebuffer;
   uint32_t framebuffer_id = render_pass.framebuffer_id;
