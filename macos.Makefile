@@ -8,5 +8,5 @@ TARGET_SUFFIX ?= .a
 
 CXXFLAGS += -Ilib/glm
 
-include common.Makefile
+include build/common.Makefile
 

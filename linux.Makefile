@@ -6,4 +6,4 @@ AR ?= ar
 TARGET_PREFIX ?= lib
 TARGET_SUFFIX ?= .a
 
-include common.Makefile
+include build/common.Makefile
