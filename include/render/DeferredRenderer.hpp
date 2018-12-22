@@ -41,8 +41,10 @@ class DeferredRenderer
     std::atomic_uint32_t render_frame_index;
 
   private:
-    void render_mesh_node_(const RenderPass& render_pass,
-        const MeshNode& mesh_node, const CameraNode& camera_node);
+    void render_mesh_node_(
+        const RenderPass& render_pass,
+        const MeshNode& mesh_node,
+        const CameraNode& camera_node);
     template <template <typename> class Allocator>
       void execute_pass_(
           size_t pass_num,
