@@ -19,20 +19,20 @@ namespace render {
 class DeferredRenderer
 {
   private:
-    ResourceManager resource_manager_;
     std::vector<RenderPass> render_passes_;
     std::atomic_bool run_;
     Window& window_;
     SDL_GLContext render_context_;
-    std::thread* render_thread_;
+    gl::Driver driver_;
+    ResourceManager resource_manager_;
     FramePacket<std::allocator> light_frame_packet_;
+    std::thread* render_thread_;
     uint32_t light_program_id_;
     uint32_t albedo_rt_id_;
     uint32_t normal_rt_id_;
     uint32_t depth_rt_id_;
     uint32_t gbuffer_id_;
     uint32_t screen_mesh_id_;
-    gl::Driver driver_;
 
   public:
     std::condition_variable condition_variable;
