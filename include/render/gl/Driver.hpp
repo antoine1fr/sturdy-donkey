@@ -15,6 +15,7 @@ namespace gl
 
 class Driver
 {
+  private:
     enum
     {
       kCommandTypeMask = 0xff
