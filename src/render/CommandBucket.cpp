@@ -145,13 +145,13 @@ void CommandBucket::bind_mesh(
     position_location,
     uv_location
   ));
-  sorted_commands_.push_back({0, bind_mesh_commands_.front()});
+  sorted_commands_.push_back({0, bind_mesh_commands_.back()});
 }
 
 void CommandBucket::draw_elements(size_t count)
 {
   draw_elements_commands_.push_back(DrawElementsCommand(count));
-  sorted_commands_.push_back({1, draw_elements_commands_.front()});
+  sorted_commands_.push_back({1, draw_elements_commands_.back()});
 }
 
 const std::list<SortedCommand>& CommandBucket::get_commands() const
