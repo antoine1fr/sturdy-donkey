@@ -28,6 +28,11 @@ Driver::Driver():
       std::bind(&Driver::bind_uniform_mat3_, this, _1),
       std::bind(&Driver::bind_uniform_mat4_, this, _1),
       std::bind(&Driver::bind_texture_, this, _1),
+      std::bind(&Driver::bind_framebuffer_, this, _1),
+      std::bind(&Driver::set_viewport_, this, _1),
+      std::bind(&Driver::set_depth_test_, this, _1),
+      std::bind(&Driver::clear_framebuffer_, this, _1),
+      std::bind(&Driver::bind_gpu_program_, this, _1)
   })
 {
   assert(gl3wInit() == 0);
@@ -163,6 +168,78 @@ void Driver::bind_texture_(const Command& command)
   glUniform1i(bind_command.location, texture_unit);
   glActiveTexture(GL_TEXTURE0 + texture_unit);
   glBindTexture(GL_TEXTURE_2D, texture.texture);
+}
+
+void Driver::bind_framebuffer_(const Command& command)
+{
+  assert(command.type == Command::Type::kBindFramebuffer);
+  const BindFramebufferCommand& bind_command =
+    static_cast<const BindFramebufferCommand&>(command);
+  GLuint framebuffer;
+  uint32_t framebuffer_id = bind_command.framebuffer_id;
+  if (framebuffer_id == std::numeric_limits<uint32_t>::max())
+    framebuffer = 0;
+  else
+    framebuffer = resource_manager_.get_framebuffer(framebuffer_id);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  check_gl_framebuffer(GL_FRAMEBUFFER);
+  if (framebuffer == 0)
+  {
+    glDrawBuffer(GL_BACK);
+  }
+  else
+  {
+    std::array<GLenum, 2> targets {{
+      GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1
+    }};
+    glDrawBuffers(targets.size(), &targets[0]);
+  }
+}
+
+void Driver::set_depth_test_(const Command& command)
+{
+  assert(command.type == Command::Type::kSetDepthTest);
+  const SetDepthTestCommand& set_command =
+    static_cast<const SetDepthTestCommand&>(command);
+  if (set_command.enable == true)
+    glEnable(GL_DEPTH_TEST);
+  else
+    glDisable(GL_DEPTH_TEST);
+}
+
+void Driver::set_viewport_(const Command& command)
+{
+  assert(command.type == Command::Type::kSetViewport);
+  const SetViewportCommand& set_command =
+    static_cast<const SetViewportCommand&>(command);
+  glm::vec2 position = set_command.position;
+  glm::vec2 size = set_command.size;
+  glViewport(
+    position.x,
+    position.y,
+    size.x,
+    size.y);
+}
+
+void Driver::clear_framebuffer_(const Command& command)
+{
+  assert(command.type == Command::Type::kClearFramebuffer);
+  const ClearFramebufferCommand& set_command =
+    static_cast<const ClearFramebufferCommand&>(command);
+  glClearColor(set_command.color.x, set_command.color.y,
+      set_command.color.z, 1.0f);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+}
+
+void Driver::bind_gpu_program_(const Command& command)
+{
+  assert(command.type == Command::Type::kBindGpuProgram);
+  const BindGpuProgramCommand& bind_command =
+    static_cast<const BindGpuProgramCommand&>(command);
+  const GpuProgram& program =
+    resource_manager_.get_gpu_program(bind_command.program_id);
+  glUseProgram(program.handle);
 }
 
 AResourceManager& Driver::get_resource_manager()

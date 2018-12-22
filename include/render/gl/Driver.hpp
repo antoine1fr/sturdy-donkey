@@ -44,7 +44,12 @@ class Driver
     void bind_uniform_mat3_(const Command& command);
     void bind_uniform_mat4_(const Command& command);
     void bind_texture_(const Command& command);
+    void bind_framebuffer_(const Command& command);
+    void bind_gpu_program_(const Command& command);
     void draw_elements_(const Command& command);
+    void set_viewport_(const Command& command);
+    void set_depth_test_(const Command& command);
+    void clear_framebuffer_(const Command& command);
 };
 
 }

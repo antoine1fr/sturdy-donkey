@@ -33,7 +33,12 @@ class Command
       kBindUniformMat2,
       kBindUniformMat3,
       kBindUniformMat4,
-      kBindTexture
+      kBindTexture,
+      kBindFramebuffer,
+      kSetViewport,
+      kSetDepthTest,
+      kClearFramebuffer,
+      kBindGpuProgram
     };
 
     Type type;
@@ -126,6 +131,38 @@ struct DrawElementsCommand: Command
   size_t count;
 };
 
+struct BindFramebufferCommand: Command
+{
+  BindFramebufferCommand(uint32_t framebuffer_id);
+  uint32_t framebuffer_id;
+};
+
+struct SetViewportCommand: Command
+{
+  SetViewportCommand(const glm::tvec2<int>& position,
+      const glm::tvec2<std::size_t>& size);
+  glm::tvec2<int> position;
+  glm::tvec2<std::size_t> size;
+};
+
+struct SetDepthTestCommand: Command
+{
+  SetDepthTestCommand(bool enable);
+  bool enable;
+};
+
+struct ClearFramebufferCommand: Command
+{
+  ClearFramebufferCommand(const glm::vec3& color);
+  glm::vec3 color;
+};
+
+struct BindGpuProgramCommand: Command
+{
+  BindGpuProgramCommand(uint32_t program_id);
+  uint32_t program_id;
+};
+
 struct SortedCommand
 {
   uint64_t sort_key;
@@ -147,6 +184,11 @@ class CommandBucket
     std::list<BindUniformMat4Command> bind_mat4_commands_;
     std::list<BindTextureCommand> bind_texture_commands_;
     std::list<DrawElementsCommand> draw_elements_commands_;
+    std::list<BindFramebufferCommand> bind_framebuffer_commands_;
+    std::list<SetDepthTestCommand> set_depth_test_commands_;
+    std::list<SetViewportCommand> set_viewport_commands_;
+    std::list<ClearFramebufferCommand> clear_framebuffer_commands_;
+    std::list<BindGpuProgramCommand> bind_gpu_program_commands_;
 
   private:
     uint64_t make_sort_key_(Command::Type type);
@@ -168,7 +210,15 @@ class CommandBucket
         uint32_t mesh_id,
         int position_location,
         int uv_location);
+    void bind_framebuffer(
+        uint32_t framebuffer_id);
+    void bind_gpu_program(
+        uint32_t program_id);
     void draw_elements(size_t count);
+    void set_depth_test(bool enable);
+    void set_viewport(const glm::tvec2<int>& position,
+        const glm::tvec2<std::size_t>& size);
+    void clear_framebuffer(const glm::vec3& color);
     const std::list<SortedCommand>& get_commands() const;
 };
 

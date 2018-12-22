@@ -96,50 +96,23 @@ void DeferredRenderer::execute_pass_(
     const FramePacket<Allocator>& frame_packet,
     CommandBucket& render_commands)
 {
-  GLuint framebuffer;
-  uint32_t framebuffer_id = render_pass.framebuffer_id;
-  if (framebuffer_id == std::numeric_limits<uint32_t>::max())
-    framebuffer = 0;
-  else
-    framebuffer = resource_manager_.get_framebuffer(framebuffer_id);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  check_gl_framebuffer(GL_FRAMEBUFFER);
+  render_commands.bind_framebuffer(render_pass.framebuffer_id);
 
   if (render_pass.depth_test)
-    glEnable(GL_DEPTH_TEST);
+    render_commands.set_depth_test(true);
   else
-    glDisable(GL_DEPTH_TEST);
+    render_commands.set_depth_test(false);
 
-  for (auto camera_node: frame_packet.get_camera_nodes())
+  const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
+  assert(camera_node.pass_num == pass_num);
+  render_commands.set_viewport(camera_node.viewport_position,
+      camera_node.viewport_size);
+  render_commands.clear_framebuffer(render_pass.clear_color);
+  for (auto mesh_node: frame_packet.get_mesh_nodes())
   {
     if (camera_node.pass_num != pass_num)
       continue;
-    glViewport(camera_node.viewport_position.x,
-        camera_node.viewport_position.y,
-        camera_node.viewport_size.x,
-        camera_node.viewport_size.y);
-    glClearColor(render_pass.clear_color.x, render_pass.clear_color.y,
-        render_pass.clear_color.z, 1.0f);
-    if (framebuffer == 0)
-    {
-      glDrawBuffer(GL_BACK);
-      glClear(render_pass.clear_bits);
-    }
-    else
-    {
-      std::array<GLenum, 2> targets {{
-        GL_COLOR_ATTACHMENT0,
-        GL_COLOR_ATTACHMENT1
-      }};
-      glDrawBuffers(targets.size(), &targets[0]);
-      glClear(render_pass.clear_bits);
-    }
-    for (auto mesh_node: frame_packet.get_mesh_nodes())
-    {
-      if (mesh_node.pass_num != pass_num)
-        continue;
-      render_mesh_node_(render_pass, mesh_node, camera_node);
-    }
+    render_mesh_node_(render_pass, mesh_node, camera_node, render_commands);
   }
 }
 

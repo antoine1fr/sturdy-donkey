@@ -101,6 +101,40 @@ DrawElementsCommand::DrawElementsCommand(size_t count):
 {
 }
 
+BindFramebufferCommand::BindFramebufferCommand(
+    uint32_t framebuffer_id):
+  Command(Type::kBindFramebuffer),
+  framebuffer_id(framebuffer_id)
+{
+}
+
+SetViewportCommand::SetViewportCommand(const glm::tvec2<int>& position,
+    const glm::tvec2<std::size_t>& size):
+  Command(Type::kSetViewport),
+  position(position),
+  size(size)
+{
+}
+
+SetDepthTestCommand::SetDepthTestCommand(bool enable):
+  Command(Type::kSetDepthTest),
+  enable(enable)
+{
+}
+
+ClearFramebufferCommand::ClearFramebufferCommand(const glm::vec3& color):
+  Command(Type::kClearFramebuffer),
+  color(color)
+{
+}
+
+BindGpuProgramCommand::BindGpuProgramCommand(
+    uint32_t program_id):
+  Command(Type::kBindGpuProgram),
+  program_id(program_id)
+{
+}
+
 void CommandBucket::bind_mesh(
     uint32_t mesh_id,
     int position_location,
@@ -214,6 +248,56 @@ void CommandBucket::bind_texture(
   sorted_commands_.push_back({
     make_sort_key_(Command::Type::kBindTexture),
     bind_texture_commands_.back()
+  });
+}
+
+void CommandBucket::bind_framebuffer(
+    uint32_t framebuffer_id)
+{
+  bind_framebuffer_commands_.push_back(BindFramebufferCommand(
+    framebuffer_id));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindFramebuffer),
+    bind_framebuffer_commands_.back()
+  });
+}
+
+void CommandBucket::set_depth_test(bool enable)
+{
+  set_depth_test_commands_.push_back(SetDepthTestCommand(enable));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kSetDepthTest),
+    set_depth_test_commands_.back()
+  });
+}
+
+void CommandBucket::set_viewport(const glm::tvec2<int>& position, 
+    const glm::tvec2<std::size_t>& size)
+{
+  set_viewport_commands_.push_back(SetViewportCommand(position, size));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kSetViewport),
+    set_viewport_commands_.back()
+  });
+}
+
+void CommandBucket::clear_framebuffer(const glm::vec3& color)
+{
+  clear_framebuffer_commands_.push_back(ClearFramebufferCommand(color));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kClearFramebuffer),
+    clear_framebuffer_commands_.back()
+  });
+}
+
+void CommandBucket::bind_gpu_program(
+    uint32_t program_id)
+{
+  bind_gpu_program_commands_.push_back(BindGpuProgramCommand(
+    program_id));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kBindGpuProgram),
+    bind_gpu_program_commands_.back()
   });
 }
 
