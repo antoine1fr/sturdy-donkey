@@ -27,6 +27,8 @@ Driver::Driver():
       std::bind(&Driver::bind_texture_, this, _1),
   })
 {
+  assert(gl3wInit() == 0);
+  assert(gl3wIsSupported(4, 1) != 0);
   output_debug_info_();
 }
 

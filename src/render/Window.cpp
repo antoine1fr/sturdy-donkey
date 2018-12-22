@@ -25,7 +25,6 @@ Window::Window(const std::string& title, int width, int height):
     height, SDL_WINDOW_OPENGL);
   render_context_ = SDL_GL_CreateContext(window_);
   ancillary_context_ = SDL_GL_CreateContext(window_);
-  gl3wInit();
 }
 
 Window::~Window()

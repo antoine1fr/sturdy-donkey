@@ -29,8 +29,6 @@ DeferredRenderer::DeferredRenderer(Window& window):
   int width = window.get_width();
   int height = window.get_height();
 
-  gl3wInit();
-
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
   create_light_pass_frame_packet_(width, height);
