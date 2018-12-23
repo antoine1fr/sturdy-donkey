@@ -26,6 +26,72 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+namespace
+{
+  struct Vertex
+  {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 uv;
+  };
+
+  bool operator == (const Vertex& lhs, const Vertex& rhs)
+  {
+    return (lhs.position == rhs.position
+        && lhs.normal == rhs.normal
+        && lhs.uv == rhs.uv);
+  }
+
+  struct Index
+  {
+    int position;
+    int normal;
+    int uv;
+  };
+
+  bool operator == (const Index& lhs, const Index& rhs)
+  {
+    return (lhs.position == rhs.position
+        && lhs.normal == rhs.normal
+        && lhs.uv == rhs.uv);
+  }
+}
+
+namespace std
+{
+  template <>
+    struct hash<Vertex>
+    {
+      typedef Vertex argument_type;
+      typedef std::size_t result_type;
+
+      std::size_t operator () (const Vertex& vertex) const noexcept
+      {
+        std::size_t seed = 0;
+        donkey::hash_combine(seed, vertex.position);
+        donkey::hash_combine(seed, vertex.normal);
+        donkey::hash_combine(seed, vertex.uv);
+        return seed;
+      }
+    };
+
+  template <>
+    struct hash<Index>
+    {
+      typedef Index argument_type;
+      typedef std::size_t result_type;
+
+      std::size_t operator () (const Index& index) const noexcept
+      {
+        std::size_t seed = 0;
+        donkey::hash_combine(seed, index.position);
+        donkey::hash_combine(seed, index.normal);
+        donkey::hash_combine(seed, index.uv);
+        return seed;
+      }
+    };
+}
+
 namespace donkey {
 
 uint32_t MeshLoader::load(
@@ -45,12 +111,14 @@ uint32_t MeshLoader::load(
   // TODO: implement support for sub-meshes.
   std::vector<uint32_t> indices;
   std::vector<float> positions;
+  std::vector<float> normals;
   std::vector<float> uvs;
   consolidate_indices_(
       attributes,
       shapes[0].mesh.indices,
       indices,
       positions,
+      normals,
       uvs);
   return resource_manager.create_mesh(positions, uvs, indices);
 }
@@ -60,21 +128,27 @@ void MeshLoader::consolidate_indices_(
     const std::vector<tinyobj::index_t>& tinyobj_indices,
     std::vector<uint32_t>& indices,
     std::vector<float>& positions,
+    std::vector<float>& normals,
     std::vector<float>& uvs) const
 {
   // 1. expand vertices
-  typedef std::pair<glm::vec3, glm::vec2> Vertex;
   std::vector<Vertex> vertices;
   vertices.reserve(tinyobj_indices.size());
   for (const tinyobj::index_t& index: tinyobj_indices)
   {
     uint32_t vertex_index = index.vertex_index * 3;
+    uint32_t normal_index = index.normal_index * 3;
     uint32_t texcoord_index = index.texcoord_index * 2;
     vertices.push_back({
       {
         attributes.vertices[vertex_index + 0],
         attributes.vertices[vertex_index + 1],
         attributes.vertices[vertex_index + 2]
+      },
+      {
+        attributes.normals[normal_index + 0],
+        attributes.normals[normal_index + 1],
+        attributes.normals[normal_index + 2]
       },
       {
         attributes.texcoords[texcoord_index + 0],
@@ -96,10 +170,11 @@ void MeshLoader::consolidate_indices_(
   }
 
   // 3. map old indices to new indices
-  std::unordered_map<std::pair<uint32_t, uint32_t>, uint32_t> index_map;
+  std::unordered_map<Index, uint32_t> index_map;
   for (const tinyobj::index_t& old_index: tinyobj_indices)
   {
     uint32_t old_vertex_index = old_index.vertex_index * 3;
+    uint32_t old_normal_index = old_index.normal_index * 3;
     uint32_t old_texcoord_index = old_index.texcoord_index * 2;
     Vertex vertex = {
       {
@@ -108,13 +183,19 @@ void MeshLoader::consolidate_indices_(
         attributes.vertices[old_vertex_index + 2]
       },
       {
+        attributes.normals[old_normal_index + 0],
+        attributes.normals[old_normal_index + 1],
+        attributes.normals[old_normal_index + 2]
+      },
+      {
         attributes.texcoords[old_texcoord_index + 0],
         attributes.texcoords[old_texcoord_index + 1]
       }
     };
     uint32_t new_index = (index.find(vertex))->second;
-    std::pair<uint32_t, uint32_t> key = {
+    Index key = {
       old_index.vertex_index,
+      old_index.normal_index,
       old_index.texcoord_index
     };
     index_map[key] = new_index;
@@ -124,26 +205,34 @@ void MeshLoader::consolidate_indices_(
   indices.reserve(tinyobj_indices.size());
   for (const tinyobj::index_t& old_index: tinyobj_indices)
   {
-    indices.push_back(index_map[{old_index.vertex_index,
-        old_index.texcoord_index}]);
+    indices.push_back(index_map[{
+      old_index.vertex_index,
+      old_index.normal_index,
+      old_index.texcoord_index
+    }]);
   }
 
   // 6. copy vertex attributes in correct order
   positions.resize(index.size() * 3);
+  normals.resize(index.size() * 3);
   uvs.resize(index.size() * 2);
   for (const Vertex& vertex: vertices)
   {
     // find the vertex' id in the index
     uint32_t i = (index.find(vertex))->second;
-    positions[i * 3] = vertex.first.x;
-    positions[(i * 3) + 1] = vertex.first.y;
-    positions[(i * 3) + 2] = vertex.first.z;
-    uvs[i * 2] = vertex.second.x;
-    uvs[(i * 2) + 1] = vertex.second.y;
+    positions[i * 3] = vertex.position.x;
+    positions[(i * 3) + 1] = vertex.position.y;
+    positions[(i * 3) + 2] = vertex.position.z;
+    normals[i * 3] = vertex.normal.x;
+    normals[(i * 3) + 1] = vertex.normal.y;
+    normals[(i * 3) + 2] = vertex.normal.z;
+    uvs[i * 2] = vertex.uv.x;
+    uvs[(i * 2) + 1] = vertex.uv.y;
   }
 
   // debug traces
   std::cout << "\tpositions: " << positions.size() << '\n';
+  std::cout << "\tnormals: " << normals.size() << '\n';
   std::cout << "\tuvs: " << uvs.size() << '\n';
   std::cout << "\tindices: " << indices.size() << '\n';
 }

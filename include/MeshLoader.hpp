@@ -38,6 +38,7 @@ class MeshLoader
         const std::vector<tinyobj::index_t>& tinyobj_indices,
         std::vector<uint32_t>& indices,
         std::vector<float>& positions,
+        std::vector<float>& normals,
         std::vector<float>& uvs) const;
 };
 
