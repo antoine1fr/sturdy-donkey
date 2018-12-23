@@ -41,6 +41,7 @@ class AResourceManager
 
     virtual uint32_t create_mesh(
       const std::vector<float>& positions,
+      const std::vector<float>& normals,
       const std::vector<float>& uvs,
       const std::vector<uint32_t>& indices) = 0;
 

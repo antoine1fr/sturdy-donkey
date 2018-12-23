@@ -91,10 +91,15 @@ uint32_t ResourceManager::create_material(uint32_t gpu_program)
 
 uint32_t ResourceManager::create_mesh(
     const std::vector<float>& positions,
+    const std::vector<float>& normals,
     const std::vector<float>& uvs,
     const std::vector<uint32_t>& indices)
 {
-  uint32_t id = gpu_resource_manager_.create_mesh(positions, uvs, indices);
+  uint32_t id = gpu_resource_manager_.create_mesh(
+      positions,
+      normals,
+      uvs,
+      indices);
   meshes_.push_back(Mesh(id, indices.size()));
   return meshes_.size() - 1;
 }

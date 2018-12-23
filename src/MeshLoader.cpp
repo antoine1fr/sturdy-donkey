@@ -120,7 +120,7 @@ uint32_t MeshLoader::load(
       positions,
       normals,
       uvs);
-  return resource_manager.create_mesh(positions, uvs, indices);
+  return resource_manager.create_mesh(positions, normals, uvs, indices);
 }
 
 void MeshLoader::consolidate_indices_(

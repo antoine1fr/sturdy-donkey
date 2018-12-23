@@ -210,7 +210,9 @@ GLuint ResourceManager::load_texture_from_file(const std::string& path)
   return id;
 }
 
-uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
+uint32_t ResourceManager::create_mesh(
+    const std::vector<float>& positions,
+    const std::vector<float>& normals,
     const std::vector<float>& uvs,
     const std::vector<unsigned int>& indices)
 {
@@ -223,6 +225,12 @@ uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
   glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(),
     &positions[0], GL_STATIC_DRAW);
+
+  GLuint normal_buffer;
+  glGenBuffers(1, &normal_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, normal_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size(),
+    &normals[0], GL_STATIC_DRAW);
 
   GLuint uv_buffer;
   glGenBuffers(1, &uv_buffer);
@@ -239,6 +247,7 @@ uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
   uint32_t id = meshes_.size();
   meshes_.push_back(Mesh(
     position_buffer,
+    normal_buffer,
     uv_buffer,
     index_buffer,
     vertex_array));

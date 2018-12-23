@@ -83,6 +83,12 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
     static_cast<float>(width), static_cast<float>(height), 0.0f,
     static_cast<float>(width), 0.0f, 0.0f
   };
+  std::vector<float> screen_mesh_normals {
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f
+  };
   std::vector<float> screen_mesh_uvs {
     0.0f, 0.0f,
     0.0f, 1.0f,
@@ -91,7 +97,10 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
   };
   std::vector<unsigned int> screen_mesh_indices {0, 1, 2, 0, 2, 3};
   screen_mesh_id_ =
-    resource_manager_.create_mesh(screen_mesh_positions, screen_mesh_uvs,
+    resource_manager_.create_mesh(
+        screen_mesh_positions,
+        screen_mesh_normals,
+        screen_mesh_uvs,
         screen_mesh_indices);
 
   light_program_id_ = resource_manager_.load_gpu_program_from_file(
