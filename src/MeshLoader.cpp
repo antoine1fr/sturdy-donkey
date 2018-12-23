@@ -148,14 +148,14 @@ void MeshLoader::consolidate_indices_(
     std::vector<float>& bitangents) const
 {
   // 1. expand vertices
-  std::vector<Vertex> vertices;
-  vertices.reserve(tinyobj_indices.size());
+  std::vector<Vertex> expanded_vertices;
+  expanded_vertices.reserve(tinyobj_indices.size());
   for (const tinyobj::index_t& index: tinyobj_indices)
   {
     uint32_t vertex_index = index.vertex_index * 3;
     uint32_t normal_index = index.normal_index * 3;
     uint32_t texcoord_index = index.texcoord_index * 2;
-    vertices.push_back({
+    expanded_vertices.push_back({
       {
         attributes.vertices[vertex_index + 0],
         attributes.vertices[vertex_index + 1],
@@ -174,12 +174,12 @@ void MeshLoader::consolidate_indices_(
       glm::vec3(0.0f)
     });
   }
-  compute_vectors_(vertices);
+  compute_vectors_(expanded_vertices);
 
   // 2. index vertices
   std::unordered_map<Vertex, uint32_t> index;
   uint32_t max_id = 0;
-  for (const Vertex& vertex: vertices)
+  for (const Vertex& vertex: expanded_vertices)
   {
     if (index.find(vertex) == index.cend())
     {
@@ -241,7 +241,7 @@ void MeshLoader::consolidate_indices_(
   uvs.resize(index.size() * 2);
   tangents.resize(index.size() * 3);
   bitangents.resize(index.size() * 3);
-  for (const Vertex& vertex: vertices)
+  for (const Vertex& vertex: expanded_vertices)
   {
     // find the vertex' id in the index
     uint32_t i = (index.find(vertex))->second;
