@@ -4,6 +4,9 @@ OBJC ?= g++
 RM = rm -f
 AR ?= ar
 TARGET_PREFIX ?= lib
-TARGET_SUFFIX ?= .a
+STATIC_TARGET_SUFFIX ?= .a
+DYNAMIC_TARGET_SUFFIX ?= .so
+
+LDFLAGS += -lgl
 
 include build/common.Makefile

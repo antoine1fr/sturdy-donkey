@@ -1,4 +1,6 @@
-TARGET = $(TARGET_PREFIX)engine$(TARGET_SUFFIX)
+BASE_TARGET = sturdy-donkey
+STATIC_TARGET = $(TARGET_PREFIX)$(BASE_TARGET)$(STATIC_TARGET_SUFFIX)
+DYNAMIC_TARGET = $(TARGET_PREFIX)$(BASE_TARGET)$(DYNAMIC_TARGET_SUFFIX)
 
 SRC_DIR = src/
 LIB_DIR = lib/
@@ -19,6 +21,10 @@ CXXFLAGS += \
 	-Werror \
 	-pedantic \
 	`pkg-config --cflags sdl2 SDL2_image`
+
+LDFLAGS += \
+	-shared -fPIC \
+	`pkg-config --libs sdl2 SDL2_image`
 
 C_SOURCES = \
 	lib/gl3w/GL/gl3w.c
@@ -50,8 +56,17 @@ OBJECTS = \
 	$(CXX_OBJECTS) \
 	$(OBJC_OBJECTS)
 
-$(TARGET): $(OBJECTS)
-	$(AR) -r -s $(TARGET) $(OBJECTS) 
+$(DYNAMIC_TARGET): $(OBJECTS)
+	$(CXX) -o $(DYNAMIC_TARGET) $(LDFLAGS) $(OBJECTS)
+
+$(STATIC_TARGET): $(OBJECTS)
+	$(AR) -r -s $(STATIC_TARGET) $(OBJECTS)
+
+static: $(STATIC_TARGET)
+
+dynamic: $(DYNAMIC_TARGET)
+
+.PHONY: static dynamic
 
 %.o: %.c
 	$(CC) -o $@ $(CFLAGS) -c $<

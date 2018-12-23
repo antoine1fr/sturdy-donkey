@@ -1,13 +1,13 @@
 include build/runtime.Makefile
 include build/shaders.Makefile
 
-all: $(TARGET) $(SHADERS)
+all: $(DYNAMIC_TARGET) $(STATIC_TARGET) $(SHADERS)
 
 clean:
 	$(RM) $(OBJECTS)
 
 fclean: clean
-	$(RM) $(TARGET) $(SHADERS)
+	$(RM) $(DYNAMIC_TARGET) $(STATIC_TARGET) $(SHADERS)
 
 re: fclean all
 

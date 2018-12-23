@@ -16,13 +16,10 @@ CXXFLAGS = \
 	-std=c++14 \
 	-Wall \
 	-Werror \
-	-pedantic \
-	`pkg-config --cflags sdl2 SDL2_image`
+	-pedantic
 
 LDFLAGS = \
 	-g3 -O0 \
-	-framework OpenGL \
-	`pkg-config --libs sdl2 SDL2_image` \
 	-L../../ -lengine
 
 CXX_SOURCES = \
