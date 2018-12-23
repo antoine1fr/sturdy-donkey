@@ -16,6 +16,7 @@ CXXFLAGS += \
 	-g3 \
 	-Iinclude \
 	-Ilib/gl3w \
+	-Ilib/tinyobjloader \
 	-std=c++14 \
 	-Wall \
 	-Werror \
@@ -35,6 +36,7 @@ CXX_SOURCES = \
 	$(SRC_DIR)Scene.cpp \
 	$(SRC_DIR)Buffer.cpp \
 	$(SRC_DIR)BufferPool.cpp \
+	$(SRC_DIR)MeshLoader.cpp \
 	$(SRC_DIR)render/AMaterial.cpp \
 	$(SRC_DIR)render/gl/Material.cpp \
 	$(SRC_DIR)render/Window.cpp \
