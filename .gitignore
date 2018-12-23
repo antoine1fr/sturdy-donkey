@@ -3,3 +3,4 @@
 *.swp
 *.a
 Makefile
+*.dylib
