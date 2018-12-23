@@ -1,12 +1,13 @@
 include build/runtime.Makefile
+include build/shaders.Makefile
 
-all: $(TARGET)
+all: $(TARGET) $(SHADERS)
 
 clean:
 	$(RM) $(OBJECTS)
 
 fclean: clean
-	$(RM) $(TARGET)
+	$(RM) $(TARGET) $(SHADERS)
 
 re: fclean all
 
