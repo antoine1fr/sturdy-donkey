@@ -23,6 +23,11 @@
 
 #include "render/ResourceManager.hpp"
 
+namespace
+{
+  struct Vertex;
+}
+
 namespace donkey {
 
 class MeshLoader
@@ -39,7 +44,25 @@ class MeshLoader
         std::vector<uint32_t>& indices,
         std::vector<float>& positions,
         std::vector<float>& normals,
-        std::vector<float>& uvs) const;
+        std::vector<float>& uvs,
+        std::vector<float>& tangents,
+        std::vector<float>& bitangents) const;
+
+    void compute_vectors_(std::vector<Vertex>& vertices) const;
+
+    glm::vec3 compute_tangent_(
+        const glm::vec3& dp1,
+        const glm::vec3& dp2,
+        const glm::vec2& duv1,
+        const glm::vec2& duv2,
+        float kf) const;
+
+    glm::vec3 compute_bitangent_(
+        const glm::vec3& dp1,
+        const glm::vec3& dp2,
+        const glm::vec2& duv1,
+        const glm::vec2& duv2,
+        float kf) const;
 };
 
 }

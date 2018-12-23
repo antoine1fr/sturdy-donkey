@@ -33,6 +33,8 @@ namespace
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 uv;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
   };
 
   bool operator == (const Vertex& lhs, const Vertex& rhs)
@@ -47,6 +49,8 @@ namespace
     int position;
     int normal;
     int uv;
+    int tangent;
+    int bitangent;
   };
 
   bool operator == (const Index& lhs, const Index& rhs)
@@ -113,13 +117,17 @@ uint32_t MeshLoader::load(
   std::vector<float> positions;
   std::vector<float> normals;
   std::vector<float> uvs;
+  std::vector<float> tangents;
+  std::vector<float> bitangents;
   consolidate_indices_(
       attributes,
       shapes[0].mesh.indices,
       indices,
       positions,
       normals,
-      uvs);
+      uvs,
+      tangents,
+      bitangents);
   return resource_manager.create_mesh(positions, normals, uvs, indices);
 }
 
@@ -129,7 +137,9 @@ void MeshLoader::consolidate_indices_(
     std::vector<uint32_t>& indices,
     std::vector<float>& positions,
     std::vector<float>& normals,
-    std::vector<float>& uvs) const
+    std::vector<float>& uvs,
+    std::vector<float>& tangents,
+    std::vector<float>& bitangents) const
 {
   // 1. expand vertices
   std::vector<Vertex> vertices;
@@ -153,9 +163,12 @@ void MeshLoader::consolidate_indices_(
       {
         attributes.texcoords[texcoord_index + 0],
         attributes.texcoords[texcoord_index + 1]
-      }
+      },
+      glm::vec3(0.0f),
+      glm::vec3(0.0f)
     });
   }
+  compute_vectors_(vertices);
 
   // 2. index vertices
   std::unordered_map<Vertex, uint32_t> index;
@@ -190,7 +203,9 @@ void MeshLoader::consolidate_indices_(
       {
         attributes.texcoords[old_texcoord_index + 0],
         attributes.texcoords[old_texcoord_index + 1]
-      }
+      },
+      glm::vec3(0.0f),
+      glm::vec3(0.0f)
     };
     uint32_t new_index = (index.find(vertex))->second;
     Index key = {
@@ -208,7 +223,9 @@ void MeshLoader::consolidate_indices_(
     indices.push_back(index_map[{
       old_index.vertex_index,
       old_index.normal_index,
-      old_index.texcoord_index
+      old_index.texcoord_index,
+      old_index.vertex_index,
+      old_index.vertex_index
     }]);
   }
 
@@ -216,6 +233,8 @@ void MeshLoader::consolidate_indices_(
   positions.resize(index.size() * 3);
   normals.resize(index.size() * 3);
   uvs.resize(index.size() * 2);
+  tangents.resize(index.size() * 3);
+  bitangents.resize(index.size() * 3);
   for (const Vertex& vertex: vertices)
   {
     // find the vertex' id in the index
@@ -228,6 +247,12 @@ void MeshLoader::consolidate_indices_(
     normals[(i * 3) + 2] = vertex.normal.z;
     uvs[i * 2] = vertex.uv.x;
     uvs[(i * 2) + 1] = vertex.uv.y;
+    tangents[i * 3] = vertex.tangent.x;
+    tangents[(i * 3) + 1] = vertex.tangent.y;
+    tangents[(i * 3) + 2] = vertex.tangent.z;
+    bitangents[i * 3] = vertex.bitangent.x;
+    bitangents[(i * 3) + 1] = vertex.bitangent.y;
+    bitangents[(i * 3) + 2] = vertex.bitangent.z;
   }
 
   // debug traces
@@ -235,6 +260,62 @@ void MeshLoader::consolidate_indices_(
   std::cout << "\tnormals: " << normals.size() << '\n';
   std::cout << "\tuvs: " << uvs.size() << '\n';
   std::cout << "\tindices: " << indices.size() << '\n';
+}
+
+glm::vec3 MeshLoader::compute_tangent_(
+    const glm::vec3& dp1,
+    const glm::vec3& dp2,
+    const glm::vec2& duv1,
+    const glm::vec2& duv2,
+    float kf) const
+{
+  glm::vec3 tangent;
+  tangent.x = kf * (duv2.y * dp1.x - duv1.y * dp2.x);
+  tangent.y = kf * (duv2.y * dp1.y - duv1.y * dp2.y);
+  tangent.z = kf * (duv2.y * dp1.z - duv1.y * dp2.z);
+  return glm::normalize(tangent);
+}
+
+glm::vec3 MeshLoader::compute_bitangent_(
+    const glm::vec3& dp1,
+    const glm::vec3& dp2,
+    const glm::vec2& duv1,
+    const glm::vec2& duv2,
+    float kf) const
+{
+  glm::vec3 bitangent;
+  bitangent.x = kf * (-duv2.y * dp1.x + duv1.y * dp2.x);
+  bitangent.y = kf * (-duv2.y * dp1.y + duv1.y * dp2.y);
+  bitangent.z = kf * (-duv2.y * dp1.z + duv1.y * dp2.z);
+  return glm::normalize(bitangent);
+}
+
+void MeshLoader::compute_vectors_(std::vector<Vertex>& vertices) const
+{
+  size_t triangle_count = vertices.size() / 3;
+  for (size_t i = 0; i < triangle_count; i++)
+  {
+    size_t offset = i * 3;
+    glm::vec3 p1 = vertices[offset + 0].position;
+    glm::vec3 p2 = vertices[offset + 1].position;
+    glm::vec3 p3 = vertices[offset + 2].position;
+    glm::vec2 uv1 = vertices[offset + 0].uv;
+    glm::vec2 uv2 = vertices[offset + 1].uv;
+    glm::vec2 uv3 = vertices[offset + 2].uv;
+    glm::vec3 dp1 = p2 - p1;
+    glm::vec3 dp2 = p3 - p1;
+    glm::vec2 duv1 = uv2 - uv1;
+    glm::vec2 duv2 = uv3 - uv1;
+    float f = 1.0f / (duv1.x * duv2.y - duv2.x * duv1.y);
+    glm::vec3 tangent = compute_tangent_(dp1, dp2, duv1, duv2, f);
+    glm::vec3 bitangent = compute_bitangent_(dp1, dp2, duv1, duv2, f);
+    vertices[offset + 0].tangent = tangent;
+    vertices[offset + 1].tangent = tangent;
+    vertices[offset + 2].tangent = tangent;
+    vertices[offset + 0].bitangent = bitangent;
+    vertices[offset + 1].bitangent = bitangent;
+    vertices[offset + 2].bitangent = bitangent;
+  }
 }
 
 }
