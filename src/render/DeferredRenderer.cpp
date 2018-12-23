@@ -101,6 +101,8 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
         screen_mesh_positions,
         screen_mesh_normals,
         screen_mesh_uvs,
+        screen_mesh_normals,
+        screen_mesh_normals,
         screen_mesh_indices);
 
   light_program_id_ = resource_manager_.load_gpu_program_from_file(

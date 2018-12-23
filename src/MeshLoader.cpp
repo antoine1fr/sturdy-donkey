@@ -128,7 +128,13 @@ uint32_t MeshLoader::load(
       uvs,
       tangents,
       bitangents);
-  return resource_manager.create_mesh(positions, normals, uvs, indices);
+  return resource_manager.create_mesh(
+      positions,
+      normals,
+      uvs,
+      tangents,
+      bitangents,
+      indices);
 }
 
 void MeshLoader::consolidate_indices_(

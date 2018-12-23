@@ -214,6 +214,8 @@ uint32_t ResourceManager::create_mesh(
     const std::vector<float>& positions,
     const std::vector<float>& normals,
     const std::vector<float>& uvs,
+    const std::vector<float>& tangents,
+    const std::vector<float>& bitangents,
     const std::vector<unsigned int>& indices)
 {
   GLuint vertex_array;
@@ -238,6 +240,18 @@ uint32_t ResourceManager::create_mesh(
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uvs.size(), &uvs[0],
       GL_STATIC_DRAW);
 
+  GLuint tangent_buffer;
+  glGenBuffers(1, &tangent_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, tangent_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tangents.size(),
+    &tangents[0], GL_STATIC_DRAW);
+
+  GLuint bitangent_buffer;
+  glGenBuffers(1, &bitangent_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, bitangent_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bitangents.size(),
+    &bitangents[0], GL_STATIC_DRAW);
+
   GLuint index_buffer;
   glGenBuffers(1, &index_buffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
@@ -249,6 +263,8 @@ uint32_t ResourceManager::create_mesh(
     position_buffer,
     normal_buffer,
     uv_buffer,
+    tangent_buffer,
+    bitangent_buffer,
     index_buffer,
     vertex_array));
   return id;

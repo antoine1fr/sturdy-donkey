@@ -31,6 +31,8 @@ struct Mesh
   GLuint position_buffer;
   GLuint normal_buffer;
   GLuint uv_buffer;
+  GLuint tangent_buffer;
+  GLuint bitangent_buffer;
   GLuint index_buffer;
   GLuint vertex_array;
 
@@ -38,6 +40,8 @@ struct Mesh
       GLuint position_buffer,
       GLuint normal_buffer,
       GLuint uv_buffer,
+      GLuint tangent_buffer,
+      GLuint bitangent_buffer,
       GLenum index_type,
       GLuint vertex_array);
 };

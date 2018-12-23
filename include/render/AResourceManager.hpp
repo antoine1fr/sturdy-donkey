@@ -43,6 +43,8 @@ class AResourceManager
       const std::vector<float>& positions,
       const std::vector<float>& normals,
       const std::vector<float>& uvs,
+      const std::vector<float>& tangents,
+      const std::vector<float>& bitangents,
       const std::vector<uint32_t>& indices) = 0;
 
     virtual uint32_t create_material(uint32_t gpu_program) = 0;
