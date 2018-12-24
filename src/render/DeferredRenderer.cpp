@@ -249,8 +249,13 @@ void DeferredRenderer::render_mesh_node_(
   bind_light_uniforms_(render_commands, material, camera_node.view);
 
   // bind geometry
-  render_commands.bind_mesh(mesh.gpu_resource_id, material.position_location,
-      material.uv_location);
+  render_commands.bind_mesh(
+      mesh.gpu_resource_id,
+      material.position_location,
+      material.normal_location,
+      material.uv_location,
+      material.tangent_location,
+      material.bitangent_location);
 
   render_commands.draw_elements(mesh.index_count);
 }

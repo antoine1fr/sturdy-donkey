@@ -69,10 +69,16 @@ struct BindMeshCommand: Command
   BindMeshCommand(
       uint32_t mesh_id,
       int position_location,
-      int uv_location);
+      int normal_location,
+      int uv_location,
+      int tangent_location,
+      int bitangent_location);
   uint32_t mesh_id;
   int position_location;
+  int normal_location;
   int uv_location;
+  int tangent_location;
+  int bitangent_location;
 };
 
 struct BindUniformFloatCommand: Command
@@ -226,7 +232,10 @@ class CommandBucket
     void bind_mesh(
         uint32_t mesh_id,
         int position_location,
-        int uv_location);
+        int normal_location,
+        int uv_location,
+        int tangent_location,
+        int bitangent_location);
     void bind_framebuffer(
         uint32_t framebuffer_id);
     void bind_gpu_program(

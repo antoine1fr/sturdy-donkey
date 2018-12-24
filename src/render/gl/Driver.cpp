@@ -84,7 +84,10 @@ void Driver::bind_mesh_(const Command& command)
   const Mesh& mesh =
     resource_manager_.get_mesh(bind_command.mesh_id);
   int position_location = bind_command.position_location;
+  int normal_location = bind_command.normal_location;
   int uv_location = bind_command.uv_location;
+  int tangent_location = bind_command.tangent_location;
+  int bitangent_location = bind_command.bitangent_location;
 
   glBindVertexArray(mesh.vertex_array);
   // vertex positions
@@ -92,11 +95,26 @@ void Driver::bind_mesh_(const Command& command)
   glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, 0,
       nullptr);
   glEnableVertexAttribArray(position_location);
+  // vertex normals
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.normal_buffer);
+  glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, 0,
+      nullptr);
+  glEnableVertexAttribArray(normal_location);
   // vertex UVs
   glBindBuffer(GL_ARRAY_BUFFER, mesh.uv_buffer);
   glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, 0,
       nullptr);
   glEnableVertexAttribArray(uv_location);
+  // vertex tangents
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.tangent_buffer);
+  glVertexAttribPointer(tangent_location, 3, GL_FLOAT, GL_FALSE, 0,
+      nullptr);
+  glEnableVertexAttribArray(tangent_location);
+  // vertex bitangents
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.bitangent_buffer);
+  glVertexAttribPointer(bitangent_location, 3, GL_FLOAT, GL_FALSE, 0,
+      nullptr);
+  glEnableVertexAttribArray(bitangent_location);
   // indices
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
 }

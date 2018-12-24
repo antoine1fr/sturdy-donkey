@@ -32,7 +32,10 @@ Material::Material(
 {
   const GpuProgram& program = resource_manager_.get_gpu_program(program_id);
   position_location = glGetAttribLocation(program.handle, "position");
+  normal_location = glGetAttribLocation(program.handle, "normal");
   uv_location = glGetAttribLocation(program.handle, "uv");
+  tangent_location = glGetAttribLocation(program.handle, "tangent");
+  bitangent_location = glGetAttribLocation(program.handle, "bitangent");
   model_location = glGetUniformLocation(program.handle, "model");
   view_location = glGetUniformLocation(program.handle, "view");
   projection_location = glGetUniformLocation(program.handle, "projection");

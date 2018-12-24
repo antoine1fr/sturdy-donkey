@@ -26,7 +26,10 @@ struct Material: Resource
 {
   std::uint32_t program_id;
   int position_location;
+  int normal_location;
   int uv_location;
+  int tangent_location;
+  int bitangent_location;
   int model_location;
   int view_location;
   int projection_location;
@@ -42,7 +45,10 @@ struct Material: Resource
       std::uint32_t id,
       std::uint32_t program_id,
       int position_location,
+      int normal_location,
       int uv_location,
+      int tangent_location,
+      int bitangent_location,
       int model_location,
       int view_location,
       int projection_location,

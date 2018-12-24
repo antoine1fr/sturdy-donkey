@@ -50,7 +50,10 @@ class AMaterial
   public:
     uint32_t program_id;
     int position_location;
+    int normal_location;
     int uv_location;
+    int tangent_location;
+    int bitangent_location;
     int model_location;
     int view_location;
     int projection_location;
