@@ -54,6 +54,22 @@ struct SceneNode
   }
 };
 
+struct DirectionalLightNode: public SceneNode
+{
+
+  DirectionalLightNode(uint32_t pass_num,
+      const glm::vec3& position,
+      const glm::vec3& angles):
+    SceneNode(pass_num, position, angles)
+  {
+  }
+
+  DirectionalLightNode(const ::donkey::DirectionalLightNode& node):
+    SceneNode(node)
+  {
+  }
+};
+
 struct MeshNode: public SceneNode
 {
   uint32_t mesh_id;
@@ -128,10 +144,12 @@ class FramePacket
   private:
     Vector<MeshNode> mesh_nodes_;
     Vector<CameraNode> camera_nodes_;
+    Vector<DirectionalLightNode> directional_light_nodes_;
 
   public:
     FramePacket();
-    FramePacket(std::list<::donkey::MeshNode> mesh_nodes,
+    FramePacket(
+        std::list<::donkey::MeshNode> mesh_nodes,
         std::list<::donkey::CameraNode> camerea_nodes);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
@@ -153,8 +171,10 @@ class FramePacket
 
     const Vector<MeshNode>& get_mesh_nodes() const;
     const Vector<CameraNode>& get_camera_nodes() const;
+    const Vector<DirectionalLightNode>& get_directional_light_nodes() const;
     Vector<MeshNode>& get_mesh_nodes();
     Vector<CameraNode>& get_camera_nodes();
+    Vector<DirectionalLightNode>& get_directional_light_nodes();
 
     void sort_mesh_nodes();
 

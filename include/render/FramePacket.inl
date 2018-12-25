@@ -30,11 +30,14 @@ FramePacket<Allocator>::FramePacket()
 }
 
 template <template <typename> class Allocator>
-FramePacket<Allocator>::FramePacket(std::list<::donkey::MeshNode> mesh_nodes,
-    std::list<::donkey::CameraNode> camera_nodes)
+FramePacket<Allocator>::FramePacket(
+    std::list<::donkey::MeshNode> mesh_nodes,
+    std::list<::donkey::CameraNode> camera_nodes,
+    std::list<::donkey::DirectionalLightNode> directional_light_nodes)
 {
   copy_nodes_(mesh_nodes, mesh_nodes_);
   copy_nodes_(camera_nodes, camera_nodes_);
+  copy_nodes_(directional_light_nodes, directional_light_nodes_);
 }
 
 //void FramePacket::copy_mesh_nodes_(const std::list<::donkey::MeshNode>&)
@@ -124,6 +127,12 @@ const typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<
 }
 
 template <template <typename> class Allocator>
+const typename FramePacket<Allocator>::template Vector<DirectionalLightNode>& FramePacket<Allocator>::get_directional_light_nodes() const
+{
+  return directional_light_nodes_;
+}
+
+template <template <typename> class Allocator>
 typename FramePacket<Allocator>::template Vector<MeshNode>& FramePacket<Allocator>::get_mesh_nodes()
 {
   return mesh_nodes_;
@@ -133,6 +142,12 @@ template <template <typename> class Allocator>
 typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Allocator>::get_camera_nodes()
 {
   return camera_nodes_;
+}
+
+template <template <typename> class Allocator>
+typename FramePacket<Allocator>::template Vector<DirectionalLightNode>& FramePacket<Allocator>::get_directional_light_nodes()
+{
+  return directional_light_nodes_;
 }
 
 template <template <typename> class Allocator>
