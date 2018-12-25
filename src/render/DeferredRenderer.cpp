@@ -45,6 +45,7 @@ DeferredRenderer::DeferredRenderer(Window& window):
   frame_count(0),
   render_frame_index(0)
 {
+  window_.make_current(render_context_);
   int width = window.get_width();
   int height = window.get_height();
 
