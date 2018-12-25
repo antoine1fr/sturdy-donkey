@@ -37,10 +37,11 @@ struct Fragment
 vec4 compute_specular_term(Fragment fragment, Light light, Material material,
     vec3 camera_position)
 {
-  vec3 camera_direction = camera_position - fragment.position;
-  vec3 highlight = normalize(camera_direction + fragment.position.xyz);
-  float n_dot_h = pow(dot(fragment.normal, highlight), material.shininess);
-  return n_dot_h * light.specular;
+  vec3 camera_direction = normalize(-fragment.position);
+  vec3 highlight = reflect(light.direction, fragment.normal);
+  float specular =  pow(max(dot(camera_direction, highlight), 0.0),
+      material.shininess);
+  return specular * light.specular;
 }
 
 vec4 compute_diffuse_term(Fragment fragment, Light light, Material material)
