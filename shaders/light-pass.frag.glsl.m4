@@ -11,7 +11,7 @@ uniform vec4 light_diffuse; // Light's diffuse color.
 uniform vec4 light_specular; // Light's specular color.
 uniform vec2 gbuffer_projection_params; // x: near plane, y: far plane
 uniform mat4 gbuffer_projection_inverse;
-uniform mat4 view;
+uniform mat4 gbuffer_view;
 
 in vec2 fragment_uv;
 out vec4 color;

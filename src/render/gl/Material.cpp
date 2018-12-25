@@ -41,6 +41,8 @@ Material::Material(
   projection_location = glGetUniformLocation(program.handle, "projection");
   gbuffer_projection_inverse_location = glGetUniformLocation(program.handle,
     "gbuffer_projection_inverse");
+  gbuffer_view_location =
+    glGetUniformLocation(program.handle, "gbuffer_view");
   gbuffer_projection_params_location = glGetUniformLocation(program.handle,
     "gbuffer_projection_params");
   light_dir_location = glGetUniformLocation(program.handle,

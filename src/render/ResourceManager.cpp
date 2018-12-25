@@ -84,6 +84,7 @@ uint32_t ResourceManager::create_material(uint32_t gpu_program)
     gpu_material.projection_location,
     gpu_material.gbuffer_projection_inverse_location,
     gpu_material.gbuffer_projection_params_location,
+    gpu_material.gbuffer_view_location,
     gpu_material.ambient_location,
     gpu_material.light_dir_location,
     gpu_material.light_diffuse_location,

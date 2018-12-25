@@ -58,6 +58,7 @@ class AMaterial
     int view_location;
     int projection_location;
     int gbuffer_projection_inverse_location;
+    int gbuffer_view_location;
     int gbuffer_projection_params_location;
     int ambient_location;
     int light_dir_location;
