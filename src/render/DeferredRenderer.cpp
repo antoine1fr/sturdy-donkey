@@ -202,10 +202,25 @@ void DeferredRenderer::bind_camera_uniforms_(
 void DeferredRenderer::bind_light_uniforms_(
     CommandBucket& render_commands,
     const Material& material,
-    const glm::mat4& view) const
+    const glm::mat4& view,
+    const DirectionalLightNode* light_node) const
 {
   // bind light infos
-  glm::vec4 light_dir_shininess = view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+  glm::mat4 rotate_x = glm::rotate(
+			glm::mat4(1.0f),
+			glm::radians(light_node->angles.x),
+      glm::vec3(1.0f, 0.0f, 0.0f));
+  glm::mat4 rotate_y = glm::rotate(
+			rotate_x,
+			glm::radians(light_node->angles.y),
+      glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 rotate_z = glm::rotate(
+			rotate_y,
+			glm::radians(light_node->angles.z),
+      glm::vec3(0.0f, 0.0f, 1.0f));
+  glm::mat4 model = rotate_z * rotate_y * rotate_x;
+  glm::vec4 light_dir_shininess =
+    view * model * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
   light_dir_shininess.w = 10.0f;
   render_commands.bind_uniform(material.light_dir_location,
       light_dir_shininess);
@@ -222,6 +237,7 @@ void DeferredRenderer::render_mesh_node_(
     const MeshNode& mesh_node,
     const CameraNode& camera_node,
     const CameraNode* last_camera_node,
+    const DirectionalLightNode* light_node,
     CommandBucket& render_commands)
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
@@ -255,7 +271,8 @@ void DeferredRenderer::render_mesh_node_(
     // camera position in view-space is always the origin
     render_commands.bind_uniform(material.camera_position_location,
         glm::vec3(0.0f));
-    bind_light_uniforms_(render_commands, material, last_camera_node->view);
+    bind_light_uniforms_(render_commands, material, last_camera_node->view,
+        light_node);
   }
 
   // bind geometry
@@ -295,6 +312,7 @@ void DeferredRenderer::render()
         render_passes_[1],
         light_frame_packet_,
         &(gbuffer_frame_packet->get_camera_nodes()[0]),
+        gbuffer_frame_packet->get_directional_light_nodes(),
         render_commands);
     driver_.execute_commands(render_commands);
 

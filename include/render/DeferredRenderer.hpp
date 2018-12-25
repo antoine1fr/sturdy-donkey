@@ -71,6 +71,7 @@ class DeferredRenderer
         const MeshNode& mesh_node,
         const CameraNode& camera_node,
         const CameraNode* last_camera_node,
+        const DirectionalLightNode* light_node,
         CommandBucket& render_commands);
     template <template <typename> class Allocator>
       void render_geometry_(
@@ -79,6 +80,7 @@ class DeferredRenderer
           const Vector<MeshNode, Allocator>& mesh_nodes,
           const CameraNode& camera_node,
           const CameraNode* last_camera_node,
+          const DirectionalLightNode* light_node,
           CommandBucket& render_commands);
     template <template <typename> class Allocator>
       void execute_gbuffer_pass_(
@@ -92,11 +94,13 @@ class DeferredRenderer
           const RenderPass& render_pass,
           const FramePacket<std::allocator>& frame_packet,
           const CameraNode* last_camera_node,
+          const Vector<DirectionalLightNode, Allocator>& light_nodes,
           CommandBucket& render_commands);
     void bind_light_uniforms_(
         CommandBucket& render_commands,
         const Material& material,
-        const glm::mat4& view) const;
+        const glm::mat4& view,
+        const DirectionalLightNode* light_node) const;
     void bind_camera_uniforms_(
         CommandBucket& render_commands,
         const Material& material,
@@ -132,6 +136,7 @@ void DeferredRenderer::render_geometry_(
     const Vector<MeshNode, Allocator>& mesh_nodes,
     const CameraNode& camera_node,
     const CameraNode* last_camera_node,
+    const DirectionalLightNode* light_node,
     CommandBucket& render_commands)
 {
   for (auto mesh_node: mesh_nodes)
@@ -143,6 +148,7 @@ void DeferredRenderer::render_geometry_(
         mesh_node,
         camera_node,
         last_camera_node,
+        light_node,
         render_commands);
   }
 }
@@ -169,6 +175,7 @@ void DeferredRenderer::execute_gbuffer_pass_(
       frame_packet.get_mesh_nodes(),
       camera_node,
       nullptr,
+      nullptr,
       render_commands);
 }
 
@@ -178,6 +185,7 @@ void DeferredRenderer::execute_light_pass_(
     const RenderPass& render_pass,
     const FramePacket<std::allocator>& frame_packet,
     const CameraNode* last_camera_node,
+    const Vector<DirectionalLightNode, Allocator>& light_nodes,
     CommandBucket& render_commands)
 {
   render_commands.bind_framebuffer(render_pass.framebuffer_id);
@@ -188,6 +196,7 @@ void DeferredRenderer::execute_light_pass_(
   render_commands.set_viewport(camera_node.viewport_position,
       camera_node.viewport_size);
   render_commands.clear_framebuffer(render_pass.clear_color);
+  for (const DirectionalLightNode& light_node: light_nodes)
   {
     render_geometry_<std::allocator>(
         pass_num,
@@ -195,6 +204,7 @@ void DeferredRenderer::execute_light_pass_(
         frame_packet.get_mesh_nodes(),
         camera_node,
         last_camera_node,
+        &light_node,
         render_commands);
   }
 }
