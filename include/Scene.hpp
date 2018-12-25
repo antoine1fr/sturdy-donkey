@@ -42,6 +42,22 @@ struct SceneNode
   }
 };
 
+struct DirectionalLightNode: public SceneNode
+{
+
+  DirectionalLightNode(uint32_t pass_num,
+      const glm::vec3& position,
+      const glm::vec3& angles):
+    SceneNode(pass_num, position, angles)
+  {
+  }
+
+  DirectionalLightNode(const DirectionalLightNode& node):
+    SceneNode(node)
+  {
+  }
+};
+
 struct MeshNode: public SceneNode
 {
   uint32_t mesh_id;
@@ -93,6 +109,7 @@ class Scene
   private:
     std::list<MeshNode> mesh_nodes_;
     std::list<CameraNode> camera_nodes_;
+    std::list<DirectionalLightNode> directional_light_nodes_;
 
   public:
     MeshNode& create_mesh_node(uint32_t pass_num,
@@ -111,11 +128,17 @@ class Scene
         const glm::vec3& angles,
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
+    DirectionalLightNode& create_directional_light_node(
+        uint32_t pass_num,
+        const glm::vec3& position,
+        const glm::vec3& angles);
 
     const std::list<MeshNode>& get_mesh_nodes() const;
     const std::list<CameraNode>& get_camera_nodes() const;
+    const std::list<DirectionalLightNode>& get_directional_light_nodes() const;
     std::list<MeshNode>& get_mesh_nodes();
     std::list<CameraNode>& get_camera_nodes();
+    std::list<DirectionalLightNode>& get_directional_light_nodes();
 };
 
 }

@@ -31,6 +31,15 @@ MeshNode& Scene::create_mesh_node(uint32_t pass_num,
   return mesh_nodes_.front();
 }
 
+DirectionalLightNode& Scene::create_directional_light_node(
+    uint32_t pass_num,
+    const glm::vec3& position,
+    const glm::vec3& angles)
+{
+  directional_light_nodes_.push_front({pass_num, position, angles});
+  return directional_light_nodes_.front();
+}
+
 CameraNode& Scene::create_perspective_camera_node(uint32_t pass_num,
     float fov, float ratio,
     float near_plane, float far_plane, const glm::vec3& position,
@@ -98,6 +107,11 @@ const std::list<CameraNode>& Scene::get_camera_nodes() const
   return camera_nodes_;
 }
 
+const std::list<DirectionalLightNode>& Scene::get_directional_light_nodes() const
+{
+  return directional_light_nodes_;
+}
+
 std::list<MeshNode>& Scene::get_mesh_nodes()
 {
   return mesh_nodes_;
@@ -106,6 +120,11 @@ std::list<MeshNode>& Scene::get_mesh_nodes()
 std::list<CameraNode>& Scene::get_camera_nodes()
 {
   return camera_nodes_;
+}
+
+std::list<DirectionalLightNode>& Scene::get_directional_light_nodes()
+{
+  return directional_light_nodes_;
 }
 
 }
