@@ -105,10 +105,6 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
         screen_mesh_normals,
         screen_mesh_normals,
         screen_mesh_indices);
-
-  light_program_id_ = resource_manager_.load_gpu_program_from_file(
-    "shaders/simple.vert.glsl",
-    "shaders/light-pass.frag.glsl");
 }
 
 void DeferredRenderer::create_gbuffer_(int width, int height)
@@ -135,6 +131,9 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
 
 uint32_t DeferredRenderer::create_light_pass_material_()
 {
+  light_program_id_ = resource_manager_.load_gpu_program_from_file(
+    "shaders/simple.vert.glsl",
+    "shaders/light-pass.frag.glsl");
   std::uint32_t id = resource_manager_.create_material(light_program_id_);
   const render::Material& material = resource_manager_.get_material(id);
   render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
