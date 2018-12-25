@@ -64,8 +64,7 @@ void main()
 {
   vec3 normal = texture(normals_tex, fragment_uv).xyz;
   Material material = Material(light_dir.w);
-  vec3 light_dir = (view * vec4(light_dir.xyz, 0)).xyz;
-  Light light = Light(light_diffuse, light_specular, light_dir);
+  Light light = Light(light_diffuse, light_specular, light_dir.xyz);
   Fragment fragment = Fragment(unpack_position(), normal);
   vec4 diffuse_term = compute_diffuse_term(fragment, light, material);
   vec4 specular_term = compute_specular_term(fragment, light, material,
