@@ -67,12 +67,14 @@ class DeferredRenderer
         const RenderPass& render_pass,
         const MeshNode& mesh_node,
         const CameraNode& camera_node,
+        const CameraNode* last_camera_node,
         CommandBucket& render_commands);
     template <template <typename> class Allocator>
       void execute_pass_(
           size_t pass_num,
           const RenderPass& render_pass,
           const FramePacket<Allocator>& frame_packet,
+          const CameraNode* last_camera_node,
           CommandBucket& render_commands);
     void bind_light_uniforms_(
         CommandBucket& render_commands,
@@ -111,6 +113,7 @@ void DeferredRenderer::execute_pass_(
     size_t pass_num,
     const RenderPass& render_pass,
     const FramePacket<Allocator>& frame_packet,
+    const CameraNode* last_camera_node,
     CommandBucket& render_commands)
 {
   render_commands.bind_framebuffer(render_pass.framebuffer_id);
@@ -129,7 +132,8 @@ void DeferredRenderer::execute_pass_(
   {
     if (camera_node.pass_num != pass_num)
       continue;
-    render_mesh_node_(render_pass, mesh_node, camera_node, render_commands);
+    render_mesh_node_(render_pass, mesh_node, camera_node, last_camera_node,
+        render_commands);
   }
 }
 

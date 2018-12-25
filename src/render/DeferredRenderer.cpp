@@ -194,17 +194,9 @@ void DeferredRenderer::bind_camera_uniforms_(
     const Material& material,
     const CameraNode& camera_node) const
 {
-  glm::mat4 projection_inverse = glm::inverse(camera_node.projection);
-
   render_commands.bind_uniform(material.view_location, camera_node.view);
   render_commands.bind_uniform(material.projection_location,
       camera_node.projection);
-  render_commands.bind_uniform(material.projection_params_location,
-      glm::vec2(camera_node.near_plane, camera_node.far_plane));
-  render_commands.bind_uniform(material.projection_inverse_location,
-      projection_inverse);
-  render_commands.bind_uniform(material.camera_position_location,
-      camera_node.position);
 }
 
 void DeferredRenderer::bind_light_uniforms_(
@@ -227,6 +219,7 @@ void DeferredRenderer::render_mesh_node_(
     const RenderPass& render_pass,
     const MeshNode& mesh_node,
     const CameraNode& camera_node,
+    const CameraNode* last_camera_node,
     CommandBucket& render_commands)
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
@@ -246,7 +239,22 @@ void DeferredRenderer::render_mesh_node_(
   // bind built-in uniforms
   bind_mesh_uniforms_(render_commands, material, mesh_node);
   bind_camera_uniforms_(render_commands, material, camera_node);
-  bind_light_uniforms_(render_commands, material, camera_node.view);
+
+  // bind some useful data related to the camera used during gbuffer pass
+  if (last_camera_node)
+  {
+    glm::mat4 projection_inverse = glm::inverse(last_camera_node->projection);
+    render_commands.bind_uniform(material.gbuffer_projection_inverse_location,
+        projection_inverse);
+    render_commands.bind_uniform(material.gbuffer_view_location,
+        last_camera_node->view);
+    render_commands.bind_uniform(material.gbuffer_projection_params_location,
+        glm::vec2(last_camera_node->near_plane, last_camera_node->far_plane));
+    // camera position in view-space is always the origin
+    render_commands.bind_uniform(material.camera_position_location,
+        glm::vec3(0.0f));
+    bind_light_uniforms_(render_commands, material, last_camera_node->view);
+  }
 
   // bind geometry
   render_commands.bind_mesh(
@@ -276,8 +284,9 @@ void DeferredRenderer::render()
     signpost_start(1, 0, 0, 0, 0);
     CommandBucket render_commands;
     execute_pass_(0, render_passes_[0], *gbuffer_frame_packet,
-        render_commands);
-    execute_pass_(1, render_passes_[1], light_frame_packet_, render_commands);
+        nullptr, render_commands);
+    execute_pass_(1, render_passes_[1], light_frame_packet_,
+        &(gbuffer_frame_packet->get_camera_nodes()[0]), render_commands);
     driver_.execute_commands(render_commands);
 
     window_.swap();
