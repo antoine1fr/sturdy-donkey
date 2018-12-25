@@ -46,10 +46,9 @@ vec4 compute_specular_term(Fragment fragment, Light light, Material material,
 
 vec4 compute_diffuse_term(Fragment fragment, Light light, Material material)
 {
-  float n_dot_l = dot(normalize(fragment.normal), normalize(light.direction));
-  float intensity = max(0, n_dot_l);
-  vec4 albedo = texture(albedo_tex, fragment_uv);
-  return intensity * (albedo + light.diffuse);
+  vec3 light_dir = normalize(-light.direction);
+  float intensity = max(dot(fragment.normal, light_dir), 0);
+  return intensity * light.diffuse;
 }
 
 vec3 unpack_position()
