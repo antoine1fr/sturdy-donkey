@@ -330,6 +330,7 @@ uint32_t ResourceManager::create_texture(
     nullptr);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
   uint32_t id = textures_.size();
   textures_.push_back(Texture(texture));
   return id;
