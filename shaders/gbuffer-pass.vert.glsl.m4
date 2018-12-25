@@ -15,11 +15,12 @@ out mat3 tbn;
 
 void main()
 {
-  mat4 view_model = view * model;
-  gl_Position = projection * view_model * vec4(position, 1.0);
+  gl_Position = projection * view * model * vec4(position, 1.0);
   fragment_uv = uv;
-  vec3 t = normalize(vec3(view_model * vec4(tangent, 0.0)));
-  vec3 b = normalize(vec3(view_model * vec4(bitangent, 0.0)));
-  vec3 n = normalize(vec3(view_model * vec4(normal, 0.0)));
+  mat3 normal_matrix = mat3(transpose(inverse(view * model)));
+  vec3 t = normalize(vec3(normal_matrix * tangent));
+  vec3 n = normalize(vec3(normal_matrix * normal));
+  t = normalize(t - dot(t, n) * n);
+  vec3 b = cross(n, t);
   tbn = mat3(t, b, n);
 }
