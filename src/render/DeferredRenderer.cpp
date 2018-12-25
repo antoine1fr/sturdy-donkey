@@ -285,10 +285,17 @@ void DeferredRenderer::render()
 
     signpost_start(1, 0, 0, 0, 0);
     CommandBucket render_commands;
-    execute_pass_(0, render_passes_[0], *gbuffer_frame_packet,
-        nullptr, render_commands);
-    execute_pass_(1, render_passes_[1], light_frame_packet_,
-        &(gbuffer_frame_packet->get_camera_nodes()[0]), render_commands);
+    execute_gbuffer_pass_<StackAllocator>(
+        0,
+        render_passes_[0],
+        *gbuffer_frame_packet,
+        render_commands);
+    execute_light_pass_<StackAllocator>(
+        1,
+        render_passes_[1],
+        light_frame_packet_,
+        &(gbuffer_frame_packet->get_camera_nodes()[0]),
+        render_commands);
     driver_.execute_commands(render_commands);
 
     window_.swap();

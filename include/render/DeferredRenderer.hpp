@@ -63,6 +63,9 @@ class DeferredRenderer
     std::atomic_uint32_t render_frame_index;
 
   private:
+    template <typename T, template <typename> class Allocator>
+      using Vector = typename FramePacket<Allocator>::template Vector<T>;
+
     void render_mesh_node_(
         const RenderPass& render_pass,
         const MeshNode& mesh_node,
@@ -70,10 +73,24 @@ class DeferredRenderer
         const CameraNode* last_camera_node,
         CommandBucket& render_commands);
     template <template <typename> class Allocator>
-      void execute_pass_(
+      void render_geometry_(
+          size_t pass_num,
+          const RenderPass& render_pass,
+          const Vector<MeshNode, Allocator>& mesh_nodes,
+          const CameraNode& camera_node,
+          const CameraNode* last_camera_node,
+          CommandBucket& render_commands);
+    template <template <typename> class Allocator>
+      void execute_gbuffer_pass_(
           size_t pass_num,
           const RenderPass& render_pass,
           const FramePacket<Allocator>& frame_packet,
+          CommandBucket& render_commands);
+    template <template <typename> class Allocator>
+      void execute_light_pass_(
+          size_t pass_num,
+          const RenderPass& render_pass,
+          const FramePacket<std::allocator>& frame_packet,
           const CameraNode* last_camera_node,
           CommandBucket& render_commands);
     void bind_light_uniforms_(
@@ -109,30 +126,75 @@ class DeferredRenderer
 };
 
 template <template <typename> class Allocator>
-void DeferredRenderer::execute_pass_(
+void DeferredRenderer::render_geometry_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const Vector<MeshNode, Allocator>& mesh_nodes,
+    const CameraNode& camera_node,
+    const CameraNode* last_camera_node,
+    CommandBucket& render_commands)
+{
+  for (auto mesh_node: mesh_nodes)
+  {
+    if (camera_node.pass_num != pass_num)
+      continue;
+    render_mesh_node_(
+        render_pass,
+        mesh_node,
+        camera_node,
+        last_camera_node,
+        render_commands);
+  }
+}
+
+template <template <typename> class Allocator>
+void DeferredRenderer::execute_gbuffer_pass_(
     size_t pass_num,
     const RenderPass& render_pass,
     const FramePacket<Allocator>& frame_packet,
-    const CameraNode* last_camera_node,
     CommandBucket& render_commands)
 {
   render_commands.bind_framebuffer(render_pass.framebuffer_id);
 
-  if (render_pass.depth_test)
-    render_commands.set_depth_test(true);
-  else
-    render_commands.set_depth_test(false);
+  render_commands.set_depth_test(true);
 
   const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
   assert(camera_node.pass_num == pass_num);
   render_commands.set_viewport(camera_node.viewport_position,
       camera_node.viewport_size);
   render_commands.clear_framebuffer(render_pass.clear_color);
-  for (auto mesh_node: frame_packet.get_mesh_nodes())
+  render_geometry_<Allocator>(
+      pass_num,
+      render_pass,
+      frame_packet.get_mesh_nodes(),
+      camera_node,
+      nullptr,
+      render_commands);
+}
+
+template <template <typename> class Allocator>
+void DeferredRenderer::execute_light_pass_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const FramePacket<std::allocator>& frame_packet,
+    const CameraNode* last_camera_node,
+    CommandBucket& render_commands)
+{
+  render_commands.bind_framebuffer(render_pass.framebuffer_id);
+  render_commands.set_depth_test(false);
+
+  const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
+  assert(camera_node.pass_num == pass_num);
+  render_commands.set_viewport(camera_node.viewport_position,
+      camera_node.viewport_size);
+  render_commands.clear_framebuffer(render_pass.clear_color);
   {
-    if (camera_node.pass_num != pass_num)
-      continue;
-    render_mesh_node_(render_pass, mesh_node, camera_node, last_camera_node,
+    render_geometry_<std::allocator>(
+        pass_num,
+        render_pass,
+        frame_packet.get_mesh_nodes(),
+        camera_node,
+        last_camera_node,
         render_commands);
   }
 }
