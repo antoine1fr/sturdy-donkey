@@ -61,6 +61,7 @@ class ResourceManager: public AResourceManager
     GLenum sdl_to_gl_pixel_format_(SDL_PixelFormat* format);
     GLenum sdl_to_gl_pixel_type_(SDL_PixelFormat* format);
     GLuint load_texture_(const std::string& path);
+    SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 
   public:
     ResourceManager();

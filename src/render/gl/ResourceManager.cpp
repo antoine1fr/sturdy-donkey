@@ -181,6 +181,35 @@ GLenum ResourceManager::sdl_to_gl_pixel_type_(SDL_PixelFormat* format)
   }
 }
 
+SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
+{
+  uint32_t bpp = surface->format->BytesPerPixel;
+  int pitch = surface->pitch;
+  int width = surface->w;
+  int height = surface->h;
+  SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height,
+      32, SDL_PIXELFORMAT_RGBA32);
+  char* src_pixels = reinterpret_cast<char*>(surface->pixels);
+  char* dst_pixels = reinterpret_cast<char*>(new_surface->pixels);
+
+  SDL_LockSurface(new_surface);
+  SDL_LockSurface(surface);
+  for (int y = 0; y < height; ++y)
+  {
+    for (int x = 0; x < width; ++x)
+    {
+      uint32_t* src_ptr = (uint32_t*)(src_pixels
+        + (y * pitch) + x * bpp);
+      uint32_t* dst_ptr = (uint32_t*)(dst_pixels
+        + ((height - y) * pitch) + x * bpp);
+      *dst_ptr = *src_ptr;
+    }
+  }
+  SDL_UnlockSurface(surface);
+  SDL_UnlockSurface(new_surface);
+  return new_surface;
+}
+
 GLuint ResourceManager::load_texture_(const std::string& path)
 {
   SDL_Surface* img_surface = IMG_Load(path.c_str());
@@ -189,15 +218,17 @@ GLuint ResourceManager::load_texture_(const std::string& path)
   glBindTexture(GL_TEXTURE_2D, texture);
   GLenum format = sdl_to_gl_pixel_format_(img_surface->format);
   GLenum type = sdl_to_gl_pixel_type_(img_surface->format);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_surface->w, img_surface->h,
+  SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mirror_surface->w, mirror_surface->h,
       0, format, type, nullptr);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, img_surface->w, img_surface->h,
-      format, type, img_surface->pixels);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mirror_surface->w, mirror_surface->h,
+      format, type, mirror_surface->pixels);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   SDL_FreeSurface(img_surface);
+  SDL_FreeSurface(mirror_surface);
   return texture;
 }
 
