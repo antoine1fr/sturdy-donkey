@@ -1,12 +1,12 @@
 #version 410 core
 
 uniform sampler2D albedo_tex;
-uniform sampler2D normals_tex; // normals in view space
+uniform sampler2D normals_tex; // normals in gbuffer_view space
 uniform sampler2D depth_tex;
 uniform vec3 camera_position; // Eye's position in view space.
 uniform vec4 ambient;
-uniform vec4 light_dir; // Light's direction in view space in xyz. Material's
-                        // shininess in w.
+uniform vec4 light_dir; // Light's direction in gbuffer_view space in xyz.
+                        // Material's shininess in w.
 uniform vec4 light_diffuse; // Light's diffuse color.
 uniform vec4 light_specular; // Light's specular color.
 uniform vec2 gbuffer_projection_params; // x: near plane, y: far plane
