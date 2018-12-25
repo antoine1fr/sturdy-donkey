@@ -38,7 +38,8 @@ Material::Material(
   bitangent_location = glGetAttribLocation(program.handle, "bitangent");
   model_location = glGetUniformLocation(program.handle, "model");
   view_location = glGetUniformLocation(program.handle, "view");
-  projection_location = glGetUniformLocation(program.handle, "projection");
+  projection_location =
+    glGetUniformLocation(program.handle, "projection");
   gbuffer_projection_inverse_location = glGetUniformLocation(program.handle,
     "gbuffer_projection_inverse");
   gbuffer_view_location =
