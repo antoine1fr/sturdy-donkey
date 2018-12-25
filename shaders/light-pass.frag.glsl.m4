@@ -9,8 +9,8 @@ uniform vec4 light_dir; // Light's direction in view space in xyz. Material's
                         // shininess in w.
 uniform vec4 light_diffuse; // Light's diffuse color.
 uniform vec4 light_specular; // Light's specular color.
-uniform vec2 projection_params; // x: near plane, y: far plane
-uniform mat4 projection_inverse;
+uniform vec2 gbuffer_projection_params; // x: near plane, y: far plane
+uniform mat4 gbuffer_projection_inverse;
 uniform mat4 view;
 
 in vec2 fragment_uv;
@@ -55,7 +55,7 @@ vec3 unpack_position()
 {
   float depth = texture(depth_tex, fragment_uv).x;
   vec4 clip_space_position = vec4(fragment_uv * 2 - 1, depth, 1);
-  vec4 view_space_position = projection_inverse * clip_space_position;
+  vec4 view_space_position = gbuffer_projection_inverse * clip_space_position;
   vec3 position = view_space_position.xyz / view_space_position.w;
   return position;
 }

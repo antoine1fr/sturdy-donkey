@@ -33,8 +33,8 @@ struct Material: Resource
   int model_location;
   int view_location;
   int projection_location;
-  int projection_inverse_location;
-  int projection_params_location;
+  int gbuffer_projection_inverse_location;
+  int gbuffer_projection_params_location;
   int ambient_location;
   int light_dir_location;
   int light_diffuse_location;
@@ -52,8 +52,8 @@ struct Material: Resource
       int model_location,
       int view_location,
       int projection_location,
-      int projection_inverse_location,
-      int projection_params_location,
+      int gbuffer_projection_inverse_location,
+      int gbuffer_projection_params_location,
       int ambient_location,
       int light_dir_location,
       int light_diffuse_location,
@@ -66,8 +66,8 @@ struct Material: Resource
     model_location(model_location),
     view_location(view_location),
     projection_location(projection_location),
-    projection_inverse_location(projection_inverse_location),
-    projection_params_location(projection_params_location),
+    gbuffer_projection_inverse_location(gbuffer_projection_inverse_location),
+    gbuffer_projection_params_location(gbuffer_projection_params_location),
     ambient_location(ambient_location),
     light_dir_location(light_dir_location),
     light_diffuse_location(light_diffuse_location),
