@@ -150,7 +150,8 @@ class FramePacket
     FramePacket();
     FramePacket(
         std::list<::donkey::MeshNode> mesh_nodes,
-        std::list<::donkey::CameraNode> camerea_nodes);
+        std::list<::donkey::CameraNode> camerea_nodes,
+        std::list<::donkey::DirectionalLightNode> directional_light_nodes);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,

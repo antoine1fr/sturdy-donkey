@@ -54,7 +54,8 @@ void Game::prepare_frame_packet()
   void* ptr = buffer.allocate(sizeof(render::FramePacket<StackAllocator>));
   new (ptr) render::FramePacket<StackAllocator>(
       scene_.get_mesh_nodes(),
-      scene_.get_camera_nodes());
+      scene_.get_camera_nodes(),
+      scene_.get_directional_light_nodes());
   renderer_.frame_count++;
   BufferPool::next_push_head();
   renderer_.condition_variable.notify_one();
