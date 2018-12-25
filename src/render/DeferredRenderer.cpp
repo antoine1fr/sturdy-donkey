@@ -205,8 +205,10 @@ void DeferredRenderer::bind_light_uniforms_(
     const glm::mat4& view) const
 {
   // bind light infos
-  glm::vec4 light_dir = view * glm::vec4(-1.0f, 1.0f, -1.0f, 10.0f);
-  render_commands.bind_uniform(material.light_dir_location, light_dir);
+  glm::vec4 light_dir_shininess = view * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+  light_dir_shininess.w = 10.0f;
+  render_commands.bind_uniform(material.light_dir_location,
+      light_dir_shininess);
   render_commands.bind_uniform(material.ambient_location,
       glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
   render_commands.bind_uniform(material.light_diffuse_location,
