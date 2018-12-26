@@ -211,25 +211,19 @@ void Driver::bind_framebuffer_(const Command& command)
   assert(command.type == Command::Type::kBindFramebuffer);
   const BindFramebufferCommand& bind_command =
     static_cast<const BindFramebufferCommand&>(command);
-  GLuint framebuffer;
   uint32_t framebuffer_id = bind_command.framebuffer_id;
   if (framebuffer_id == std::numeric_limits<uint32_t>::max())
-    framebuffer = 0;
-  else
-    framebuffer = resource_manager_.get_framebuffer(framebuffer_id);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  check_gl_framebuffer(GL_FRAMEBUFFER);
-  if (framebuffer == 0)
   {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDrawBuffer(GL_BACK);
   }
   else
   {
-    std::array<GLenum, 2> targets {{
-      GL_COLOR_ATTACHMENT0,
-        GL_COLOR_ATTACHMENT1
-    }};
-    glDrawBuffers(targets.size(), &targets[0]);
+    const Framebuffer& framebuffer =
+      resource_manager_.get_framebuffer(framebuffer_id);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer.handle);
+    check_gl_framebuffer(GL_FRAMEBUFFER);
+    glDrawBuffers(framebuffer.descriptor.size(), &framebuffer.descriptor[0]);
   }
 }
 

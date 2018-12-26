@@ -29,6 +29,7 @@
 #include "render/gl/GpuProgram.hpp"
 #include "render/gl/Mesh.hpp"
 #include "render/gl/Texture.hpp"
+#include "render/gl/Framebuffer.hpp"
 
 namespace donkey {
 namespace render {
@@ -45,7 +46,7 @@ class ResourceManager: public AResourceManager
     std::vector<GpuProgram> gpu_programs_;
     std::vector<Mesh> meshes_;
     std::vector<Texture> textures_;
-    std::vector<GLuint> framebuffers_;
+    std::vector<Framebuffer> framebuffers_;
     std::vector<Material> materials_;
     static const std::vector<GLenum> pixel_internal_formats_;
     static const std::vector<GLenum> pixel_formats_;
@@ -94,7 +95,7 @@ class ResourceManager: public AResourceManager
     const GpuProgram& get_gpu_program(uint32_t id) const;
     const Mesh& get_mesh(uint32_t id) const;
     const Texture& get_texture(uint32_t id) const;
-    GLuint get_framebuffer(uint32_t id) const;
+    const Framebuffer& get_framebuffer(uint32_t id) const;
 };
 
 template <GLenum type>

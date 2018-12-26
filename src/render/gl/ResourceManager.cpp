@@ -57,7 +57,7 @@ void ResourceManager::cleanup()
 {
   for (auto framebuffer: framebuffers_)
   {
-    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteFramebuffers(1, &framebuffer.handle);
   }
   for (auto program: gpu_programs_)
   {
@@ -350,7 +350,7 @@ uint32_t ResourceManager::create_framebuffer(uint32_t albedo_rt_id,
       GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
   check_gl_framebuffer(GL_FRAMEBUFFER);
   uint32_t id = framebuffers_.size();
-  framebuffers_.push_back(framebuffer);
+  framebuffers_.push_back(Framebuffer(framebuffer, 2));
   return id;
 }
 
@@ -369,7 +369,7 @@ const Texture& ResourceManager::get_texture(uint32_t id) const
   return textures_[id];
 }
 
-GLuint ResourceManager::get_framebuffer(uint32_t id) const
+const Framebuffer& ResourceManager::get_framebuffer(uint32_t id) const
 {
   return framebuffers_[id];
 }
