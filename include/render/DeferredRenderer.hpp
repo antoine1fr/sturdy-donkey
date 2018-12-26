@@ -48,12 +48,16 @@ class DeferredRenderer
     AResourceManager& gpu_resource_manager_;
     ResourceManager resource_manager_;
     FramePacket<std::allocator> light_frame_packet_;
+    FramePacket<std::allocator> albedo_frame_packet_;
     std::thread* render_thread_;
     uint32_t light_program_id_;
+    uint32_t albedo_program_id_;
+    uint32_t light_rt_id_;
     uint32_t albedo_rt_id_;
     uint32_t normal_rt_id_;
     uint32_t depth_rt_id_;
     uint32_t gbuffer_id_;
+    uint32_t light_framebuffer_id_;
     uint32_t screen_mesh_id_;
 
   public:
@@ -96,6 +100,12 @@ class DeferredRenderer
           const CameraNode* last_camera_node,
           const Vector<DirectionalLightNode, Allocator>& light_nodes,
           CommandBucket& render_commands);
+    template <template <typename> class Allocator>
+      void execute_albedo_pass_(
+          size_t pass_num,
+          const RenderPass& render_pass,
+          const FramePacket<std::allocator>& frame_packet,
+          CommandBucket& render_commands);
     void bind_light_uniforms_(
         CommandBucket& render_commands,
         const Material& material,
@@ -111,8 +121,15 @@ class DeferredRenderer
         const MeshNode& mesh_node) const;
     void create_light_pass_mesh_(int width, int height);
     void create_gbuffer_(int width, int height);
-    uint32_t create_light_pass_material_();
+    void create_light_render_target_(int width, int height);
+    uint32_t create_light_material_(
+        const std::string& vertex_shader_path,
+        const std::string& fragment_shader_path);
+    uint32_t create_albedo_material_(
+        const std::string& vertex_shader_path,
+        const std::string& fragment_shader_path);
     void create_light_pass_frame_packet_(int width, int height);
+    void create_albedo_pass_frame_packet_(int width, int height);
 
   public:
     DeferredRenderer(Window& window);
@@ -190,23 +207,61 @@ void DeferredRenderer::execute_light_pass_(
 {
   render_commands.bind_framebuffer(render_pass.framebuffer_id);
   render_commands.set_depth_test(false);
+  render_commands.set_blending(true);
 
   const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
   assert(camera_node.pass_num == pass_num);
   render_commands.set_viewport(camera_node.viewport_position,
       camera_node.viewport_size);
   render_commands.clear_framebuffer(render_pass.clear_color);
+  const Vector<MeshNode, std::allocator>& mesh_nodes =
+    frame_packet.get_mesh_nodes();
+  // 1. accumulate diffuse terms and specular terms
   for (const DirectionalLightNode& light_node: light_nodes)
   {
-    render_geometry_<std::allocator>(
-        pass_num,
+    render_mesh_node_(
         render_pass,
-        frame_packet.get_mesh_nodes(),
+        mesh_nodes[0],
         camera_node,
         last_camera_node,
         &light_node,
         render_commands);
   }
+  // 2. add ambient term
+  render_mesh_node_(
+      render_pass,
+      mesh_nodes[1],
+      camera_node,
+      last_camera_node,
+      nullptr,
+      render_commands);
+  render_commands.set_blending(false);
+}
+
+template <template <typename> class Allocator>
+void DeferredRenderer::execute_albedo_pass_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const FramePacket<std::allocator>& frame_packet,
+    CommandBucket& render_commands)
+{
+  render_commands.bind_framebuffer(render_pass.framebuffer_id);
+  render_commands.set_depth_test(false);
+
+  const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
+  assert(camera_node.pass_num == pass_num);
+  render_commands.set_viewport(camera_node.viewport_position,
+      camera_node.viewport_size);
+  render_commands.clear_framebuffer(render_pass.clear_color);
+  const Vector<MeshNode, std::allocator>& mesh_nodes =
+    frame_packet.get_mesh_nodes();
+  render_mesh_node_(
+      render_pass,
+      mesh_nodes[0],
+      camera_node,
+      nullptr,
+      nullptr,
+      render_commands);
 }
 
 }

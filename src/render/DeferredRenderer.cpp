@@ -51,7 +51,9 @@ DeferredRenderer::DeferredRenderer(Window& window):
 
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
+  create_light_render_target_(width, height);
   create_light_pass_frame_packet_(width, height);
+  create_albedo_pass_frame_packet_(width, height);
   // register gbuffer pass
   add_render_pass({gbuffer_id_,
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
@@ -59,6 +61,12 @@ DeferredRenderer::DeferredRenderer(Window& window):
       true,
       false});
   // register light accumulation pass
+  add_render_pass({light_framebuffer_id_,
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      true});
+  // register final albedo pass
   add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -129,11 +137,30 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
       depth_rt.gpu_resource_id);
 }
 
-uint32_t DeferredRenderer::create_light_pass_material_()
+void DeferredRenderer::create_light_render_target_(int width, int height)
+{
+  light_rt_id_ =
+    resource_manager_.create_texture(width, height, pixel::Format::kRGBA,
+        pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
+  uint32_t depth_rt_id =
+    resource_manager_.create_texture(width, height,
+        pixel::Format::kDepthComponent,
+        pixel::InternalFormat::kDepthComponent24,
+        pixel::ComponentType::kFloat);
+  const Texture& light_rt = resource_manager_.get_texture(light_rt_id_);
+  const Texture& depth_rt = resource_manager_.get_texture(depth_rt_id);
+  light_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
+      light_rt.gpu_resource_id,
+      depth_rt.gpu_resource_id);
+}
+
+uint32_t DeferredRenderer::create_light_material_(
+    const std::string& vertex_shader_path,
+    const std::string& fragment_shader_path)
 {
   light_program_id_ = resource_manager_.load_gpu_program_from_file(
-    "shaders/simple.vert.glsl",
-    "shaders/light-pass.frag.glsl");
+    vertex_shader_path,
+    fragment_shader_path);
   std::uint32_t id = resource_manager_.create_material(light_program_id_);
   const render::Material& material = resource_manager_.get_material(id);
   render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
@@ -149,15 +176,60 @@ uint32_t DeferredRenderer::create_light_pass_material_()
   return id;
 }
 
+uint32_t DeferredRenderer::create_albedo_material_(
+    const std::string& vertex_shader_path,
+    const std::string& fragment_shader_path)
+{
+  albedo_program_id_ = resource_manager_.load_gpu_program_from_file(
+    vertex_shader_path,
+    fragment_shader_path);
+  std::uint32_t id = resource_manager_.create_material(albedo_program_id_);
+  const render::Material& material = resource_manager_.get_material(id);
+  render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
+      material.gpu_resource_id);
+  const Texture& albedo_rt = resource_manager_.get_texture(albedo_rt_id_);
+  const Texture& light_rt = resource_manager_.get_texture(light_rt_id_);
+  gpu_material.register_texture_slot("albedo_texture",
+      albedo_rt.gpu_resource_id, 0);
+  gpu_material.register_texture_slot("light_texture", light_rt.gpu_resource_id,
+      1);
+  return id;
+}
+
 void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
 {
   // create material for light accumulation pass
-  uint32_t rt1_material_id = create_light_pass_material_();
+  uint32_t light_material_id = create_light_material_(
+    "shaders/simple.vert.glsl",
+    "shaders/light-pass.frag.glsl");
+  uint32_t ambient_material_id = create_light_material_(
+    "shaders/simple.vert.glsl",
+    "shaders/ambient-pass.frag.glsl");
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
-      screen_mesh_id_, rt1_material_id);
+      screen_mesh_id_, light_material_id);
+  light_frame_packet_.create_mesh_node(1,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      screen_mesh_id_, ambient_material_id);
   light_frame_packet_.create_ortho_camera_node(1,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::tvec2<int>(0, 0),
+      glm::tvec2<GLsizei>(width, height));
+}
+
+void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
+{
+  uint32_t albedo_material_id = create_albedo_material_(
+    "shaders/simple.vert.glsl",
+    "shaders/albedo-pass.frag.glsl");
+  albedo_frame_packet_.create_mesh_node(2,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      screen_mesh_id_, albedo_material_id);
+  albedo_frame_packet_.create_ortho_camera_node(2,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::tvec2<int>(0, 0),
@@ -224,8 +296,6 @@ void DeferredRenderer::bind_light_uniforms_(
   light_dir_shininess.w = 10.0f;
   render_commands.bind_uniform(material.light_dir_location,
       light_dir_shininess);
-  render_commands.bind_uniform(material.ambient_location,
-      glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
   render_commands.bind_uniform(material.light_diffuse_location,
       glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
   render_commands.bind_uniform(material.light_specular_location,
@@ -271,8 +341,13 @@ void DeferredRenderer::render_mesh_node_(
     // camera position in view-space is always the origin
     render_commands.bind_uniform(material.camera_position_location,
         glm::vec3(0.0f));
-    bind_light_uniforms_(render_commands, material, last_camera_node->view,
-        light_node);
+    render_commands.bind_uniform(material.ambient_location,
+        glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    if (light_node)
+    {
+      bind_light_uniforms_(render_commands, material, last_camera_node->view,
+          light_node);
+    }
   }
 
   // bind geometry
@@ -313,6 +388,11 @@ void DeferredRenderer::render()
         light_frame_packet_,
         &(gbuffer_frame_packet->get_camera_nodes()[0]),
         gbuffer_frame_packet->get_directional_light_nodes(),
+        render_commands);
+    execute_albedo_pass_<StackAllocator>(
+        2,
+        render_passes_[2],
+        albedo_frame_packet_,
         render_commands);
     driver_.execute_commands(render_commands);
 
