@@ -353,6 +353,22 @@ uint32_t ResourceManager::create_framebuffer(uint32_t albedo_rt_id,
   return id;
 }
 
+uint32_t ResourceManager::create_framebuffer(uint32_t color_rt_id,
+    uint32_t depth_rt_id)
+{
+  GLuint framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+      GL_TEXTURE_2D, get_texture(color_rt_id).texture, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+      GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
+  check_gl_framebuffer(GL_FRAMEBUFFER);
+  uint32_t id = framebuffers_.size();
+  framebuffers_.push_back(Framebuffer(framebuffer, 1));
+  return id;
+}
+
 const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const
 {
   return gpu_programs_[id];

@@ -89,6 +89,9 @@ class ResourceManager: public AResourceManager
         uint32_t albedo_rt_id,
         uint32_t normal_rt_id,
         uint32_t depth_rt_id);
+    virtual uint32_t create_framebuffer(
+        uint32_t color_rt_id,
+        uint32_t depth_rt_id);
 
     virtual AMaterial& get_material(std::uint32_t id);
 
