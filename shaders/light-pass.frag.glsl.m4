@@ -1,10 +1,8 @@
 #version 410 core
 
-uniform sampler2D albedo_tex;
 uniform sampler2D normals_tex; // normals in gbuffer_view space
 uniform sampler2D depth_tex;
 uniform vec3 camera_position; // Eye's position in view space.
-uniform vec4 ambient;
 uniform vec4 light_dir; // Light's direction in gbuffer_view space in xyz.
                         // Material's shininess in w.
 uniform vec4 light_diffuse; // Light's diffuse color.
@@ -69,6 +67,5 @@ void main()
   vec4 diffuse_term = compute_diffuse_term(fragment, light, material);
   vec4 specular_term = compute_specular_term(fragment, light, material,
       camera_position);
-  vec4 albedo = texture(albedo_tex, fragment_uv);
-  color = albedo * (ambient + diffuse_term + specular_term);
+  color = diffuse_term + specular_term;
 }
