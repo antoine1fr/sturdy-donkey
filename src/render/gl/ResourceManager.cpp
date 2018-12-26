@@ -44,7 +44,6 @@ const std::vector<GLenum> ResourceManager::pixel_component_types_ = {
 
 ResourceManager::ResourceManager()
 {
-  framebuffers_.push_back(0);
   textures_.push_back(Texture(0));
 }
 
