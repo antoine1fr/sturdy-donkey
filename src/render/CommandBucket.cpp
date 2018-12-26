@@ -145,6 +145,12 @@ SetDepthTestCommand::SetDepthTestCommand(bool enable):
 {
 }
 
+SetBlendingCommand::SetBlendingCommand(bool enable):
+  Command(Type::kSetBlending),
+  enable(enable)
+{
+}
+
 ClearFramebufferCommand::ClearFramebufferCommand(const glm::vec3& color):
   Command(Type::kClearFramebuffer),
   color(color)
@@ -297,6 +303,15 @@ void CommandBucket::set_depth_test(bool enable)
   sorted_commands_.push_back({
     make_sort_key_(Command::Type::kSetDepthTest),
     set_depth_test_commands_.back()
+  });
+}
+
+void CommandBucket::set_blending(bool enable)
+{
+  set_blending_commands_.push_back(SetBlendingCommand(enable));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kSetBlending),
+    set_blending_commands_.back()
   });
 }
 

@@ -55,7 +55,8 @@ class Command
       kSetViewport,
       kSetDepthTest,
       kClearFramebuffer,
-      kBindGpuProgram
+      kBindGpuProgram,
+      kSetBlending
     };
 
     Type type;
@@ -174,6 +175,12 @@ struct SetDepthTestCommand: Command
   bool enable;
 };
 
+struct SetBlendingCommand: Command
+{
+  SetBlendingCommand(bool enable);
+  bool enable;
+};
+
 struct ClearFramebufferCommand: Command
 {
   ClearFramebufferCommand(const glm::vec3& color);
@@ -209,6 +216,7 @@ class CommandBucket
     std::list<DrawElementsCommand> draw_elements_commands_;
     std::list<BindFramebufferCommand> bind_framebuffer_commands_;
     std::list<SetDepthTestCommand> set_depth_test_commands_;
+    std::list<SetBlendingCommand> set_blending_commands_;
     std::list<SetViewportCommand> set_viewport_commands_;
     std::list<ClearFramebufferCommand> clear_framebuffer_commands_;
     std::list<BindGpuProgramCommand> bind_gpu_program_commands_;
@@ -242,6 +250,7 @@ class CommandBucket
         uint32_t program_id);
     void draw_elements(size_t count);
     void set_depth_test(bool enable);
+    void set_blending(bool enable);
     void set_viewport(const glm::tvec2<int>& position,
         const glm::tvec2<std::size_t>& size);
     void clear_framebuffer(const glm::vec3& color);

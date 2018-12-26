@@ -49,7 +49,8 @@ Driver::Driver():
       std::bind(&Driver::set_viewport_, this, _1),
       std::bind(&Driver::set_depth_test_, this, _1),
       std::bind(&Driver::clear_framebuffer_, this, _1),
-      std::bind(&Driver::bind_gpu_program_, this, _1)
+      std::bind(&Driver::bind_gpu_program_, this, _1),
+      std::bind(&Driver::set_blending_, this, _1)
   })
 {
   assert(gl3wInit() == 0);
@@ -241,6 +242,21 @@ void Driver::set_depth_test_(const Command& command)
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
+}
+
+void Driver::set_blending_(const Command& command)
+{
+  assert(command.type == Command::Type::kSetBlending);
+  const SetBlendingCommand& set_command =
+    static_cast<const SetBlendingCommand&>(command);
+  if (set_command.enable == true)
+  {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glBlendEquation(GL_FUNC_ADD);
+  }
+  else
+    glDisable(GL_BLEND);
 }
 
 void Driver::set_viewport_(const Command& command)

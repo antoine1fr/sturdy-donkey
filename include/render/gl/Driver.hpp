@@ -66,6 +66,7 @@ class Driver
     void draw_elements_(const Command& command);
     void set_viewport_(const Command& command);
     void set_depth_test_(const Command& command);
+    void set_blending_(const Command& command);
     void clear_framebuffer_(const Command& command);
 };
 
