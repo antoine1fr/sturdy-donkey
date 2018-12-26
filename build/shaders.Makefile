@@ -1,4 +1,5 @@
 SHADERS = \
+	shaders/albedo-pass.frag.glsl \
 	shaders/gbuffer-pass.frag.glsl \
 	shaders/gbuffer-pass.vert.glsl \
 	shaders/light-pass.frag.glsl \
