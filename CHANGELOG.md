@@ -1,5 +1,24 @@
 # Sturdy Donkey's change log
 
+## Version 0.4.0
+
+Here are the most notable changes:
+
+* Refactor a bit the makefiles.
+* Mirror images on x-axis when loading them from file.
+* Load normals when loading Wavefront meshes.
+* Compute tangent and bitangents when loading Wavefront meshes.
+* Fix per-pixel Phong shaders. Still, only directional lights are supported.
+* Add real support for directional lights in the renderer, instead of hard
+  coding them. The renderer technically supports as much directional lights
+  as there is space in the frame packet.
+
+For an exhaustive change log, please run the following command:
+
+```
+$ git log --oneline 0.3.0..0.4.0
+```
+
 ## Version 0.3.0
 
 Here are the most notable changes:
