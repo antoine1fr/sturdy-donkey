@@ -45,13 +45,20 @@ FramePacket<Allocator>::FramePacket(
 //}
 
 template <template <typename> class Allocator>
-MeshNode& FramePacket<Allocator>::create_mesh_node(uint32_t pass_num,
+MeshNode& FramePacket<Allocator>::create_mesh_node(
+    uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     uint32_t mesh_id,
     uint32_t material_id)
 {
-  mesh_nodes_.push_back({pass_num, position, angles, mesh_id, material_id});
+  mesh_nodes_.push_back({
+    pass_num,
+    position,
+    angles,
+    mesh_id,
+    material_id
+  });
   return mesh_nodes_.front();
 }
 
