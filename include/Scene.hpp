@@ -117,13 +117,18 @@ class Scene
         const glm::vec3& angles,
         uint32_t mesh_id,
         uint32_t material_id);
-    CameraNode& create_perspective_camera_node(uint32_t pass_num,
-        float fov, float ratio,
-        float near_plane, float far_plane, const glm::vec3& position,
+    CameraNode& create_perspective_camera_node(
+        uint32_t pass_num,
+        float fov,
+        float ratio,
+        float near_plane,
+        float far_plane,
+        const glm::vec3& position,
         const glm::vec3& angles,
         const glm::tvec2<int> viewport_position,
         const glm::tvec2<GLsizei> viewport_size);
-    CameraNode& create_ortho_camera_node(uint32_t pass_num,
+    CameraNode& create_ortho_camera_node(
+        uint32_t pass_num,
         const glm::vec3& position,
         const glm::vec3& angles,
         const glm::tvec2<int> viewport_position,
