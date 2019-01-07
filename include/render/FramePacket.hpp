@@ -56,16 +56,24 @@ struct SceneNode
 
 struct DirectionalLightNode: public SceneNode
 {
+  glm::vec4 diffuse;
+  glm::vec4 specular;
 
   DirectionalLightNode(uint32_t pass_num,
       const glm::vec3& position,
-      const glm::vec3& angles):
+      const glm::vec3& angles,
+      const glm::vec4& diffuse,
+      const glm::vec4& specular):
     SceneNode(pass_num, position, angles)
+    diffuse(diffuse),
+    specular(specular)
   {
   }
 
   DirectionalLightNode(const ::donkey::DirectionalLightNode& node):
-    SceneNode(node)
+    SceneNode(node),
+    diffuse(node.diffuse),
+    specular(node.specular)
   {
   }
 };

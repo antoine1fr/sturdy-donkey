@@ -44,16 +44,24 @@ struct SceneNode
 
 struct DirectionalLightNode: public SceneNode
 {
+  glm::vec4 diffuse;
+  glm::vec4 specular;
 
   DirectionalLightNode(uint32_t pass_num,
       const glm::vec3& position,
-      const glm::vec3& angles):
-    SceneNode(pass_num, position, angles)
+      const glm::vec3& angles,
+      const glm::vec4& diffuse,
+      const glm::vec4& specular):
+    SceneNode(pass_num, position, angles),
+    diffuse(diffuse),
+    specular(specular)
   {
   }
 
   DirectionalLightNode(const DirectionalLightNode& node):
-    SceneNode(node)
+    SceneNode(node),
+    diffuse(node.diffuse),
+    specular(node.specular)
   {
   }
 };
@@ -136,7 +144,9 @@ class Scene
     DirectionalLightNode& create_directional_light_node(
         uint32_t pass_num,
         const glm::vec3& position,
-        const glm::vec3& angles);
+        const glm::vec3& angles,
+        const glm::vec4& diffuse,
+        const glm::vec4& specular);
 
     const std::list<MeshNode>& get_mesh_nodes() const;
     const std::list<CameraNode>& get_camera_nodes() const;

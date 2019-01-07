@@ -39,9 +39,12 @@ MeshNode& Scene::create_mesh_node(uint32_t pass_num,
 DirectionalLightNode& Scene::create_directional_light_node(
     uint32_t pass_num,
     const glm::vec3& position,
-    const glm::vec3& angles)
+    const glm::vec3& angles,
+    const glm::vec4& diffuse,
+    const glm::vec4& specular)
 {
-  directional_light_nodes_.push_front({pass_num, position, angles});
+  directional_light_nodes_.push_front({pass_num, position, angles,
+      diffuse, specular});
   return directional_light_nodes_.front();
 }
 

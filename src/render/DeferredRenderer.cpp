@@ -297,9 +297,9 @@ void DeferredRenderer::bind_light_uniforms_(
   render_commands.bind_uniform(material.light_dir_location,
       light_dir_shininess);
   render_commands.bind_uniform(material.light_diffuse_location,
-      glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+      light_node->diffuse);
   render_commands.bind_uniform(material.light_specular_location,
-      glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+      light_node->specular);
 }
 
 void DeferredRenderer::render_mesh_node_(
