@@ -27,7 +27,12 @@ MeshNode& Scene::create_mesh_node(uint32_t pass_num,
     uint32_t mesh_id,
     uint32_t material_id)
 {
-  mesh_nodes_.push_front({pass_num, position, angles, mesh_id, material_id});
+  mesh_nodes_.push_front({
+    pass_num,
+    position,
+    angles,
+    mesh_id,
+    material_id});
   return mesh_nodes_.front();
 }
 
@@ -40,9 +45,13 @@ DirectionalLightNode& Scene::create_directional_light_node(
   return directional_light_nodes_.front();
 }
 
-CameraNode& Scene::create_perspective_camera_node(uint32_t pass_num,
-    float fov, float ratio,
-    float near_plane, float far_plane, const glm::vec3& position,
+CameraNode& Scene::create_perspective_camera_node(
+    uint32_t pass_num,
+    float fov,
+    float ratio,
+    float near_plane,
+    float far_plane,
+    const glm::vec3& position,
     const glm::vec3& angles,
     const glm::tvec2<int> viewport_position,
     const glm::tvec2<GLsizei> viewport_size)
@@ -66,7 +75,8 @@ CameraNode& Scene::create_perspective_camera_node(uint32_t pass_num,
   return camera_nodes_.front();
 }
 
-CameraNode& Scene::create_ortho_camera_node(uint32_t pass_num,
+CameraNode& Scene::create_ortho_camera_node(
+    uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
     const glm::tvec2<int> viewport_position,
