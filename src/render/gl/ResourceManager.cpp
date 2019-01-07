@@ -27,6 +27,7 @@ namespace gl {
 
 const std::vector<GLenum> ResourceManager::pixel_internal_formats_ = {
   GL_RGB8,
+  GL_RGB16F,
   GL_RGBA8,
   GL_DEPTH_COMPONENT24
 };

@@ -24,6 +24,7 @@ namespace pixel {
 enum class InternalFormat
 {
   kRGB8,
+  kRGB16F,
   kRGBA8,
   kDepthComponent24
 };
