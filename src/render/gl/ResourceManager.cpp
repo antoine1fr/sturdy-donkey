@@ -209,14 +209,17 @@ SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
 
 GLuint ResourceManager::load_texture_(const std::string& path)
 {
-  SDL_Surface* img_surface = IMG_Load(path.c_str());
+  SDL_Surface* original_surface = IMG_Load(path.c_str());
+  SDL_Surface* img_surface = SDL_ConvertSurfaceFormat(original_surface,
+      SDL_PIXELFORMAT_RGBA32, 0);
+  SDL_FreeSurface(original_surface);
   GLuint texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  GLenum format = sdl_to_gl_pixel_format_(img_surface->format);
-  GLenum type = sdl_to_gl_pixel_type_(img_surface->format);
+  GLenum format = GL_RGBA;
+  GLenum type = GL_UNSIGNED_BYTE;
   SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mirror_surface->w, mirror_surface->h,
+  glTexImage2D(GL_TEXTURE_2D, 0, format, mirror_surface->w, mirror_surface->h,
       0, format, type, nullptr);
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mirror_surface->w, mirror_surface->h,
       format, type, mirror_surface->pixels);
