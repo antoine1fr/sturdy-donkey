@@ -184,14 +184,12 @@ GLenum ResourceManager::sdl_to_gl_pixel_type_(SDL_PixelFormat* format)
 
 SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
 {
-  uint32_t bpp = surface->format->BytesPerPixel;
-  int pitch = surface->pitch;
   int width = surface->w;
   int height = surface->h;
   SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height,
       32, SDL_PIXELFORMAT_RGBA32);
-  char* src_pixels = reinterpret_cast<char*>(surface->pixels);
-  char* dst_pixels = reinterpret_cast<char*>(new_surface->pixels);
+  uint32_t* src_pixels = reinterpret_cast<uint32_t*>(surface->pixels);
+  uint32_t* dst_pixels = reinterpret_cast<uint32_t*>(new_surface->pixels);
 
   SDL_LockSurface(new_surface);
   SDL_LockSurface(surface);
@@ -199,10 +197,8 @@ SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
   {
     for (int x = 0; x < width; ++x)
     {
-      uint32_t* src_ptr = (uint32_t*)(src_pixels
-        + (y * pitch) + x * bpp);
-      uint32_t* dst_ptr = (uint32_t*)(dst_pixels
-        + ((height - y) * pitch) + x * bpp);
+      uint32_t* src_ptr = src_pixels + y * width + x;
+      uint32_t* dst_ptr = dst_pixels + ((height - y - 1) * width) + x;
       *dst_ptr = *src_ptr;
     }
   }
