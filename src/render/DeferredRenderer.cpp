@@ -122,7 +122,7 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
         pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
   normal_rt_id_ =
     resource_manager_.create_texture(width, height, pixel::Format::kRGBA,
-        pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
+        pixel::InternalFormat::kRGB16F, pixel::ComponentType::kFloat);
   depth_rt_id_ =
     resource_manager_.create_texture(width, height,
         pixel::Format::kDepthComponent,
