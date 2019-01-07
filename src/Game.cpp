@@ -31,7 +31,7 @@ namespace donkey
 {
 
 Game::Game(IResourceLoaderDelegate& resource_loader):
-  window_("Pipelined rendering demo", 1280, 720),
+  window_("Pipelined rendering demo", 1600, 900),
   renderer_(window_),
   render_context_(window_.get_render_context())
 {
