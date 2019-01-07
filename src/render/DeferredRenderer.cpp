@@ -213,11 +213,17 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       screen_mesh_id_, ambient_material_id);
-  light_frame_packet_.create_ortho_camera_node(1,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::tvec2<int>(0, 0),
-      glm::tvec2<GLsizei>(width, height));
+  light_frame_packet_.add_camera_node(
+      donkey::CameraNode(
+        1,
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::tvec2<int>(0, 0),
+        glm::tvec2<GLsizei>(width, height),
+        0.0f,
+        -1.0f,
+        1.0f,
+        donkey::CameraNode::Type::kOrthographic));
 }
 
 void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
@@ -229,11 +235,17 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       screen_mesh_id_, albedo_material_id);
-  albedo_frame_packet_.create_ortho_camera_node(2,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::tvec2<int>(0, 0),
-      glm::tvec2<GLsizei>(width, height));
+  albedo_frame_packet_.add_camera_node(
+      donkey::CameraNode(
+        2,
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::tvec2<int>(0, 0),
+        glm::tvec2<GLsizei>(width, height),
+        0.0f,
+        -1.0f,
+        1.0f,
+        donkey::CameraNode::Type::kOrthographic));
 }
 
 void DeferredRenderer::bind_mesh_uniforms_(

@@ -51,7 +51,6 @@ DirectionalLightNode& Scene::create_directional_light_node(
 CameraNode& Scene::create_perspective_camera_node(
     uint32_t pass_num,
     float fov,
-    float ratio,
     float near_plane,
     float far_plane,
     const glm::vec3& position,
@@ -59,22 +58,9 @@ CameraNode& Scene::create_perspective_camera_node(
     const glm::tvec2<int> viewport_position,
     const glm::tvec2<GLsizei> viewport_size)
 {
-  glm::mat4 projection = glm::perspectiveRH(glm::radians(fov), ratio, near_plane,
-      far_plane);
-  glm::mat4 view = glm::lookAtRH(
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, -1.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_x = glm::rotate(glm::mat4(1.0f), glm::radians(angles.x),
-      glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f), glm::radians(angles.y),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), glm::radians(angles.z),
-      glm::vec3(0.0f, 0.0f, 1.0f));
-  glm::mat4 translate = glm::translate(glm::mat4(1.0f), -position);
-  view = translate * rotate_z * rotate_y * rotate_x * view;
-  camera_nodes_.push_front(CameraNode(pass_num, position, angles, projection,
-      view, viewport_position, viewport_size, near_plane, far_plane));
+  camera_nodes_.push_front(CameraNode(pass_num, position, angles,
+        viewport_position, viewport_size, fov, near_plane, far_plane,
+        CameraNode::Type::kPerspective));
   return camera_nodes_.front();
 }
 
@@ -85,28 +71,9 @@ CameraNode& Scene::create_ortho_camera_node(
     const glm::tvec2<int> viewport_position,
     const glm::tvec2<GLsizei> viewport_size)
 {
-  glm::mat4 projection =
-    glm::orthoRH(
-        static_cast<float>(viewport_position.x),
-        static_cast<float>(viewport_size.x),
-        static_cast<float>(viewport_position.y),
-        static_cast<float>(viewport_size.y),
-        -1.0f,
-        1.0f);
-  glm::mat4 view = glm::lookAtRH(
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, -1.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_x = glm::rotate(glm::mat4(1.0f), glm::radians(angles.x),
-      glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f), glm::radians(angles.y),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), glm::radians(angles.z),
-      glm::vec3(0.0f, 0.0f, 1.0f));
-  glm::mat4 translate = glm::translate(glm::mat4(1.0f), -position);
-  view = translate * rotate_z * rotate_y * rotate_x * view;
-  camera_nodes_.push_front(CameraNode(pass_num, position, angles, projection,
-      view, viewport_position, viewport_size, -1.0f, 1.0f));
+  camera_nodes_.push_front(CameraNode(pass_num, position, angles,
+      viewport_position, viewport_size, 0.0f, -1.0f, 1.0f,
+      CameraNode::Type::kOrthographic));
   return camera_nodes_.front();
 }
 

@@ -20,6 +20,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "common.hpp"
 #include "Scene.hpp"
@@ -108,37 +109,69 @@ struct CameraNode: public SceneNode
   glm::mat4 view;
   glm::tvec2<int> viewport_position;
   glm::tvec2<GLsizei> viewport_size;
+  float fov;
   float near_plane;
   float far_plane;
 
-  CameraNode(uint32_t pass_num,
-      const glm::vec3& position,
-      const glm::vec3& angles,
-      const glm::mat4& projection,
-      const glm::mat4& view,
-      const glm::tvec2<int> viewport_position,
-      const glm::tvec2<GLsizei> viewport_size,
-      float near_plane,
-      float far_plane):
-    SceneNode(pass_num, position, angles),
-    projection(projection),
-    view(view),
-    viewport_position(viewport_position),
-    viewport_size(viewport_size),
-    near_plane(near_plane),
-    far_plane(far_plane)
+  void make_orthographic_matrices()
   {
+    projection =
+      glm::orthoRH(
+          static_cast<float>(viewport_position.x),
+          static_cast<float>(viewport_size.x),
+          static_cast<float>(viewport_position.y),
+          static_cast<float>(viewport_size.y),
+          -1.0f,
+          1.0f);
+    view = glm::lookAtRH(
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, -1.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotate_x = glm::rotate(glm::mat4(1.0f), glm::radians(angles.x),
+        glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f), glm::radians(angles.y),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), glm::radians(angles.z),
+        glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), -position);
+    view = translate * rotate_z * rotate_y * rotate_x * view;
+  }
+
+  void make_perspective_matrices()
+  {
+    float ratio = static_cast<float>(viewport_size.x)
+      / static_cast<float>(viewport_size.y);
+    projection = glm::perspectiveRH(
+        glm::radians(fov),
+        ratio,
+        near_plane,
+        far_plane);
+    view = glm::lookAtRH(
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, -1.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotate_x = glm::rotate(glm::mat4(1.0f), glm::radians(angles.x),
+        glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 rotate_y = glm::rotate(glm::mat4(1.0f), glm::radians(angles.y),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), glm::radians(angles.z),
+        glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), -position);
+    view = translate * rotate_z * rotate_y * rotate_x * view;
   }
 
   CameraNode(const ::donkey::CameraNode& node):
     SceneNode(node),
-    projection(node.projection),
-    view(node.view),
     viewport_position(node.viewport_position),
     viewport_size(node.viewport_size),
+    fov(node.fov),
     near_plane(node.near_plane),
     far_plane(node.far_plane)
   {
+    if (node.type == donkey::CameraNode::Type::kOrthographic)
+      make_orthographic_matrices();
+    else
+      make_perspective_matrices();
   }
 };
 
@@ -166,17 +199,8 @@ class FramePacket
         const glm::vec3& angles,
         uint32_t mesh_id,
         uint32_t material_id);
-    CameraNode& create_perspective_camera_node(uint32_t pass_num,
-        float fov, float ratio,
-        float near_plane, float far_plane, const glm::vec3& position,
-        const glm::vec3& angles,
-        const glm::tvec2<int> viewport_position,
-        const glm::tvec2<GLsizei> viewport_size);
-    CameraNode& create_ortho_camera_node(uint32_t pass_num,
-        const glm::vec3& position,
-        const glm::vec3& angles,
-        const glm::tvec2<int> viewport_position,
-        const glm::tvec2<GLsizei> viewport_size);
+
+    void add_camera_node(CameraNode&& camera_node);
 
     const Vector<MeshNode>& get_mesh_nodes() const;
     const Vector<CameraNode>& get_camera_nodes() const;

@@ -85,30 +85,35 @@ struct MeshNode: public SceneNode
 
 struct CameraNode: public SceneNode
 {
-  glm::mat4 projection;
-  glm::mat4 view;
   glm::tvec2<int> viewport_position;
   glm::tvec2<GLsizei> viewport_size;
+  float fov;
   float near_plane;
   float far_plane;
+
+  enum class Type
+  {
+    kOrthographic,
+    kPerspective
+  } type;
 
   CameraNode(
       uint32_t pass_num,
       const glm::vec3& position,
       const glm::vec3& angles,
-      const glm::mat4& projection,
-      const glm::mat4& view,
       const glm::tvec2<int> viewport_position,
       const glm::tvec2<GLsizei> viewport_size,
+      float fov,
       float near_plane,
-      float far_plane):
+      float far_plane,
+      Type type):
     SceneNode(pass_num, position, angles),
-    projection(projection),
-    view(view),
     viewport_position(viewport_position),
     viewport_size(viewport_size),
+    fov(fov),
     near_plane(near_plane),
-    far_plane(far_plane)
+    far_plane(far_plane),
+    type(type)
   {
   }
 };
@@ -129,7 +134,6 @@ class Scene
     CameraNode& create_perspective_camera_node(
         uint32_t pass_num,
         float fov,
-        float ratio,
         float near_plane,
         float far_plane,
         const glm::vec3& position,
