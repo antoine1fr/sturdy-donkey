@@ -38,8 +38,6 @@ class Buffer
     void* ptr() const;
     void set_pointer(void* ptr);
 
-    template <typename T>
-      T* placement_new();
 
   private:
     Size capacity_;
@@ -47,11 +45,5 @@ class Buffer
     char* ptr_;
 };
 
-template <typename T>
-T* Buffer::placement_new()
-{
-  void* ptr = allocate(sizeof(T));
-  return new (ptr) T;
-}
 
 }
