@@ -209,7 +209,8 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
-      screen_mesh_id_, light_material_id);
+      screen_mesh_id_,
+      light_material_id);
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
