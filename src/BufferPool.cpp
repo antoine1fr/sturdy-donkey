@@ -19,7 +19,6 @@
 #include <mach/vm_statistics.h>
 #include <cerrno>
 #include <unistd.h>
-#include <iostream>
 
 #include "BufferPool.hpp"
 
@@ -78,7 +77,6 @@ Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
   void* ptr = mmap(nullptr, capacity, prot, flags, -1, 0);
   if (ptr == MAP_FAILED)
     perror(nullptr);
-  std::cout << "Page size: " << getpagesize() << '\n';
   return new(ptr) Buffer(
     tag,
     id,
