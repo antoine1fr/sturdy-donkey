@@ -92,7 +92,8 @@ struct CameraNode: public SceneNode
   float near_plane;
   float far_plane;
 
-  CameraNode(uint32_t pass_num,
+  CameraNode(
+      uint32_t pass_num,
       const glm::vec3& position,
       const glm::vec3& angles,
       const glm::mat4& projection,
