@@ -39,6 +39,13 @@ namespace render {
 
 class DeferredRenderer
 {
+  public:
+    template <typename T>
+      using StackAllocator = StackAllocator<T, 4>;
+    typedef FramePacket<StackAllocator> StackFramePacket;
+    template <typename T, template <typename> class Allocator>
+      using Vector = typename FramePacket<Allocator>::template Vector<T>;
+
   private:
     std::vector<RenderPass> render_passes_;
     std::atomic_bool run_;
@@ -59,17 +66,10 @@ class DeferredRenderer
     uint32_t gbuffer_id_;
     uint32_t light_framebuffer_id_;
     uint32_t screen_mesh_id_;
-
-  public:
-    std::condition_variable condition_variable;
-    std::mutex mutex;
-    std::atomic_uint32_t frame_count;
-    std::atomic_uint32_t render_frame_index;
+    std::atomic_size_t simulated_frame_count_;
+    std::atomic_size_t rendered_frame_count_;
 
   private:
-    template <typename T, template <typename> class Allocator>
-      using Vector = typename FramePacket<Allocator>::template Vector<T>;
-
     void render_mesh_node_(
         const RenderPass& render_pass,
         const MeshNode& mesh_node,
@@ -130,6 +130,7 @@ class DeferredRenderer
         const std::string& fragment_shader_path);
     void create_light_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
+    size_t wait_for_work_();
 
   public:
     DeferredRenderer(Window& window);
@@ -144,6 +145,11 @@ class DeferredRenderer
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;
     void start_render_thread();
+    size_t get_rendered_frame_count() const;
+    size_t get_simulated_frame_count() const;
+    size_t get_simulated_frame_count_relaxed() const;
+    void increment_rendered_frame_count();
+    void increment_simulated_frame_count();
 };
 
 template <template <typename> class Allocator>

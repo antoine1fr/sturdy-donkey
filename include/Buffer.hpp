@@ -25,21 +25,32 @@ namespace donkey
 class Buffer
 {
   public:
+    enum class Tag
+    {
+      kFramePacket,
+      kCount
+    };
+
     typedef std::size_t Size;
 
-    Buffer(Size capacity);
+    Buffer(Tag tag, int id, Size capacity, char* ptr);
     Buffer(Buffer&& buffer) noexcept;
     Buffer(const Buffer&) = delete;
     ~Buffer();
-    void* allocate(Size size);
+    void* allocate(Size size, Size alignment);
     void reset();
     Size size() const;
     Size capacity() const;
     void* ptr() const;
     void set_pointer(void* ptr);
+    Tag get_tag() const;
+    int get_id() const;
+    void set_tag_and_id(Tag tag, int id);
 
 
   private:
+    Tag tag_;
+    int id_;
     Size capacity_;
     Size size_;
     char* ptr_;

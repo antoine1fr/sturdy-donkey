@@ -188,16 +188,26 @@ class FramePacket
       using Vector = std::vector<T, Allocator<T>>;
 
   private:
+    typedef Allocator<MeshNode> MeshNodeAllocator;
+    typedef Allocator<CameraNode> CameraNodeAllocator;
+    typedef Allocator<DirectionalLightNode> DirectionalLightNodeAllocator;
+
+  private:
+    MeshNodeAllocator mesh_node_allocator_;
+    CameraNodeAllocator camera_node_allocator_;
+    DirectionalLightNodeAllocator directional_light_node_allocator_;
     Vector<MeshNode> mesh_nodes_;
     Vector<CameraNode> camera_nodes_;
     Vector<DirectionalLightNode> directional_light_nodes_;
 
   public:
-    FramePacket();
+    FramePacket(const MeshNodeAllocator& allocator = Allocator<MeshNode>());
+
     FramePacket(
         std::list<::donkey::MeshNode> mesh_nodes,
         std::list<::donkey::CameraNode> camerea_nodes,
-        std::list<::donkey::DirectionalLightNode> directional_light_nodes);
+        std::list<::donkey::DirectionalLightNode> directional_light_nodes,
+        const MeshNodeAllocator& allocator = Allocator<MeshNode>());
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
@@ -216,6 +226,9 @@ class FramePacket
     Vector<DirectionalLightNode>& get_directional_light_nodes();
 
     void sort_mesh_nodes();
+
+  public:
+    static std::array<FramePacket<Allocator>*, 2> frame_packets;
 
   private:
     template <typename T, typename U>

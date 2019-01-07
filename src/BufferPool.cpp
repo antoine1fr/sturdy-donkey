@@ -15,48 +15,107 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <sys/mman.h>
+#include <mach/vm_statistics.h>
+#include <cerrno>
+#include <unistd.h>
+#include <iostream>
+
 #include "BufferPool.hpp"
 
 namespace donkey
 {
 
-std::atomic_size_t BufferPool::push_head_num_(0);
-std::atomic_size_t BufferPool::pop_head_num_(0);
-BufferPool::Vector BufferPool::instances_;
+BufferPool* BufferPool::instance_ = nullptr;
 
-Buffer& BufferPool::get_push_head()
+BufferPool::BufferPool():
+  used_buffers_(static_cast<size_t>(Buffer::Tag::kCount))
 {
-  return instances_[push_head_num_ % instances_.size()];
 }
 
-Buffer& BufferPool::get_buffer(Vector::size_type n)
+BufferPool* BufferPool::get_instance()
 {
-  return instances_[n % instances_.size()];
+  if (!instance_)
+    instance_ = new BufferPool;
+  return instance_;
 }
 
-Buffer& BufferPool::get_pop_head()
+void BufferPool::cleanup()
 {
-  return instances_[pop_head_num_ % instances_.size()];
+  if (instance_)
+    delete instance_;
 }
 
-std::size_t BufferPool::get_buffer_count()
+Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
 {
-  return push_head_num_ - pop_head_num_;
+  std::lock_guard<std::mutex> lock(mutex_);
+  size_t real_size = size + sizeof(Buffer);
+
+  // Loop through unused buffers by increasing capacity and return the first
+  // large enough to fulfil the request.
+  for (std::list<Buffer*>::iterator it = unused_buffers_.begin();
+      it != unused_buffers_.end();
+      it++)
+  {
+    if ((*it)->capacity() > real_size)
+    {
+      Buffer* buffer = *it;
+      unused_buffers_.erase(it);
+      buffer->reset();
+      buffer->set_tag_and_id(tag, id);
+      return buffer;
+    }
+  }
+
+  // No unused buffer meeting the requirements. Let's allocate one.
+  int prot = PROT_READ | PROT_WRITE;
+  int flags = MAP_ANONYMOUS | MAP_PRIVATE | VM_MAKE_TAG(VM_MEMORY_MALLOC_HUGE);
+  size_t block_size = getpagesize();
+  size_t block_count = real_size / block_size;
+  if (real_size % block_size > 0)
+    block_count += 1;
+  size_t capacity = block_count * block_size;
+  void* ptr = mmap(nullptr, capacity, prot, flags, -1, 0);
+  if (ptr == MAP_FAILED)
+    perror(nullptr);
+  std::cout << "Page size: " << getpagesize() << '\n';
+  return new(ptr) Buffer(
+    tag,
+    id,
+    capacity - sizeof(Buffer),
+    static_cast<char*>(ptr) + sizeof(Buffer));
 }
 
-void BufferPool::add_instance(Size size)
+void BufferPool::give_back_buffer(Buffer* buffer)
 {
-  instances_.push_back(Buffer(size));
+  std::lock_guard<std::mutex> lock(mutex_);
+  size_t t = static_cast<size_t>(buffer->get_tag());
+  used_buffers_[t].push_front(buffer);
 }
 
-void BufferPool::next_push_head()
+void BufferPool::free_tag(Buffer::Tag tag, int id)
 {
-  push_head_num_++;
-}
+  std::lock_guard<std::mutex> lock(mutex_);
 
-void BufferPool::next_pop_head()
-{
-  pop_head_num_++;
+  // get every used buffer corresponding to the tuple (tag, id)
+  std::list<std::list<Buffer*>::iterator> iterators;
+  size_t t = static_cast<size_t>(tag);
+  for (std::list<Buffer*>::iterator it = used_buffers_[t].begin();
+      it != used_buffers_[t].end();
+      it++)
+  {
+    Buffer* buffer = *it;
+    if (buffer->get_id() == id)
+      iterators.push_front(it);
+  }
+
+  // put back every buffer in unused buffer list
+  for (const std::list<Buffer*>::iterator& it: iterators)
+  {
+    Buffer* buffer = *it;
+    used_buffers_[id].erase(it);
+    unused_buffers_.push_front(buffer);
+  }
 }
 
 }

@@ -37,6 +37,9 @@ class Game
     render::DeferredRenderer renderer_;
     SDL_GLContext  render_context_;
 
+  private:
+    void wait_render_thread_() const;
+
   public:
     Game(IResourceLoaderDelegate& resourceLoader);
     ~Game();

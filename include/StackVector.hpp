@@ -23,7 +23,7 @@
 namespace donkey
 {
 
-template <typename T>
-using StackVector = std::vector<T, StackAllocator<T>>;
+template <typename T, size_t alignment>
+using StackVector = std::vector<T, StackAllocator<T, alignment>>;
 
 }

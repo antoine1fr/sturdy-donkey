@@ -26,6 +26,7 @@
 #include "Game.hpp"
 #include "Buffer.hpp"
 #include "BufferPool.hpp"
+#include "StackAllocator.hpp"
 
 namespace donkey
 {
@@ -37,8 +38,6 @@ Game::Game(IResourceLoaderDelegate& resource_loader):
 {
   window_.make_current(render_context_);
   resource_loader.load(window_, scene_, renderer_);
-  BufferPool::add_instance(10000000);
-  BufferPool::add_instance(10000000);
   renderer_.start_render_thread();
 }
 
@@ -46,19 +45,40 @@ Game::~Game()
 {
 }
 
+void Game::wait_render_thread_() const
+{
+  size_t simulated_frame_count = renderer_.get_simulated_frame_count();
+  size_t rendered_frame_count;
+  do
+  {
+    rendered_frame_count = renderer_.get_rendered_frame_count();
+  } while (rendered_frame_count < simulated_frame_count);
+}
+
+template <typename T>
+using StackAllocator_ = render::DeferredRenderer::StackAllocator<T>;
+using StackFramePacket = render::DeferredRenderer::StackFramePacket;
+
 void Game::prepare_frame_packet()
 {
   signpost_start(0, 2, 0, 0, 0);
-  Buffer& buffer = BufferPool::get_push_head();
-  buffer.reset();
-  void* ptr = buffer.allocate(sizeof(render::FramePacket<StackAllocator>));
-  new (ptr) render::FramePacket<StackAllocator>(
-      scene_.get_mesh_nodes(),
-      scene_.get_camera_nodes(),
-      scene_.get_directional_light_nodes());
-  renderer_.frame_count++;
-  BufferPool::next_push_head();
-  renderer_.condition_variable.notify_one();
+  size_t frame_packet_id = renderer_.get_simulated_frame_count_relaxed() % 2;
+  if (StackFramePacket::frame_packets[frame_packet_id] != nullptr)
+  {
+    BufferPool::get_instance()->free_tag(Buffer::Tag::kFramePacket,
+        frame_packet_id);
+  }
+  StackAllocator_<StackFramePacket> allocator(Buffer::Tag::kFramePacket,
+      frame_packet_id);
+  StackFramePacket* frame_packet = allocator.allocate(1);
+  new (frame_packet) StackFramePacket(
+    scene_.get_mesh_nodes(),
+    scene_.get_camera_nodes(),
+    scene_.get_directional_light_nodes(),
+    allocator);
+  StackFramePacket::frame_packets[frame_packet_id] = frame_packet;
+  wait_render_thread_();
+  renderer_.increment_simulated_frame_count();
   signpost_end(0, 2, 0, 0, 0);
 }
 
@@ -70,7 +90,6 @@ void Game::notify_exit()
 void Game::update(Duration elapsed_time)
 {
   signpost_start(0, 0, 0, 0, 0);
-  while (renderer_.frame_count - renderer_.render_frame_index > 1);
   signpost_end(0, 0, 0, 0, 0);
   signpost_start(0, 1, 0, 0, 0);
   const float rotation_speed = 50.0f;

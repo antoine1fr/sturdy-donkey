@@ -20,10 +20,12 @@
 namespace donkey
 {
 
-Buffer::Buffer(Size capacity):
+Buffer::Buffer(Tag tag, int id, Size capacity, char* ptr):
+  tag_(tag),
+  id_(id),
   capacity_(capacity),
   size_(0),
-  ptr_(nullptr)
+  ptr_(ptr)
 {
 }
 
@@ -42,16 +44,19 @@ Buffer::~Buffer()
     delete [] ptr_;
 }
 
-void* Buffer::allocate(Size size)
+void* Buffer::allocate(Size size, uintptr_t alignment)
 {
-  if (!ptr_)
-    ptr_ = new char[capacity_];
+  assert(alignment % 2 == 0);
+  uintptr_t mask = alignment - 1;
+  char* ptr = ptr_ + size_;
+  ptrdiff_t offset = alignment - (reinterpret_cast<uintptr_t>(ptr) & mask);
   Size new_size = size + size_;
   if (new_size < capacity_)
   {
-    void* ptr = static_cast<void*>(ptr_ + size_);
     size_ = new_size;
-    return ptr;
+    char* adjusted_ptr = ptr + offset;
+    *(adjusted_ptr - 1) = static_cast<uint8_t>(offset);
+    return static_cast<void*>(adjusted_ptr);
   }
   return nullptr;
 }
@@ -79,6 +84,22 @@ void* Buffer::ptr() const
 void Buffer::set_pointer(void* ptr)
 {
   ptr_ = static_cast<char*>(ptr);
+}
+
+void Buffer::set_tag_and_id(Tag tag, int id)
+{
+  tag_ = tag;
+  id_ = id;
+}
+
+Buffer::Tag Buffer::get_tag() const
+{
+  return tag_;
+}
+
+int Buffer::get_id() const
+{
+  return id_;
 }
 
 }

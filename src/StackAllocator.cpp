@@ -15,35 +15,14 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <atomic>
-#include <list>
 #include <vector>
-#include <mutex>
-
 #include "Buffer.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-class BufferPool
-{
-  private:
-    static BufferPool* instance_;
-    std::vector<std::list<Buffer*>> used_buffers_;
-    std::list<Buffer*> unused_buffers_;
-    std::mutex mutex_;
-
-  public:
-    static BufferPool* get_instance();
-    static void cleanup();
-    Buffer* get_buffer(Buffer::Tag tag, int id, size_t size);
-    void give_back_buffer(Buffer* buffer);
-    void free_tag(Buffer::Tag tag, int id);
-
-  private:
-    BufferPool();
-};
+thread_local std::vector<Buffer*> buffers_(
+    static_cast<size_t>(Buffer::Tag::kCount),
+    nullptr);
 
 }
+

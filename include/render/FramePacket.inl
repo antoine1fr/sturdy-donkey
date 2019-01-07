@@ -24,8 +24,22 @@ namespace donkey
 namespace render
 {
 
+
 template <template <typename> class Allocator>
-FramePacket<Allocator>::FramePacket()
+std::array<FramePacket<Allocator>*, 2>
+  FramePacket<Allocator>::frame_packets = {
+    nullptr,
+    nullptr
+  };
+
+template <template <typename> class Allocator>
+FramePacket<Allocator>::FramePacket(const MeshNodeAllocator& allocator):
+  mesh_node_allocator_(allocator),
+  camera_node_allocator_(allocator),
+  directional_light_node_allocator_(allocator),
+  mesh_nodes_(mesh_node_allocator_),
+  camera_nodes_(camera_node_allocator_),
+  directional_light_nodes_(directional_light_node_allocator_)
 {
 }
 
@@ -33,7 +47,14 @@ template <template <typename> class Allocator>
 FramePacket<Allocator>::FramePacket(
     std::list<::donkey::MeshNode> mesh_nodes,
     std::list<::donkey::CameraNode> camera_nodes,
-    std::list<::donkey::DirectionalLightNode> directional_light_nodes)
+    std::list<::donkey::DirectionalLightNode> directional_light_nodes,
+    const MeshNodeAllocator& allocator):
+  mesh_node_allocator_(allocator),
+  camera_node_allocator_(allocator),
+  directional_light_node_allocator_(allocator),
+  mesh_nodes_(mesh_node_allocator_),
+  camera_nodes_(camera_node_allocator_),
+  directional_light_nodes_(directional_light_node_allocator_)
 {
   copy_nodes_(mesh_nodes, mesh_nodes_);
   copy_nodes_(camera_nodes, camera_nodes_);

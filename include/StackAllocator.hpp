@@ -17,48 +17,34 @@
 
 #pragma once
 
+#include <vector>
+
+#include "Buffer.hpp"
 #include "BufferPool.hpp"
 
 namespace donkey
 {
 
-template <typename T>
+template <typename T, std::size_t alignment>
 struct StackAllocator
 {
   typedef T value_type;
   typedef T* pointer;
   typedef std::size_t size_type;
 
-  StackAllocator()
-  {
-  }
+  Buffer::Tag tag;
+  int id;
 
-  ~StackAllocator()
-  {
-  }
+  StackAllocator(Buffer::Tag tag, int id);
 
-  pointer allocate(size_type size)
-  {
-    Buffer& buffer = BufferPool::get_push_head();
-    return static_cast<pointer>(buffer.allocate(size * sizeof(T)));
-  }
+  template <typename U>
+    StackAllocator(const StackAllocator<U, alignment>& allocator);
 
-  void deallocate(pointer, size_type size)
-  {
-    // Nothing to do.
-  }
-
-  void* get_pointer() const
-  {
-    Buffer& buffer = BufferPool::get_push_head();
-    return buffer.ptr();
-  }
-
-  void rollback(pointer pointer)
-  {
-    Buffer& buffer = BufferPool::get_push_head();
-    buffer.set_pointer(pointer);
-  }
+  ~StackAllocator();
+  pointer allocate(size_type size);
+  void deallocate(pointer, size_type size);
 };
 
 }
+
+#include "StackAllocator.inl"

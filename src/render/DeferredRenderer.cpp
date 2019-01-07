@@ -41,8 +41,8 @@ DeferredRenderer::DeferredRenderer(Window& window):
   gpu_resource_manager_(driver_.get_resource_manager()),
   resource_manager_(gpu_resource_manager_),
   render_thread_(nullptr),
-  frame_count(0),
-  render_frame_index(0)
+  simulated_frame_count_(0),
+  rendered_frame_count_(0)
 {
   window_.make_current(render_context_);
   int width = window.get_width();
@@ -378,17 +378,28 @@ void DeferredRenderer::render_mesh_node_(
   render_commands.draw_elements(mesh.index_count);
 }
 
+size_t DeferredRenderer::wait_for_work_()
+{
+  size_t simulated_frame_count;
+  size_t rendered_frame_count =
+    rendered_frame_count_.load(std::memory_order_relaxed);
+  do
+  {
+    simulated_frame_count = get_simulated_frame_count();
+  } while (rendered_frame_count == simulated_frame_count);
+  return rendered_frame_count;
+}
+
 void DeferredRenderer::render()
 {
   window_.make_current(render_context_);
   while (run_)
   {
-    std::unique_lock<std::mutex> frame_lock(mutex);
-    condition_variable.wait(frame_lock,
-        [this]{return frame_count > render_frame_index;});
-    Buffer& buffer = BufferPool::get_pop_head();
-    FramePacket<StackAllocator>* gbuffer_frame_packet =
-      static_cast<FramePacket<StackAllocator>*>(buffer.ptr());;
+    // Wait for simulation to produce a frame packet.
+    size_t rendered_frame_count = wait_for_work_();
+    size_t frame_packet_id = rendered_frame_count % 2;
+    StackFramePacket* gbuffer_frame_packet =
+      StackFramePacket::frame_packets[frame_packet_id];
     gbuffer_frame_packet->sort_mesh_nodes();
 
     signpost_start(1, 0, 0, 0, 0);
@@ -413,8 +424,7 @@ void DeferredRenderer::render()
     driver_.execute_commands(render_commands);
 
     window_.swap();
-    render_frame_index++;
-    BufferPool::next_pop_head();
+    increment_rendered_frame_count();
     signpost_end(1, 0, 0, 0, 0);
   }
 }
@@ -462,6 +472,31 @@ uint32_t DeferredRenderer::get_depth_rt_id() const
 void DeferredRenderer::start_render_thread()
 {
   render_thread_ = new std::thread([this](){ this->render(); });
+}
+
+size_t DeferredRenderer::get_rendered_frame_count() const
+{
+  return rendered_frame_count_.load(std::memory_order_acquire);
+}
+
+size_t DeferredRenderer::get_simulated_frame_count() const
+{
+  return simulated_frame_count_.load(std::memory_order_acquire);
+}
+
+size_t DeferredRenderer::get_simulated_frame_count_relaxed() const
+{
+  return simulated_frame_count_.load(std::memory_order_relaxed);
+}
+
+void DeferredRenderer::increment_rendered_frame_count()
+{
+  rendered_frame_count_.fetch_add(1);
+}
+
+void DeferredRenderer::increment_simulated_frame_count()
+{
+  simulated_frame_count_.fetch_add(1);
 }
 
 }
