@@ -38,6 +38,7 @@ const std::vector<GLenum> ResourceManager::pixel_formats_ = {
 };
 
 const std::vector<GLenum> ResourceManager::pixel_component_types_ = {
+  GL_BYTE,
   GL_UNSIGNED_BYTE,
   GL_FLOAT
 };

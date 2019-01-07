@@ -37,6 +37,7 @@ enum class Format
 
 enum class ComponentType
 {
+  kByte,
   kUnsignedByte,
   kFloat
 };
