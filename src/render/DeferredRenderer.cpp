@@ -208,10 +208,12 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, light_material_id);
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, ambient_material_id);
   light_frame_packet_.add_camera_node(
       donkey::CameraNode(
@@ -234,6 +236,7 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
   albedo_frame_packet_.create_mesh_node(2,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, albedo_material_id);
   albedo_frame_packet_.add_camera_node(
       donkey::CameraNode(
@@ -269,7 +272,8 @@ void DeferredRenderer::bind_mesh_uniforms_(
   glm::mat4 translate = glm::translate(
 			glm::mat4(1.0f),
 			mesh_node.position);
-  glm::mat4 model = translate * rotate_z * rotate_y * rotate_x;
+  glm::mat4 scale = glm::scale(glm::mat4(1.0f), mesh_node.scale);
+  glm::mat4 model = translate * rotate_z * rotate_y * rotate_x * scale;
   render_commands.bind_uniform(material.model_location, model);
 }
 

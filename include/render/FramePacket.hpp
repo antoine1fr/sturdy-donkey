@@ -37,20 +37,24 @@ struct SceneNode
   uint32_t pass_num;
   glm::vec3 position;
   glm::vec3 angles;
+  glm::vec3 scale;
 
   SceneNode(uint32_t pass_num,
       const glm::vec3& position,
-      const glm::vec3& angles):
+      const glm::vec3& angles,
+      const glm::vec3& scale):
     pass_num(pass_num),
     position(position),
-    angles(angles)
+    angles(angles),
+    scale(scale)
   {
   }
 
   SceneNode(const ::donkey::SceneNode& node):
     pass_num(node.pass_num),
     position(node.position),
-    angles(node.angles)
+    angles(node.angles),
+    scale(node.scale)
   {
   }
 };
@@ -65,7 +69,7 @@ struct DirectionalLightNode: public SceneNode
       const glm::vec3& angles,
       const glm::vec4& diffuse,
       const glm::vec4& specular):
-    SceneNode(pass_num, position, angles)
+    SceneNode(pass_num, position, angles, glm::vec3(1.0f)),
     diffuse(diffuse),
     specular(specular)
   {
@@ -87,9 +91,10 @@ struct MeshNode: public SceneNode
   MeshNode(uint32_t pass_num,
       const glm::vec3& position,
       const glm::vec3& angles,
+      const glm::vec3& scale,
       uint32_t mesh_id,
       uint32_t material_id):
-    SceneNode(pass_num, position, angles),
+    SceneNode(pass_num, position, angles, scale),
     mesh_id(mesh_id),
     material_id(material_id)
   {
@@ -197,6 +202,7 @@ class FramePacket
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
         const glm::vec3& angles,
+        const glm::vec3& scale,
         uint32_t mesh_id,
         uint32_t material_id);
 

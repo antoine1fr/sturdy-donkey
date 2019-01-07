@@ -24,6 +24,7 @@ namespace donkey
 MeshNode& Scene::create_mesh_node(uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
+    const glm::vec3& scale,
     uint32_t mesh_id,
     uint32_t material_id)
 {
@@ -31,6 +32,7 @@ MeshNode& Scene::create_mesh_node(uint32_t pass_num,
     pass_num,
     position,
     angles,
+    scale,
     mesh_id,
     material_id});
   return mesh_nodes_.front();

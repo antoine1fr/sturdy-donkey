@@ -49,6 +49,7 @@ MeshNode& FramePacket<Allocator>::create_mesh_node(
     uint32_t pass_num,
     const glm::vec3& position,
     const glm::vec3& angles,
+    const glm::vec3& scale,
     uint32_t mesh_id,
     uint32_t material_id)
 {
@@ -56,6 +57,7 @@ MeshNode& FramePacket<Allocator>::create_mesh_node(
     pass_num,
     position,
     angles,
+    scale,
     mesh_id,
     material_id
   });
