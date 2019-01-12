@@ -38,7 +38,6 @@ DeferredRenderer::DeferredRenderer(
     Window* window,
     gl::Driver* driver,
     IResourceLoaderDelegate& resource_loader):
-  run_(true),
   window_(window),
   render_context_(window->get_render_context()),
   driver_(driver),
@@ -449,11 +448,6 @@ void DeferredRenderer::add_render_pass(const RenderPass& render_pass)
 void DeferredRenderer::add_render_pass(RenderPass&& render_pass)
 {
   render_passes_.push_back(render_pass);
-}
-
-void DeferredRenderer::notify_exit()
-{
-  run_ = false;
 }
 
 uint32_t DeferredRenderer::get_albedo_rt_id() const

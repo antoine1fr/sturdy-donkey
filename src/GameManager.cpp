@@ -76,7 +76,6 @@ void GameManager::simulation_loop()
       if (event.type == SDL_QUIT)
       {
         run_.store(false, std::memory_order_relaxed);
-        renderer_->notify_exit();
       }
     }
 

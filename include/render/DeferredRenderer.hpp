@@ -49,7 +49,6 @@ class DeferredRenderer
 
   private:
     std::vector<RenderPass> render_passes_;
-    std::atomic_bool run_;
     Window* window_;
     SDL_GLContext render_context_;
     gl::Driver* driver_;
@@ -144,7 +143,6 @@ class DeferredRenderer
     AResourceManager& get_gpu_resource_manager();
     void add_render_pass(const RenderPass& render_pass);
     void add_render_pass(RenderPass&& render_pass);
-    void notify_exit();
     uint32_t get_albedo_rt_id() const;
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;
