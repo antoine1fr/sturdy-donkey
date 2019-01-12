@@ -30,6 +30,7 @@
 #include "render/gl/Mesh.hpp"
 #include "render/gl/Texture.hpp"
 #include "render/gl/Framebuffer.hpp"
+#include "render/gl/State.hpp"
 
 namespace donkey {
 namespace render {
@@ -48,6 +49,7 @@ class ResourceManager: public AResourceManager
     std::vector<Texture> textures_;
     std::vector<Framebuffer> framebuffers_;
     std::vector<Material> materials_;
+    std::vector<State> states_;
     static const std::vector<GLenum> pixel_internal_formats_;
     static const std::vector<GLenum> pixel_formats_;
     static const std::vector<GLenum> pixel_component_types_;
@@ -62,6 +64,7 @@ class ResourceManager: public AResourceManager
     GLenum sdl_to_gl_pixel_format_(SDL_PixelFormat* format);
     GLenum sdl_to_gl_pixel_type_(SDL_PixelFormat* format);
     GLuint load_texture_(const std::string& path);
+    GLuint load_texture_(uint8_t* pixels, int width, int height);
     SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 
   public:
@@ -69,6 +72,10 @@ class ResourceManager: public AResourceManager
     virtual ~ResourceManager();
     virtual void cleanup();
     virtual uint32_t load_texture_from_file(const std::string& path);
+    virtual uint32_t load_texture_from_memory(
+        uint8_t* pixels,
+        int width,
+        int height);
     virtual uint32_t load_gpu_program_from_file(const std::string& vs_path,
       const std::string& fs_path);
     virtual uint32_t create_mesh(
@@ -93,12 +100,15 @@ class ResourceManager: public AResourceManager
         uint32_t color_rt_id,
         uint32_t depth_rt_id);
 
+    virtual uint32_t create_state(const render::State& state);
+
     virtual AMaterial& get_material(std::uint32_t id);
 
     const GpuProgram& get_gpu_program(uint32_t id) const;
     const Mesh& get_mesh(uint32_t id) const;
     const Texture& get_texture(uint32_t id) const;
     const Framebuffer& get_framebuffer(uint32_t id) const;
+    const State& get_state(uint32_t id) const;
 };
 
 template <GLenum type>

@@ -53,7 +53,7 @@ class DeferredRenderer
     SDL_GLContext render_context_;
     gl::Driver* driver_;
     AResourceManager& gpu_resource_manager_;
-    ResourceManager resource_manager_;
+    ResourceManager* resource_manager_;
     FramePacket<std::allocator> light_frame_packet_;
     FramePacket<std::allocator> albedo_frame_packet_;
     std::thread* render_thread_;
@@ -66,8 +66,6 @@ class DeferredRenderer
     uint32_t gbuffer_id_;
     uint32_t light_framebuffer_id_;
     uint32_t screen_mesh_id_;
-    std::atomic_size_t simulated_frame_count_;
-    std::atomic_size_t rendered_frame_count_;
 
   private:
     void render_mesh_node_(
@@ -130,27 +128,20 @@ class DeferredRenderer
         const std::string& fragment_shader_path);
     void create_light_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
-    size_t wait_for_work_();
 
   public:
     DeferredRenderer(
         Window* window,
         gl::Driver* driver,
-        IResourceLoaderDelegate& resource_loader);
+        ResourceManager* resource_manager);
     ~DeferredRenderer();
-    void render();
-    ResourceManager& get_resource_manager();
-    AResourceManager& get_gpu_resource_manager();
+    void render(StackFramePacket* frame_packet,
+        CommandBucket& render_commands);
     void add_render_pass(const RenderPass& render_pass);
     void add_render_pass(RenderPass&& render_pass);
     uint32_t get_albedo_rt_id() const;
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;
-    size_t get_rendered_frame_count() const;
-    size_t get_simulated_frame_count() const;
-    size_t get_simulated_frame_count_relaxed() const;
-    void increment_rendered_frame_count();
-    void increment_simulated_frame_count();
 };
 
 template <template <typename> class Allocator>

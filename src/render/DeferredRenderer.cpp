@@ -37,15 +37,13 @@ namespace render
 DeferredRenderer::DeferredRenderer(
     Window* window,
     gl::Driver* driver,
-    IResourceLoaderDelegate& resource_loader):
+    ResourceManager* resource_manager):
   window_(window),
   render_context_(window->get_render_context()),
   driver_(driver),
   gpu_resource_manager_(driver_->get_resource_manager()),
-  resource_manager_(gpu_resource_manager_),
-  render_thread_(nullptr),
-  simulated_frame_count_(0),
-  rendered_frame_count_(0)
+  resource_manager_(resource_manager),
+  render_thread_(nullptr)
 {
   window_->make_current(render_context_);
   int width = window->get_width();
@@ -74,8 +72,6 @@ DeferredRenderer::DeferredRenderer(
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       true});
-  resource_loader.load_render_resources(window, resource_manager_,
-      gpu_resource_manager_);
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -85,7 +81,6 @@ DeferredRenderer::~DeferredRenderer()
     render_thread_->join();
     delete render_thread_;
   }
-  resource_manager_.cleanup();
 }
 
 void DeferredRenderer::create_light_pass_mesh_(int width, int height)
@@ -110,7 +105,7 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
   };
   std::vector<unsigned int> screen_mesh_indices {0, 1, 2, 0, 2, 3};
   screen_mesh_id_ =
-    resource_manager_.create_mesh(
+    resource_manager_->create_mesh(
         screen_mesh_positions,
         screen_mesh_normals,
         screen_mesh_uvs,
@@ -122,19 +117,19 @@ void DeferredRenderer::create_light_pass_mesh_(int width, int height)
 void DeferredRenderer::create_gbuffer_(int width, int height)
 {
   albedo_rt_id_ =
-    resource_manager_.create_texture(width, height, pixel::Format::kRGBA,
+    resource_manager_->create_texture(width, height, pixel::Format::kRGBA,
         pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
   normal_rt_id_ =
-    resource_manager_.create_texture(width, height, pixel::Format::kRGBA,
+    resource_manager_->create_texture(width, height, pixel::Format::kRGBA,
         pixel::InternalFormat::kRGB16F, pixel::ComponentType::kFloat);
   depth_rt_id_ =
-    resource_manager_.create_texture(width, height,
+    resource_manager_->create_texture(width, height,
         pixel::Format::kDepthComponent,
         pixel::InternalFormat::kDepthComponent24,
         pixel::ComponentType::kFloat);
-  const Texture& albedo_rt = resource_manager_.get_texture(albedo_rt_id_);
-  const Texture& normal_rt = resource_manager_.get_texture(normal_rt_id_);
-  const Texture& depth_rt = resource_manager_.get_texture(depth_rt_id_);
+  const Texture& albedo_rt = resource_manager_->get_texture(albedo_rt_id_);
+  const Texture& normal_rt = resource_manager_->get_texture(normal_rt_id_);
+  const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id_);
   gbuffer_id_ = gpu_resource_manager_.create_framebuffer(
       albedo_rt.gpu_resource_id,
       normal_rt.gpu_resource_id,
@@ -144,15 +139,15 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
 void DeferredRenderer::create_light_render_target_(int width, int height)
 {
   light_rt_id_ =
-    resource_manager_.create_texture(width, height, pixel::Format::kRGBA,
+    resource_manager_->create_texture(width, height, pixel::Format::kRGBA,
         pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
   uint32_t depth_rt_id =
-    resource_manager_.create_texture(width, height,
+    resource_manager_->create_texture(width, height,
         pixel::Format::kDepthComponent,
         pixel::InternalFormat::kDepthComponent24,
         pixel::ComponentType::kFloat);
-  const Texture& light_rt = resource_manager_.get_texture(light_rt_id_);
-  const Texture& depth_rt = resource_manager_.get_texture(depth_rt_id);
+  const Texture& light_rt = resource_manager_->get_texture(light_rt_id_);
+  const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id);
   light_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
       light_rt.gpu_resource_id,
       depth_rt.gpu_resource_id);
@@ -162,16 +157,16 @@ uint32_t DeferredRenderer::create_light_material_(
     const std::string& vertex_shader_path,
     const std::string& fragment_shader_path)
 {
-  light_program_id_ = resource_manager_.load_gpu_program_from_file(
+  light_program_id_ = resource_manager_->load_gpu_program_from_file(
     vertex_shader_path,
     fragment_shader_path);
-  std::uint32_t id = resource_manager_.create_material(light_program_id_);
-  const render::Material& material = resource_manager_.get_material(id);
+  std::uint32_t id = resource_manager_->create_material(light_program_id_);
+  const render::Material& material = resource_manager_->get_material(id);
   render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
       material.gpu_resource_id);
-  const Texture& albedo_rt = resource_manager_.get_texture(albedo_rt_id_);
-  const Texture& normal_rt = resource_manager_.get_texture(normal_rt_id_);
-  const Texture& depth_rt = resource_manager_.get_texture(depth_rt_id_);
+  const Texture& albedo_rt = resource_manager_->get_texture(albedo_rt_id_);
+  const Texture& normal_rt = resource_manager_->get_texture(normal_rt_id_);
+  const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id_);
   gpu_material.register_texture_slot("albedo_tex", albedo_rt.gpu_resource_id,
       0);
   gpu_material.register_texture_slot("normals_tex", normal_rt.gpu_resource_id,
@@ -184,15 +179,15 @@ uint32_t DeferredRenderer::create_albedo_material_(
     const std::string& vertex_shader_path,
     const std::string& fragment_shader_path)
 {
-  albedo_program_id_ = resource_manager_.load_gpu_program_from_file(
+  albedo_program_id_ = resource_manager_->load_gpu_program_from_file(
     vertex_shader_path,
     fragment_shader_path);
-  std::uint32_t id = resource_manager_.create_material(albedo_program_id_);
-  const render::Material& material = resource_manager_.get_material(id);
+  std::uint32_t id = resource_manager_->create_material(albedo_program_id_);
+  const render::Material& material = resource_manager_->get_material(id);
   render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
       material.gpu_resource_id);
-  const Texture& albedo_rt = resource_manager_.get_texture(albedo_rt_id_);
-  const Texture& light_rt = resource_manager_.get_texture(light_rt_id_);
+  const Texture& albedo_rt = resource_manager_->get_texture(albedo_rt_id_);
+  const Texture& light_rt = resource_manager_->get_texture(light_rt_id_);
   gpu_material.register_texture_slot("albedo_texture",
       albedo_rt.gpu_resource_id, 0);
   gpu_material.register_texture_slot("light_texture", light_rt.gpu_resource_id,
@@ -332,9 +327,9 @@ void DeferredRenderer::render_mesh_node_(
     CommandBucket& render_commands)
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
-  const Mesh& mesh = resource_manager_.get_mesh(mesh_node.mesh_id);
+  const Mesh& mesh = resource_manager_->get_mesh(mesh_node.mesh_id);
   const Material& material =
-    resource_manager_.get_material(mesh_node.material_id);
+    resource_manager_->get_material(mesh_node.material_id);
   const AMaterial& gpu_material =
     gpu_resource_manager_.get_material(material.gpu_resource_id);
 
@@ -383,29 +378,10 @@ void DeferredRenderer::render_mesh_node_(
   render_commands.draw_elements(mesh.index_count);
 }
 
-size_t DeferredRenderer::wait_for_work_()
+void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
+    CommandBucket& render_commands)
 {
-  size_t simulated_frame_count;
-  size_t rendered_frame_count =
-    rendered_frame_count_.load(std::memory_order_relaxed);
-  do
-  {
-    simulated_frame_count = get_simulated_frame_count();
-  } while (rendered_frame_count == simulated_frame_count);
-  return rendered_frame_count;
-}
-
-void DeferredRenderer::render()
-{
-  // Wait for simulation to produce a frame packet.
-  size_t rendered_frame_count = wait_for_work_();
-  size_t frame_packet_id = rendered_frame_count % 2;
-  StackFramePacket* gbuffer_frame_packet =
-    StackFramePacket::frame_packets[frame_packet_id];
-  gbuffer_frame_packet->sort_mesh_nodes();
-
   signpost_start(1, 0, 0, 0, 0);
-  CommandBucket render_commands;
   execute_gbuffer_pass_<StackAllocator>(
     0,
     render_passes_[0],
@@ -423,21 +399,7 @@ void DeferredRenderer::render()
     render_passes_[2],
     albedo_frame_packet_,
     render_commands);
-  driver_->execute_commands(render_commands);
-
-  window_->swap();
-  increment_rendered_frame_count();
   signpost_end(1, 0, 0, 0, 0);
-}
-
-ResourceManager& DeferredRenderer::get_resource_manager()
-{
-  return resource_manager_;
-}
-
-AResourceManager& DeferredRenderer::get_gpu_resource_manager()
-{
-  return gpu_resource_manager_;
 }
 
 void DeferredRenderer::add_render_pass(const RenderPass& render_pass)
@@ -463,31 +425,6 @@ uint32_t DeferredRenderer::get_normal_rt_id() const
 uint32_t DeferredRenderer::get_depth_rt_id() const
 {
   return depth_rt_id_;
-}
-
-size_t DeferredRenderer::get_rendered_frame_count() const
-{
-  return rendered_frame_count_.load(std::memory_order_acquire);
-}
-
-size_t DeferredRenderer::get_simulated_frame_count() const
-{
-  return simulated_frame_count_.load(std::memory_order_acquire);
-}
-
-size_t DeferredRenderer::get_simulated_frame_count_relaxed() const
-{
-  return simulated_frame_count_.load(std::memory_order_relaxed);
-}
-
-void DeferredRenderer::increment_rendered_frame_count()
-{
-  rendered_frame_count_.fetch_add(1);
-}
-
-void DeferredRenderer::increment_simulated_frame_count()
-{
-  simulated_frame_count_.fetch_add(1);
 }
 
 }

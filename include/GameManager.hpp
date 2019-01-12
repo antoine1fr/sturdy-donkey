@@ -22,7 +22,9 @@
 #include "Game.hpp"
 #include "IResourceLoaderDelegate.hpp"
 #include "render/DeferredRenderer.hpp"
+#include "render/DebugHudRenderer.hpp"
 #include "render/Window.hpp"
+#include "render/ResourceManager.hpp"
 
 namespace donkey
 {
@@ -33,12 +35,22 @@ class GameManager
     render::Window* window_;
     render::gl::Driver* driver_;
     render::DeferredRenderer* renderer_;
+    render::DebugHudRenderer* debug_hud_renderer_;
     IResourceLoaderDelegate& resource_loader_;
     std::atomic_bool run_;
+    std::atomic_size_t simulated_frame_count_;
+    std::atomic_size_t rendered_frame_count_;
+    render::ResourceManager* resource_manager_;
 
   private:
+    size_t wait_for_frame_packet_();
     void wait_render_thread_() const;
     void prepare_frame_packet_(Game& game);
+    size_t get_rendered_frame_count_() const;
+    size_t get_simulated_frame_count_() const;
+    size_t get_simulated_frame_count_relaxed_() const;
+    void increment_rendered_frame_count_();
+    void increment_simulated_frame_count_();
 
   public:
     template <typename T>

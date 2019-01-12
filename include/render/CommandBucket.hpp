@@ -56,7 +56,8 @@ class Command
       kSetDepthTest,
       kClearFramebuffer,
       kBindGpuProgram,
-      kSetBlending
+      kSetBlending,
+      kSetState
     };
 
     Type type;
@@ -193,6 +194,12 @@ struct BindGpuProgramCommand: Command
   uint32_t program_id;
 };
 
+struct SetStateCommand: Command
+{
+  SetStateCommand(uint32_t state_id);
+  uint32_t state_id;
+};
+
 struct SortedCommand
 {
   uint64_t sort_key;
@@ -220,6 +227,7 @@ class CommandBucket
     std::list<SetViewportCommand> set_viewport_commands_;
     std::list<ClearFramebufferCommand> clear_framebuffer_commands_;
     std::list<BindGpuProgramCommand> bind_gpu_program_commands_;
+    std::list<SetStateCommand> set_state_commands_;
 
   private:
     uint64_t make_sort_key_(Command::Type type);
@@ -254,6 +262,7 @@ class CommandBucket
     void set_viewport(const glm::tvec2<int>& position,
         const glm::tvec2<std::size_t>& size);
     void clear_framebuffer(const glm::vec3& color);
+    void set_state(uint32_t state_id);
     const std::list<SortedCommand>& get_commands() const;
 };
 

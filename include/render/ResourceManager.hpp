@@ -19,6 +19,7 @@
 
 #include "render/AResourceManager.hpp"
 #include "render/Material.hpp"
+#include "render/State.hpp"
 
 namespace donkey {
 namespace render {
@@ -31,6 +32,7 @@ class ResourceManager
     std::vector<Mesh> meshes_;
     std::vector<Texture> textures_;
     std::vector<Material> materials_;
+    std::vector<State> states_;
 
   public:
     ResourceManager(AResourceManager& gpu_resource_manager);
@@ -43,6 +45,7 @@ class ResourceManager
     uint32_t register_material(Material&& material);
     void cleanup();
     uint32_t load_texture_from_file(const std::string& path);
+    uint32_t load_texture_from_memory(uint8_t* pixels, int width, int height);
 
     uint32_t load_gpu_program_from_file(
       const std::string& vs_path,
@@ -64,6 +67,8 @@ class ResourceManager
         pixel::Format format,
         pixel::InternalFormat internal_format,
         pixel::ComponentType component_type);
+
+    uint32_t create_state(const State& state);
 };
 
 }

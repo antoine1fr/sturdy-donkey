@@ -164,6 +164,12 @@ BindGpuProgramCommand::BindGpuProgramCommand(
 {
 }
 
+SetStateCommand::SetStateCommand(uint32_t state_id):
+  Command(Type::kSetState),
+  state_id(state_id)
+{
+}
+
 void CommandBucket::bind_mesh(
     uint32_t mesh_id,
     int position_location,
@@ -342,6 +348,15 @@ void CommandBucket::bind_gpu_program(
   sorted_commands_.push_back({
     make_sort_key_(Command::Type::kBindGpuProgram),
     bind_gpu_program_commands_.back()
+  });
+}
+
+void CommandBucket::set_state(uint32_t state_id)
+{
+  set_state_commands_.push_back(SetStateCommand(state_id));
+  sorted_commands_.push_back({
+    make_sort_key_(Command::Type::kSetState),
+    set_state_commands_.back()
   });
 }
 

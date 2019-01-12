@@ -50,7 +50,8 @@ Driver::Driver():
       std::bind(&Driver::set_depth_test_, this, _1),
       std::bind(&Driver::clear_framebuffer_, this, _1),
       std::bind(&Driver::bind_gpu_program_, this, _1),
-      std::bind(&Driver::set_blending_, this, _1)
+      std::bind(&Driver::set_blending_, this, _1),
+      std::bind(&Driver::set_state_, this, _1)
   })
 {
   assert(gl3wInit() == 0);
@@ -285,6 +286,55 @@ void Driver::bind_gpu_program_(const Command& command)
   const GpuProgram& program =
     resource_manager_.get_gpu_program(bind_command.program_id);
   glUseProgram(program.handle);
+}
+
+void Driver::set_state_(const Command& command)
+{
+  assert(command.type == Command::Type::kSetState);
+  const SetStateCommand& set_state_command =
+    static_cast<const SetStateCommand&>(command);
+  const State& state = resource_manager_.get_state(set_state_command.state_id);
+
+  if (state.blending_enabled)
+  {
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(state.blend_source_rgb, state.blend_destination_rgb,
+        state.blend_source_alpha, state.blend_destination_alpha);
+    glBlendEquationSeparate(state.blend_equation_rgb,
+        state.blend_equation_alpha);
+  }
+  else
+    glDisable(GL_BLEND);
+
+  if (state.face_culling_enabled)
+  {
+    glEnable(GL_CULL_FACE);
+    glCullFace(state.cull_mode);
+  }
+  else
+    glDisable(GL_CULL_FACE);
+
+  glViewport(state.viewport[0], state.viewport[1], state.viewport[2],
+      state.viewport[3]);
+
+  if (state.scissor_test_enabled)
+  {
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(state.scissor_box[0], state.scissor_box[1], state.scissor_box[2],
+        state.scissor_box[3]);
+  }
+  else
+    glDisable(GL_SCISSOR_TEST);
+
+  if (state.depth_test_enabled)
+    glEnable(GL_DEPTH_TEST);
+  else
+    glDisable(GL_DEPTH_TEST);
+
+  if (state.stencil_test_enabled)
+    glEnable(GL_STENCIL_TEST);
+  else
+    glDisable(GL_STENCIL_TEST);
 }
 
 AResourceManager& Driver::get_resource_manager()

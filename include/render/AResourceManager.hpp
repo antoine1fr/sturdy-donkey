@@ -24,6 +24,7 @@
 #include "render/Mesh.hpp"
 #include "render/GpuProgram.hpp"
 #include "render/pixel.hpp"
+#include "render/State.hpp"
 
 namespace donkey {
 namespace render {
@@ -34,6 +35,11 @@ class AResourceManager
     virtual void cleanup() = 0;
 
     virtual uint32_t load_texture_from_file(const std::string& path) = 0;
+
+    virtual uint32_t load_texture_from_memory(
+        uint8_t* pixels,
+        int width,
+        int height) = 0;
 
     virtual uint32_t load_gpu_program_from_file(
       const std::string& vs_path,
@@ -64,6 +70,8 @@ class AResourceManager
     virtual uint32_t create_framebuffer(
         uint32_t color_rt_id,
         uint32_t depth_rt_id) = 0;
+
+    virtual uint32_t create_state(const render::State& state) = 0;
 
     virtual AMaterial& get_material(std::uint32_t id) = 0;
 };

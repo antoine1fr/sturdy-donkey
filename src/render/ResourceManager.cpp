@@ -57,6 +57,17 @@ uint32_t ResourceManager::load_texture_from_file(const std::string& path)
   return textures_.size() - 1;
 }
 
+uint32_t ResourceManager::load_texture_from_memory(
+    uint8_t* pixels,
+    int width,
+    int height)
+{
+  uint32_t id = gpu_resource_manager_.load_texture_from_memory(
+      pixels, width, height);
+  textures_.push_back(Texture(id));
+  return textures_.size() - 1;
+}
+
 uint32_t ResourceManager::load_gpu_program_from_file(
     const std::string& vs_path,
     const std::string& fs_path)
@@ -123,6 +134,13 @@ uint32_t ResourceManager::create_texture(
       internal_format, component_type);
   textures_.push_back(Texture(id));
   return textures_.size() - 1;
+}
+
+uint32_t ResourceManager::create_state(const State& state)
+{
+  uint32_t id = gpu_resource_manager_.create_state(state);
+  states_.push_back(State(id, state));
+  return states_.size() - 1;
 }
 
 }

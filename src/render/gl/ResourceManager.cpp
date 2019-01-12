@@ -213,29 +213,51 @@ GLuint ResourceManager::load_texture_(const std::string& path)
   SDL_Surface* img_surface = SDL_ConvertSurfaceFormat(original_surface,
       SDL_PIXELFORMAT_RGBA32, 0);
   SDL_FreeSurface(original_surface);
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
+  GLuint id = load_texture_(
+      reinterpret_cast<uint8_t*>(mirror_surface->pixels),
+      mirror_surface->w,
+      mirror_surface->h);
+  SDL_FreeSurface(img_surface);
+  SDL_FreeSurface(mirror_surface);
+  return id;
+}
+
+GLuint ResourceManager::load_texture_(uint8_t* pixels, int width, int height)
+{
   GLenum format = GL_RGBA;
   GLenum type = GL_UNSIGNED_BYTE;
-  SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
-  glTexImage2D(GL_TEXTURE_2D, 0, format, mirror_surface->w, mirror_surface->h,
+  GLuint texture;
+
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, format, width, height,
       0, format, type, nullptr);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mirror_surface->w, mirror_surface->h,
-      format, type, mirror_surface->pixels);
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
+      format, type, pixels);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  SDL_FreeSurface(img_surface);
-  SDL_FreeSurface(mirror_surface);
   return texture;
 }
 
-GLuint ResourceManager::load_texture_from_file(const std::string& path)
+uint32_t ResourceManager::load_texture_from_file(const std::string& path)
 {
   std::cout << "Loading texture from file: " << path << '\n';
   GLuint texture = load_texture_(path);
+  uint32_t id = textures_.size();
+  textures_.push_back(Texture(texture));
+  return id;
+}
+
+uint32_t ResourceManager::load_texture_from_memory(
+    uint8_t* pixels,
+    int width,
+    int height)
+{
+  std::cout << "Loading texture from memory.\n";
+  GLuint texture = load_texture_(pixels, width, height);
   uint32_t id = textures_.size();
   textures_.push_back(Texture(texture));
   return id;
@@ -370,6 +392,12 @@ uint32_t ResourceManager::create_framebuffer(uint32_t color_rt_id,
   return id;
 }
 
+uint32_t ResourceManager::create_state(const render::State& state)
+{
+  states_.push_back(State(state));
+  return states_.size() - 1;
+}
+
 const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const
 {
   return gpu_programs_[id];
@@ -388,6 +416,11 @@ const Texture& ResourceManager::get_texture(uint32_t id) const
 const Framebuffer& ResourceManager::get_framebuffer(uint32_t id) const
 {
   return framebuffers_[id];
+}
+
+const State& ResourceManager::get_state(uint32_t id) const
+{
+  return states_[id];
 }
 
 AMaterial& ResourceManager::get_material(std::uint32_t id)

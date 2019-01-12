@@ -23,13 +23,9 @@
 #include "render/CommandBucket.hpp"
 #include "render/gl/ResourceManager.hpp"
 
-namespace donkey
-{
-
-namespace render
-{
-namespace gl
-{
+namespace donkey {
+namespace render {
+namespace gl {
 
 class Driver
 {
@@ -68,6 +64,7 @@ class Driver
     void set_depth_test_(const Command& command);
     void set_blending_(const Command& command);
     void clear_framebuffer_(const Command& command);
+    void set_state_(const Command& command);
 };
 
 }
