@@ -146,7 +146,6 @@ class DeferredRenderer
     uint32_t get_albedo_rt_id() const;
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;
-    void start_render_thread();
     size_t get_rendered_frame_count() const;
     size_t get_simulated_frame_count() const;
     size_t get_simulated_frame_count_relaxed() const;
