@@ -27,6 +27,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+#include "IResourceLoaderDelegate.hpp"
 #include "render/gl/Driver.hpp"
 #include "render/FramePacket.hpp"
 #include "render/AResourceManager.hpp"
@@ -49,9 +50,9 @@ class DeferredRenderer
   private:
     std::vector<RenderPass> render_passes_;
     std::atomic_bool run_;
-    Window& window_;
+    Window* window_;
     SDL_GLContext render_context_;
-    gl::Driver driver_;
+    gl::Driver* driver_;
     AResourceManager& gpu_resource_manager_;
     ResourceManager resource_manager_;
     FramePacket<std::allocator> light_frame_packet_;
@@ -133,7 +134,10 @@ class DeferredRenderer
     size_t wait_for_work_();
 
   public:
-    DeferredRenderer(Window& window);
+    DeferredRenderer(
+        Window* window,
+        gl::Driver* driver,
+        IResourceLoaderDelegate& resource_loader);
     ~DeferredRenderer();
     void render();
     ResourceManager& get_resource_manager();

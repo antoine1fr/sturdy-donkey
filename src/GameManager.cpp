@@ -24,26 +24,48 @@
 namespace donkey
 {
 
-GameManager::GameManager()
+GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
+  resource_loader_(resource_loader)
 {
   assert(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0);
   int img_flags = IMG_INIT_PNG;
   int bit_mask = IMG_Init(img_flags);
   assert((bit_mask & img_flags) == img_flags);
+  window_ = new render::Window("Pipelined rendering demo", 1600, 900);
+  driver_ = new render::gl::Driver;
+  SDL_GLContext render_context = window_->get_render_context();
+  window_->make_current(render_context);
+  renderer_ = new render::DeferredRenderer(window_, driver_, resource_loader);
 }
 
 GameManager::~GameManager()
 {
+  delete renderer_;
+  delete driver_;
+  delete window_;
   SDL_Quit();
 }
 
-void GameManager::run(Game& game)
+void GameManager::render_loop()
 {
-  bool run = true;
+  SDL_GLContext render_context = window_->get_render_context();
+  window_->make_current(render_context);
+  while (run_.load(std::memory_order_relaxed))
+  {
+    renderer_->render();
+  }
+}
+
+void GameManager::simulation_loop()
+{
+  SDL_GLContext render_context = window_->get_render_context();
   SDL_Event event;
   auto last_time = Clock::now();
+  Game game(resource_loader_);
 
-  while (run)
+  window_->make_current(render_context);
+
+  while (run_.load(std::memory_order_relaxed))
   {
     auto time = Clock::now();
     Duration elapsed_time = time - last_time;
@@ -53,14 +75,50 @@ void GameManager::run(Game& game)
     {
       if (event.type == SDL_QUIT)
       {
-        run = false;
-        game.notify_exit();
+        run_.store(false, std::memory_order_relaxed);
+        renderer_->notify_exit();
       }
     }
 
     game.update(elapsed_time);
-    game.prepare_frame_packet();
+    prepare_frame_packet_(game);
   }
+}
+
+void GameManager::wait_render_thread_() const
+{
+  size_t simulated_frame_count = renderer_->get_simulated_frame_count();
+  size_t rendered_frame_count;
+  do
+  {
+    rendered_frame_count = renderer_->get_rendered_frame_count();
+  } while (rendered_frame_count < simulated_frame_count);
+}
+
+void GameManager::prepare_frame_packet_(Game& game)
+{
+  size_t simulated_frame_count = renderer_->get_simulated_frame_count_relaxed();
+  size_t frame_packet_id = simulated_frame_count % 2;
+  if (FramePacket::frame_packets[frame_packet_id] != nullptr)
+  {
+    BufferPool::get_instance()->free_tag(Buffer::Tag::kFramePacket,
+        frame_packet_id);
+  }
+  StackAllocator<FramePacket> allocator(Buffer::Tag::kFramePacket,
+      frame_packet_id);
+  FramePacket* frame_packet = allocator.allocate(1);
+  game.prepare_frame_packet(frame_packet, allocator);
+  FramePacket::frame_packets[frame_packet_id] = frame_packet;
+  wait_render_thread_();
+  renderer_->increment_simulated_frame_count();
+}
+
+void GameManager::run()
+{
+  run_.store(true, std::memory_order_relaxed);
+  std::thread thread([this]() { render_loop(); });
+  simulation_loop();
+  thread.join();
 }
 
 }

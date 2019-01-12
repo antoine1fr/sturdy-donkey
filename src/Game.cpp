@@ -31,60 +31,25 @@
 namespace donkey
 {
 
-Game::Game(IResourceLoaderDelegate& resource_loader):
-  window_("Pipelined rendering demo", 1600, 900),
-  renderer_(window_),
-  render_context_(window_.get_render_context())
+Game::Game(IResourceLoaderDelegate& resource_loader)
 {
-  window_.make_current(render_context_);
-  resource_loader.load(window_, scene_, renderer_);
-  renderer_.start_render_thread();
+  resource_loader.load_game_objects(scene_);
 }
 
 Game::~Game()
 {
 }
 
-void Game::wait_render_thread_() const
-{
-  size_t simulated_frame_count = renderer_.get_simulated_frame_count();
-  size_t rendered_frame_count;
-  do
-  {
-    rendered_frame_count = renderer_.get_rendered_frame_count();
-  } while (rendered_frame_count < simulated_frame_count);
-}
-
-template <typename T>
-using StackAllocator_ = render::DeferredRenderer::StackAllocator<T>;
-using StackFramePacket = render::DeferredRenderer::StackFramePacket;
-
-void Game::prepare_frame_packet()
+void Game::prepare_frame_packet(FramePacket* frame_packet,
+    StackAllocator<FramePacket>& allocator)
 {
   signpost_start(0, 2, 0, 0, 0);
-  size_t frame_packet_id = renderer_.get_simulated_frame_count_relaxed() % 2;
-  if (StackFramePacket::frame_packets[frame_packet_id] != nullptr)
-  {
-    BufferPool::get_instance()->free_tag(Buffer::Tag::kFramePacket,
-        frame_packet_id);
-  }
-  StackAllocator_<StackFramePacket> allocator(Buffer::Tag::kFramePacket,
-      frame_packet_id);
-  StackFramePacket* frame_packet = allocator.allocate(1);
-  new (frame_packet) StackFramePacket(
+  new (frame_packet) FramePacket(
     scene_.get_mesh_nodes(),
     scene_.get_camera_nodes(),
     scene_.get_directional_light_nodes(),
     allocator);
-  StackFramePacket::frame_packets[frame_packet_id] = frame_packet;
-  wait_render_thread_();
-  renderer_.increment_simulated_frame_count();
   signpost_end(0, 2, 0, 0, 0);
-}
-
-void Game::notify_exit()
-{
-  renderer_.notify_exit();
 }
 
 void Game::update(Duration elapsed_time)

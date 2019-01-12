@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include <thread>
-#include <SDL.h>
-
 #include "common.hpp"
-#include "Scene.hpp"
-#include "render/DeferredRenderer.hpp"
-#include "render/Window.hpp"
 #include "IResourceLoaderDelegate.hpp"
+#include "Scene.hpp"
+#include "StackAllocator.hpp"
+#include "render/DeferredRenderer.hpp"
+#include "render/FramePacket.hpp"
 
 namespace donkey
 {
@@ -33,19 +31,17 @@ class Game
 {
   private:
     Scene scene_;
-    render::Window window_;
-    render::DeferredRenderer renderer_;
-    SDL_GLContext  render_context_;
-
-  private:
-    void wait_render_thread_() const;
 
   public:
+    template <typename T>
+    using StackAllocator = render::DeferredRenderer::StackAllocator<T>;
+    using FramePacket = render::DeferredRenderer::StackFramePacket;
+
     Game(IResourceLoaderDelegate& resourceLoader);
     ~Game();
-    void prepare_frame_packet();
+    void prepare_frame_packet(FramePacket* frame_packet,
+        StackAllocator<FramePacket>& allocator);
     void update(Duration elapsed_time);
-    void notify_exit();
 };
 
 }

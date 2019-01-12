@@ -34,19 +34,23 @@ namespace donkey
 namespace render
 {
 
-DeferredRenderer::DeferredRenderer(Window& window):
+DeferredRenderer::DeferredRenderer(
+    Window* window,
+    gl::Driver* driver,
+    IResourceLoaderDelegate& resource_loader):
   run_(true),
   window_(window),
-  render_context_(window.get_render_context()),
-  gpu_resource_manager_(driver_.get_resource_manager()),
+  render_context_(window->get_render_context()),
+  driver_(driver),
+  gpu_resource_manager_(driver_->get_resource_manager()),
   resource_manager_(gpu_resource_manager_),
   render_thread_(nullptr),
   simulated_frame_count_(0),
   rendered_frame_count_(0)
 {
-  window_.make_current(render_context_);
-  int width = window.get_width();
-  int height = window.get_height();
+  window_->make_current(render_context_);
+  int width = window->get_width();
+  int height = window->get_height();
 
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
@@ -71,6 +75,8 @@ DeferredRenderer::DeferredRenderer(Window& window):
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       true});
+  resource_loader.load_render_resources(window, resource_manager_,
+      gpu_resource_manager_);
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -392,41 +398,37 @@ size_t DeferredRenderer::wait_for_work_()
 
 void DeferredRenderer::render()
 {
-  window_.make_current(render_context_);
-  while (run_)
-  {
-    // Wait for simulation to produce a frame packet.
-    size_t rendered_frame_count = wait_for_work_();
-    size_t frame_packet_id = rendered_frame_count % 2;
-    StackFramePacket* gbuffer_frame_packet =
-      StackFramePacket::frame_packets[frame_packet_id];
-    gbuffer_frame_packet->sort_mesh_nodes();
+  // Wait for simulation to produce a frame packet.
+  size_t rendered_frame_count = wait_for_work_();
+  size_t frame_packet_id = rendered_frame_count % 2;
+  StackFramePacket* gbuffer_frame_packet =
+    StackFramePacket::frame_packets[frame_packet_id];
+  gbuffer_frame_packet->sort_mesh_nodes();
 
-    signpost_start(1, 0, 0, 0, 0);
-    CommandBucket render_commands;
-    execute_gbuffer_pass_<StackAllocator>(
-        0,
-        render_passes_[0],
-        *gbuffer_frame_packet,
-        render_commands);
-    execute_light_pass_<StackAllocator>(
-        1,
-        render_passes_[1],
-        light_frame_packet_,
-        &(gbuffer_frame_packet->get_camera_nodes()[0]),
-        gbuffer_frame_packet->get_directional_light_nodes(),
-        render_commands);
-    execute_albedo_pass_<StackAllocator>(
-        2,
-        render_passes_[2],
-        albedo_frame_packet_,
-        render_commands);
-    driver_.execute_commands(render_commands);
+  signpost_start(1, 0, 0, 0, 0);
+  CommandBucket render_commands;
+  execute_gbuffer_pass_<StackAllocator>(
+    0,
+    render_passes_[0],
+    *gbuffer_frame_packet,
+    render_commands);
+  execute_light_pass_<StackAllocator>(
+    1,
+    render_passes_[1],
+    light_frame_packet_,
+    &(gbuffer_frame_packet->get_camera_nodes()[0]),
+    gbuffer_frame_packet->get_directional_light_nodes(),
+    render_commands);
+  execute_albedo_pass_<StackAllocator>(
+    2,
+    render_passes_[2],
+    albedo_frame_packet_,
+    render_commands);
+  driver_->execute_commands(render_commands);
 
-    window_.swap();
-    increment_rendered_frame_count();
-    signpost_end(1, 0, 0, 0, 0);
-  }
+  window_->swap();
+  increment_rendered_frame_count();
+  signpost_end(1, 0, 0, 0, 0);
 }
 
 ResourceManager& DeferredRenderer::get_resource_manager()
@@ -467,11 +469,6 @@ uint32_t DeferredRenderer::get_normal_rt_id() const
 uint32_t DeferredRenderer::get_depth_rt_id() const
 {
   return depth_rt_id_;
-}
-
-void DeferredRenderer::start_render_thread()
-{
-  render_thread_ = new std::thread([this](){ this->render(); });
 }
 
 size_t DeferredRenderer::get_rendered_frame_count() const
