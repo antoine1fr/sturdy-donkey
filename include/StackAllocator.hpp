@@ -28,6 +28,12 @@ namespace donkey
 template <typename T, std::size_t alignment>
 struct StackAllocator
 {
+  template <typename U>
+    struct rebind
+    {
+      typedef StackAllocator<U, alignment> other;
+    };
+
   typedef T value_type;
   typedef T* pointer;
   typedef std::size_t size_type;
