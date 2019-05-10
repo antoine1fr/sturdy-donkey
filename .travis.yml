@@ -6,6 +6,12 @@ addons:
     packages:
       - sdl2
       - sdl2_image
+  apt:
+    packages:
+      - libsdl2-dev
+      - libsdl2-image-dev
+      - libglm-dev
+      - libgl1-mesa-dev
 
 matrix:
   include:
@@ -13,6 +19,8 @@ matrix:
       osx_image: xcode10.2
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
+    - os: linux
+      dist: xenial
 
 before_install:
   - eval "${MATRIX_EVAL}"
