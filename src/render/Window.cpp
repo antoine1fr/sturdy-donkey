@@ -16,6 +16,7 @@
  */
 
 #include <GL/gl3w.h>
+#include <cassert>
 #include "render/Window.hpp"
 
 namespace donkey

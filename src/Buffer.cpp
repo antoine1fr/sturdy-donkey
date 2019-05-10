@@ -16,6 +16,7 @@
  */
 
 #include <cstdint>
+#include <cassert>
 #include "Buffer.hpp"
 
 namespace donkey
