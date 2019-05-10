@@ -21,7 +21,7 @@
 namespace donkey {
 
 thread_local std::vector<Buffer*> buffers_(
-    static_cast<size_t>(Buffer::Tag::kCount),
+    static_cast<std::size_t>(Buffer::Tag::kCount),
     nullptr);
 
 }

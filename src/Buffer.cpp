@@ -15,6 +15,7 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <cstdint>
 #include "Buffer.hpp"
 
 namespace donkey
@@ -44,12 +45,12 @@ Buffer::~Buffer()
     delete [] ptr_;
 }
 
-void* Buffer::allocate(Size size, uintptr_t alignment)
+void* Buffer::allocate(Size size, std::uintptr_t alignment)
 {
   assert(alignment % 2 == 0);
   uintptr_t mask = alignment - 1;
   char* ptr = ptr_ + size_;
-  ptrdiff_t offset = alignment - (reinterpret_cast<uintptr_t>(ptr) & mask);
+  std::ptrdiff_t offset = alignment - (reinterpret_cast<uintptr_t>(ptr) & mask);
   Size new_size = size + size_;
   if (new_size < capacity_)
   {
