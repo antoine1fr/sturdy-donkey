@@ -7,6 +7,6 @@ TARGET_PREFIX ?= lib
 STATIC_TARGET_SUFFIX ?= .a
 DYNAMIC_TARGET_SUFFIX ?= .so
 
-LDFLAGS += -lgl
+LDFLAGS += -lGL
 
 include build/common.Makefile
