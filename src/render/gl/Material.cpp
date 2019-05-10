@@ -69,14 +69,14 @@ Material::Material(
     y ## _slots_.push_back(ScalarMaterialSlot<x>(location, storage)); \
   }
 
-DEFINE_REGISTER_SLOT(float, float, float);
-DEFINE_REGISTER_SLOT(glm::vec2, vec2, vector2);
-DEFINE_REGISTER_SLOT(glm::vec3, vec3, vector3);
-DEFINE_REGISTER_SLOT(glm::vec4, vec4, vector4);
-DEFINE_REGISTER_SLOT(glm::mat2, mat2, matrix2);
-DEFINE_REGISTER_SLOT(glm::mat3, mat3, matrix3);
-DEFINE_REGISTER_SLOT(glm::mat4, mat4, matrix4);
-DEFINE_REGISTER_SLOT(int, int, int);
+DEFINE_REGISTER_SLOT(float, float, float)
+DEFINE_REGISTER_SLOT(glm::vec2, vec2, vector2)
+DEFINE_REGISTER_SLOT(glm::vec3, vec3, vector3)
+DEFINE_REGISTER_SLOT(glm::vec4, vec4, vector4)
+DEFINE_REGISTER_SLOT(glm::mat2, mat2, matrix2)
+DEFINE_REGISTER_SLOT(glm::mat3, mat3, matrix3)
+DEFINE_REGISTER_SLOT(glm::mat4, mat4, matrix4)
+DEFINE_REGISTER_SLOT(int, int, int)
 
 #undef DEFINE_REGISTER_SLOT
 
