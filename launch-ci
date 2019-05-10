@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ $(uname) == "Linux" ]; then
+  make -f linux.Makefile
+else
+  make -f macos.Makefile
+fi
