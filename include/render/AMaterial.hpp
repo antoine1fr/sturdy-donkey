@@ -18,7 +18,9 @@
 #pragma once
 
 #include <GL/gl3w.h>
-#include <glm/detail/type_vec.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <vector>
 #include <string>
 #include "TextureMaterialSlot.hpp"
