@@ -15,8 +15,12 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "build.hpp"
+
 #include <sys/mman.h>
-#include <mach/vm_statistics.h>
+#if defined(STURDY_DONKEY_MACOS)
+# include <mach/vm_statistics.h>
+#endif
 #include <cerrno>
 #include <unistd.h>
 
@@ -68,7 +72,10 @@ Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
 
   // No unused buffer meeting the requirements. Let's allocate one.
   int prot = PROT_READ | PROT_WRITE;
-  int flags = MAP_ANONYMOUS | MAP_PRIVATE | VM_MAKE_TAG(VM_MEMORY_MALLOC_HUGE);
+  int flags = MAP_ANONYMOUS | MAP_PRIVATE;
+#if defined(STURDY_DONKEY_MACOS)
+  flags |=  VM_MAKE_TAG(VM_MEMORY_MALLOC_HUGE);
+#endif
   size_t block_size = getpagesize();
   size_t block_count = real_size / block_size;
   if (real_size % block_size > 0)
