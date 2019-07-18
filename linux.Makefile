@@ -8,7 +8,7 @@ STATIC_TARGET_SUFFIX ?= .a
 DYNAMIC_TARGET_SUFFIX ?= .so
 
 CFLAGS+= -fPIC
-CXXFLAGS+= -fPIC
+BASIC_CXXFLAGS+= -fPIC
 LDFLAGS += -lGL -fPIC -shared
 
 include build/common.Makefile

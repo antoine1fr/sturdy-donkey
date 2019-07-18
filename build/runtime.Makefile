@@ -13,18 +13,24 @@ CFLAGS += \
 	-Werror \
 	-pedantic
 
-CXXFLAGS += \
+BASIC_CXXFLAGS += \
 	-g3 \
 	-O0 \
+	-std=c++14
+
+CXXFLAGS += \
+	$(BASIC_CXXFLAGS) \
 	-Iinclude \
 	-Ilib/gl3w \
 	-Ilib/tinyobjloader \
 	-Ilib/imgui \
-	-std=c++14 \
 	-Wall \
 	-Werror \
 	-pedantic \
 	`pkg-config --cflags sdl2 SDL2_image`
+
+IMGUI_CXXFLAGS += \
+	$(BASIC_CXXFLAGS)
 
 LDFLAGS += \
 	-shared -fPIC \
@@ -33,10 +39,12 @@ LDFLAGS += \
 C_SOURCES = \
 	lib/gl3w/GL/gl3w.c
 
-CXX_SOURCES = \
+IMGUI_SOURCES = \
 	lib/imgui/imgui.cpp \
 	lib/imgui/imgui_draw.cpp \
 	lib/imgui/imgui_widgets.cpp \
+
+CXX_SOURCES = \
 	$(SRC_DIR)Buffer.cpp \
 	$(SRC_DIR)BufferPool.cpp \
 	$(SRC_DIR)Game.cpp \
@@ -61,11 +69,13 @@ CXX_SOURCES = \
 
 C_OBJECTS=$(C_SOURCES:.c=.o)
 CXX_OBJECTS=$(CXX_SOURCES:.cpp=.o)
+IMGUI_OBJECTS=$(IMGUI_SOURCES:.cpp=.o)
 
 OBJECTS = \
 	$(C_OBJECTS) \
 	$(CXX_OBJECTS) \
-	$(OBJC_OBJECTS)
+	$(OBJC_OBJECTS) \
+	$(IMGUI_OBJECTS)
 
 $(DYNAMIC_TARGET): $(OBJECTS)
 	$(CXX) -o $(DYNAMIC_TARGET) $(LDFLAGS) $(OBJECTS)
@@ -82,8 +92,11 @@ dynamic: $(DYNAMIC_TARGET)
 %.o: %.c
 	$(CC) -o $@ $(CFLAGS) -c $<
 
-%.o: %.cpp
+$(CXX_OBJECTS):%.o: %.cpp
 	$(CXX) -o $@ $(CXXFLAGS) -c $<
+
+$(IMGUI_OBJECTS):%.o: %.cpp
+	$(CXX) -o $@ $(IMGUI_CXXFLAGS) -c $<
 
 %.o: %.mm
 	$(OBJC) -o $@ $(OBJCFLAGS) -c $<
