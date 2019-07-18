@@ -89,10 +89,11 @@ void GameManager::wait_render_thread_() const
 {
   size_t simulated_frame_count = renderer_->get_simulated_frame_count();
   size_t rendered_frame_count;
+  bool run = run_.load(std::memory_order_relaxed);
   do
   {
     rendered_frame_count = renderer_->get_rendered_frame_count();
-  } while (rendered_frame_count < simulated_frame_count);
+  } while (run && (rendered_frame_count < simulated_frame_count));
 }
 
 void GameManager::prepare_frame_packet_(Game& game)
