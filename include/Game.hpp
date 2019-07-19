@@ -34,8 +34,8 @@ class Game
 
   public:
     template <typename T>
-    using StackAllocator = render::DeferredRenderer::StackAllocator<T>;
-    using FramePacket = render::DeferredRenderer::StackFramePacket;
+    using StackAllocator = render::StackAllocator<T>;
+    using FramePacket = render::StackFramePacket;
 
     Game(IResourceLoaderDelegate& resourceLoader);
     ~Game();

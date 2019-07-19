@@ -28,6 +28,8 @@ class Buffer
     enum class Tag
     {
       kFramePacket,
+      kLightFramePacket,
+      kAlbedoFramePacket,
       kCount
     };
 

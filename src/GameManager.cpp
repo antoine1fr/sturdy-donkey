@@ -44,7 +44,7 @@ GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
   debug_hud_renderer_ = new render::DebugHudRenderer(window_, driver_,
       resource_manager_);
   resource_loader.load_render_resources(window_, resource_manager_,
-      driver_->get_resource_manager());
+                                        &(driver_->get_resource_manager()));
 }
 
 GameManager::~GameManager()

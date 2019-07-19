@@ -32,7 +32,7 @@ class IResourceLoaderDelegate
     virtual void load_render_resources(
         render::Window* window,
         render::ResourceManager* resource_manager,
-        render::AResourceManager& gpu_resource_manager) = 0;
+        render::AResourceManager* gpu_resource_manager) = 0;
 };
 
 }

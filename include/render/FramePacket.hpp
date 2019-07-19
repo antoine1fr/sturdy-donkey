@@ -21,6 +21,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 #include "common.hpp"
 #include "Scene.hpp"
@@ -201,13 +202,13 @@ class FramePacket
     Vector<DirectionalLightNode> directional_light_nodes_;
 
   public:
-    FramePacket(const MeshNodeAllocator& allocator = Allocator<MeshNode>());
+    FramePacket(const MeshNodeAllocator& allocator);
 
     FramePacket(
         std::list<::donkey::MeshNode> mesh_nodes,
         std::list<::donkey::CameraNode> camerea_nodes,
         std::list<::donkey::DirectionalLightNode> directional_light_nodes,
-        const MeshNodeAllocator& allocator = Allocator<MeshNode>());
+        const MeshNodeAllocator& allocator);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
@@ -242,6 +243,12 @@ class FramePacket
         }
       }
 };
+
+template <typename T>
+using StackAllocator = StackAllocator<T, 4>;
+typedef FramePacket<StackAllocator> StackFramePacket;
+template <typename T>
+using StackVector = StackFramePacket::template Vector<T>;
 
 }
 }

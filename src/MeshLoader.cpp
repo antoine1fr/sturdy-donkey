@@ -99,7 +99,7 @@ namespace std
 namespace donkey {
 
 uint32_t MeshLoader::load(
-    render::ResourceManager& resource_manager,
+    render::ResourceManager* resource_manager,
     const std::string& path) const
 {
   std::cout << "Loading mesh from file: " << path << '\n';
@@ -128,7 +128,7 @@ uint32_t MeshLoader::load(
       uvs,
       tangents,
       bitangents);
-  return resource_manager.create_mesh(
+  return resource_manager->create_mesh(
       positions,
       normals,
       uvs,

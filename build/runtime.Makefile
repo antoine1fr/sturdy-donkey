@@ -56,6 +56,10 @@ CXX_SOURCES = \
 	$(SRC_DIR)render/CommandBucket.cpp \
 	$(SRC_DIR)render/DebugHudRenderer.cpp \
 	$(SRC_DIR)render/DeferredRenderer.cpp \
+	$(SRC_DIR)render/RenderPass.cpp \
+	$(SRC_DIR)render/albedo_pass.cpp \
+	$(SRC_DIR)render/gbuffer_pass.cpp \
+	$(SRC_DIR)render/light_pass.cpp \
 	$(SRC_DIR)render/Mesh.cpp \
 	$(SRC_DIR)render/ResourceManager.cpp \
 	$(SRC_DIR)render/TextureMaterialSlot.cpp \

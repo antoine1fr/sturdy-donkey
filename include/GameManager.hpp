@@ -54,8 +54,8 @@ class GameManager
 
   public:
     template <typename T>
-    using StackAllocator = render::DeferredRenderer::StackAllocator<T>;
-    using FramePacket = render::DeferredRenderer::StackFramePacket;
+    using StackAllocator = render::StackAllocator<T>;
+    using FramePacket = render::StackFramePacket;
 
     GameManager(IResourceLoaderDelegate& resource_loader);
     ~GameManager();

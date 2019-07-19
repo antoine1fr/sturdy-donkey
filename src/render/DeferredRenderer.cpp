@@ -43,6 +43,8 @@ DeferredRenderer::DeferredRenderer(
   driver_(driver),
   gpu_resource_manager_(driver_->get_resource_manager()),
   resource_manager_(resource_manager),
+  light_frame_packet_(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0)),
+  albedo_frame_packet_(StackAllocator<MeshNode>(Buffer::Tag::kAlbedoFramePacket, 0)),
   render_thread_(nullptr)
 {
   window_->make_current(render_context_);
@@ -59,19 +61,22 @@ DeferredRenderer::DeferredRenderer(
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       true,
-      false});
+      false,
+      &execute_gbuffer_pass});
   // register light accumulation pass
   add_render_pass({light_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
-      true});
+      true,
+      &execute_light_pass});
   // register final albedo pass
   add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
-      true});
+      true,
+      &execute_albedo_pass});
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -251,154 +256,37 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
         donkey::CameraNode::Type::kOrthographic));
 }
 
-void DeferredRenderer::bind_mesh_uniforms_(
-    CommandBucket& render_commands,
-    const Material& material,
-    const MeshNode& mesh_node) const
-{
-  // compute model matrix
-  glm::mat4 rotate_x = glm::rotate(
-			glm::mat4(1.0f),
-			glm::radians(mesh_node.angles.x),
-      glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 rotate_y = glm::rotate(
-			rotate_x,
-			glm::radians(mesh_node.angles.y),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(
-			rotate_y,
-			glm::radians(mesh_node.angles.z),
-      glm::vec3(0.0f, 0.0f, 1.0f));
-  glm::mat4 translate = glm::translate(
-			glm::mat4(1.0f),
-			mesh_node.position);
-  glm::mat4 scale = glm::scale(glm::mat4(1.0f), mesh_node.scale);
-  glm::mat4 model = translate * rotate_z * rotate_y * rotate_x * scale;
-  render_commands.bind_uniform(material.model_location, model);
-}
-
-void DeferredRenderer::bind_camera_uniforms_(
-    CommandBucket& render_commands,
-    const Material& material,
-    const CameraNode& camera_node) const
-{
-  render_commands.bind_uniform(material.view_location, camera_node.view);
-  render_commands.bind_uniform(material.projection_location,
-      camera_node.projection);
-}
-
-void DeferredRenderer::bind_light_uniforms_(
-    CommandBucket& render_commands,
-    const Material& material,
-    const glm::mat4& view,
-    const DirectionalLightNode* light_node) const
-{
-  // bind light infos
-  glm::mat4 rotate_x = glm::rotate(
-			glm::mat4(1.0f),
-			glm::radians(light_node->angles.x),
-      glm::vec3(1.0f, 0.0f, 0.0f));
-  glm::mat4 rotate_y = glm::rotate(
-			rotate_x,
-			glm::radians(light_node->angles.y),
-      glm::vec3(0.0f, 1.0f, 0.0f));
-  glm::mat4 rotate_z = glm::rotate(
-			rotate_y,
-			glm::radians(light_node->angles.z),
-      glm::vec3(0.0f, 0.0f, 1.0f));
-  glm::mat4 model = rotate_z * rotate_y * rotate_x;
-  glm::vec4 light_dir_shininess =
-    view * model * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-  light_dir_shininess.w = 10.0f;
-  render_commands.bind_uniform(material.light_dir_location,
-      light_dir_shininess);
-  render_commands.bind_uniform(material.light_diffuse_location,
-      light_node->diffuse);
-  render_commands.bind_uniform(material.light_specular_location,
-      light_node->specular);
-}
-
-void DeferredRenderer::render_mesh_node_(
-    const RenderPass& render_pass,
-    const MeshNode& mesh_node,
-    const CameraNode& camera_node,
-    const CameraNode* last_camera_node,
-    const DirectionalLightNode* light_node,
-    CommandBucket& render_commands)
-{
-  static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
-  const Mesh& mesh = resource_manager_->get_mesh(mesh_node.mesh_id);
-  const Material& material =
-    resource_manager_->get_material(mesh_node.material_id);
-  const AMaterial& gpu_material =
-    gpu_resource_manager_.get_material(material.gpu_resource_id);
-
-  if (last_material_id != mesh_node.material_id)
-  {
-    render_commands.bind_gpu_program(material.program_id);
-    gpu_material.bind_slots(render_commands);
-    last_material_id = mesh_node.material_id;
-  }
-
-  // bind built-in uniforms
-  bind_mesh_uniforms_(render_commands, material, mesh_node);
-  bind_camera_uniforms_(render_commands, material, camera_node);
-
-  // bind some useful data related to the camera used during gbuffer pass
-  if (last_camera_node)
-  {
-    glm::mat4 projection_inverse = glm::inverse(last_camera_node->projection);
-    render_commands.bind_uniform(material.gbuffer_projection_inverse_location,
-        projection_inverse);
-    render_commands.bind_uniform(material.gbuffer_view_location,
-        last_camera_node->view);
-    render_commands.bind_uniform(material.gbuffer_projection_params_location,
-        glm::vec2(last_camera_node->near_plane, last_camera_node->far_plane));
-    // camera position in view-space is always the origin
-    render_commands.bind_uniform(material.camera_position_location,
-        glm::vec3(0.0f));
-    render_commands.bind_uniform(material.ambient_location,
-        glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
-    if (light_node)
-    {
-      bind_light_uniforms_(render_commands, material, last_camera_node->view,
-          light_node);
-    }
-  }
-
-  // bind geometry
-  render_commands.bind_mesh(
-      mesh.gpu_resource_id,
-      material.position_location,
-      material.normal_location,
-      material.uv_location,
-      material.tangent_location,
-      material.bitangent_location);
-
-  render_commands.draw_elements(mesh.index_count);
-}
-
 void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     CommandBucket& render_commands)
 {
   signpost_start(1, 0, 0, 0, 0);
-  execute_gbuffer_pass_<StackAllocator>(
+  execute_gbuffer_pass(
     0,
     render_passes_[0],
     *gbuffer_frame_packet,
-    render_commands);
-  execute_light_pass_<StackAllocator>(
+    &(gbuffer_frame_packet->get_camera_nodes()[0]),
+    gbuffer_frame_packet->get_directional_light_nodes(),
+    render_commands,
+    resource_manager_,
+    &gpu_resource_manager_);
+  execute_light_pass(
     1,
     render_passes_[1],
     light_frame_packet_,
     &(gbuffer_frame_packet->get_camera_nodes()[0]),
     gbuffer_frame_packet->get_directional_light_nodes(),
-    render_commands);
-  execute_albedo_pass_<StackAllocator>(
+    render_commands,
+    resource_manager_,
+    &gpu_resource_manager_);
+  execute_albedo_pass(
     2,
     render_passes_[2],
     albedo_frame_packet_,
-    render_commands);
+    &(gbuffer_frame_packet->get_camera_nodes()[0]),
+    gbuffer_frame_packet->get_directional_light_nodes(),
+    render_commands,
+    resource_manager_,
+    &gpu_resource_manager_);
   signpost_end(1, 0, 0, 0, 0);
 }
 

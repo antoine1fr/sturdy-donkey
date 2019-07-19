@@ -34,7 +34,7 @@ class MeshLoader
 {
   public:
     uint32_t load(
-        render::ResourceManager& resource_manager,
+        render::ResourceManager* resource_manager,
         const std::string& path) const;
 
   private:

@@ -41,7 +41,7 @@ Game::~Game()
 }
 
 void Game::prepare_frame_packet(FramePacket* frame_packet,
-    StackAllocator<FramePacket>& allocator)
+                                StackAllocator<FramePacket>& allocator)
 {
   signpost_start(0, 2, 0, 0, 0);
   new (frame_packet) FramePacket(
