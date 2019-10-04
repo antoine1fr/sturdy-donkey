@@ -34,6 +34,7 @@
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
+#include "StackVector.hpp"
 
 namespace donkey {
 namespace render {
@@ -48,8 +49,10 @@ class DeferredRenderer
     gl::Driver* driver_;
     AResourceManager& gpu_resource_manager_;
     ResourceManager* resource_manager_;
-    StackFramePacket light_frame_packet_;
-    StackFramePacket albedo_frame_packet_;
+
+    typedef std::list<StackFramePacket> FramePacketList;
+    std::list<StackFramePacket> frame_packets_;
+
     std::thread* render_thread_;
     uint32_t light_program_id_;
     uint32_t albedo_program_id_;

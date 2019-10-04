@@ -43,8 +43,6 @@ DeferredRenderer::DeferredRenderer(
   driver_(driver),
   gpu_resource_manager_(driver_->get_resource_manager()),
   resource_manager_(resource_manager),
-  light_frame_packet_(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0)),
-  albedo_frame_packet_(StackAllocator<MeshNode>(Buffer::Tag::kAlbedoFramePacket, 0)),
   render_thread_(nullptr)
 {
   window_->make_current(render_context_);
@@ -209,6 +207,8 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
   uint32_t ambient_material_id = create_light_material_(
     "shaders/simple.vert.glsl",
     "shaders/ambient-pass.frag.glsl");
+  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0));
+  StackFramePacket& light_frame_packet_ = frame_packets_.back();
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -238,6 +238,8 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
   uint32_t albedo_material_id = create_albedo_material_(
     "shaders/simple.vert.glsl",
     "shaders/albedo-pass.frag.glsl");
+  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kAlbedoFramePacket, 0));
+  StackFramePacket& albedo_frame_packet_ = frame_packets_.back();
   albedo_frame_packet_.create_mesh_node(2,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -259,6 +261,7 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
 void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     CommandBucket& render_commands)
 {
+  FramePacketList::iterator frame_packet_it = frame_packets_.begin();
   signpost_start(1, 0, 0, 0, 0);
   execute_gbuffer_pass(
     0,
@@ -269,24 +272,18 @@ void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     render_commands,
     resource_manager_,
     &gpu_resource_manager_);
-  execute_light_pass(
-    1,
-    render_passes_[1],
-    light_frame_packet_,
-    &(gbuffer_frame_packet->get_camera_nodes()[0]),
-    gbuffer_frame_packet->get_directional_light_nodes(),
-    render_commands,
-    resource_manager_,
-    &gpu_resource_manager_);
-  execute_albedo_pass(
-    2,
-    render_passes_[2],
-    albedo_frame_packet_,
-    &(gbuffer_frame_packet->get_camera_nodes()[0]),
-    gbuffer_frame_packet->get_directional_light_nodes(),
-    render_commands,
-    resource_manager_,
-    &gpu_resource_manager_);
+  for (size_t i = 1; i < render_passes_.size(); ++i)
+  {
+    render_passes_[i].execute(
+      i,
+      render_passes_[i],
+      *(frame_packet_it++),
+      &(gbuffer_frame_packet->get_camera_nodes()[0]),
+      gbuffer_frame_packet->get_directional_light_nodes(),
+      render_commands,
+      resource_manager_,
+      &gpu_resource_manager_);
+  }
   signpost_end(1, 0, 0, 0, 0);
 }
 
