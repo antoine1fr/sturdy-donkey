@@ -1,8 +1,8 @@
-CC ?= clang
-CXX ?= clang++
-OBJC ?= clang++
+CC = clang
+CXX = clang++
+OBJC = clang++
 RM = rm -f
-AR ?= ar
+AR = ar
 TARGET_PREFIX ?= lib
 STATIC_TARGET_SUFFIX ?= .a
 DYNAMIC_TARGET_SUFFIX ?= .dylib
