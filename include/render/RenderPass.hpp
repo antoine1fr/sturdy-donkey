@@ -47,6 +47,7 @@ struct RenderPass
   glm::vec3 clear_color;
   bool depth_test;
   bool lighting; // loop through lights if true
+  bool blending;
   ExecuteRenderPass execute;
 };
 

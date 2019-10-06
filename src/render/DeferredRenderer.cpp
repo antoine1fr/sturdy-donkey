@@ -60,12 +60,14 @@ DeferredRenderer::DeferredRenderer(
       glm::vec3(0.0f, 0.0f, 0.0f),
       true,
       false,
+      false,
       &execute_gbuffer_pass});
   // register light accumulation pass
   add_render_pass({light_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
+      true,
       true,
       &execute_light_pass});
   // register final albedo pass
@@ -74,6 +76,7 @@ DeferredRenderer::DeferredRenderer(
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       true,
+      false,
       &execute_albedo_pass});
 }
 
