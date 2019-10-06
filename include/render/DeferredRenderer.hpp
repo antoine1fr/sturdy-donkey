@@ -97,6 +97,9 @@ class DeferredRenderer
     void create_light_accu_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
     void create_ambient_pass_frame_packet_(int width, int height);
+    void create_render_targets_(int width, int height);
+    void create_frame_packets_(int width, int height);
+    void create_render_passes_();
     void render_geometry_(
         size_t pass_num,
         const RenderPass& render_pass,

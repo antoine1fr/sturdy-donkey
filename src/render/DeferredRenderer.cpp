@@ -45,21 +45,42 @@ DeferredRenderer::DeferredRenderer(
   resource_manager_(resource_manager),
   render_thread_(nullptr)
 {
-  window_->make_current(render_context_);
   int width = window->get_width();
   int height = window->get_height();
-
+  window_->make_current(render_context_);
   create_light_pass_mesh_(width, height);
+  create_render_targets_(width, height);
+  create_frame_packets_(width, height);
+  create_render_passes_();
+}
+
+DeferredRenderer::~DeferredRenderer()
+{
+  if (render_thread_)
+  {
+    render_thread_->join();
+    delete render_thread_;
+  }
+}
+
+void DeferredRenderer::create_render_targets_(int width, int height)
+{
+  // render targets
   create_gbuffer_(width, height);
-
   create_light_accu_render_target_(width, height);
-  create_light_accu_pass_frame_packet_(width, height);
-
   create_albedo_render_target_(width, height);
+}
+
+void DeferredRenderer::create_frame_packets_(int width, int height)
+{
+  // frame packets
+  create_light_accu_pass_frame_packet_(width, height);
   create_albedo_pass_frame_packet_(width, height);
-
   create_ambient_pass_frame_packet_(width, height);
+}
 
+void DeferredRenderer::create_render_passes_()
+{
   // register gbuffer pass
   add_render_pass({gbuffer_id_,
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
@@ -92,15 +113,6 @@ DeferredRenderer::DeferredRenderer(
       false,
       false,
       nullptr});
-}
-
-DeferredRenderer::~DeferredRenderer()
-{
-  if (render_thread_)
-  {
-    render_thread_->join();
-    delete render_thread_;
-  }
 }
 
 void DeferredRenderer::create_light_pass_mesh_(int width, int height)
