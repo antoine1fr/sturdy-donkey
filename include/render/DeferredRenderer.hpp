@@ -56,12 +56,15 @@ class DeferredRenderer
     std::thread* render_thread_;
     uint32_t light_program_id_;
     uint32_t albedo_program_id_;
+    uint32_t ambient_program_id_;
     uint32_t light_rt_id_;
     uint32_t albedo_rt_id_;
     uint32_t normal_rt_id_;
     uint32_t depth_rt_id_;
+    uint32_t light_plus_albedo_rt_id_;
     uint32_t gbuffer_id_;
     uint32_t light_framebuffer_id_;
+    uint32_t albedo_framebuffer_id_;
     uint32_t screen_mesh_id_;
 
   private:
@@ -80,15 +83,20 @@ class DeferredRenderer
         const MeshNode& mesh_node) const;
     void create_light_pass_mesh_(int width, int height);
     void create_gbuffer_(int width, int height);
-    void create_light_render_target_(int width, int height);
+    void create_light_accu_render_target_(int width, int height);
+    void create_albedo_render_target_(int width, int height);
     uint32_t create_light_material_(
+        const std::string& vertex_shader_path,
+        const std::string& fragment_shader_path);
+    uint32_t create_ambient_material_(
         const std::string& vertex_shader_path,
         const std::string& fragment_shader_path);
     uint32_t create_albedo_material_(
         const std::string& vertex_shader_path,
         const std::string& fragment_shader_path);
-    void create_light_pass_frame_packet_(int width, int height);
+    void create_light_accu_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
+    void create_ambient_pass_frame_packet_(int width, int height);
     void render_geometry_(
         size_t pass_num,
         const RenderPass& render_pass,

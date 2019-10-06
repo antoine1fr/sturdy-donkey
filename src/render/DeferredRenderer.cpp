@@ -51,9 +51,15 @@ DeferredRenderer::DeferredRenderer(
 
   create_light_pass_mesh_(width, height);
   create_gbuffer_(width, height);
-  create_light_render_target_(width, height);
-  create_light_pass_frame_packet_(width, height);
+
+  create_light_accu_render_target_(width, height);
+  create_light_accu_pass_frame_packet_(width, height);
+
+  create_albedo_render_target_(width, height);
   create_albedo_pass_frame_packet_(width, height);
+
+  create_ambient_pass_frame_packet_(width, height);
+
   // register gbuffer pass
   add_render_pass({gbuffer_id_,
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
@@ -70,7 +76,15 @@ DeferredRenderer::DeferredRenderer(
       true,
       true,
       nullptr});
-  // register final albedo pass
+  // register albedo accumulation pass
+  add_render_pass({albedo_framebuffer_id_,
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      false,
+      false,
+      nullptr});
+  // register ambient accumulation pass
   add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -142,7 +156,7 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
       depth_rt.gpu_resource_id);
 }
 
-void DeferredRenderer::create_light_render_target_(int width, int height)
+void DeferredRenderer::create_light_accu_render_target_(int width, int height)
 {
   light_rt_id_ =
     resource_manager_->create_texture(width, height, pixel::Format::kRGBA,
@@ -156,6 +170,23 @@ void DeferredRenderer::create_light_render_target_(int width, int height)
   const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id);
   light_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
       light_rt.gpu_resource_id,
+      depth_rt.gpu_resource_id);
+}
+
+void DeferredRenderer::create_albedo_render_target_(int width, int height)
+{
+  light_plus_albedo_rt_id_ =
+    resource_manager_->create_texture(width, height, pixel::Format::kRGBA,
+        pixel::InternalFormat::kRGBA8, pixel::ComponentType::kUnsignedByte);
+  uint32_t depth_rt_id =
+    resource_manager_->create_texture(width, height,
+        pixel::Format::kDepthComponent,
+        pixel::InternalFormat::kDepthComponent24,
+        pixel::ComponentType::kFloat);
+  const Texture& color_rt = resource_manager_->get_texture(light_plus_albedo_rt_id_);
+  const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id);
+  albedo_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
+      color_rt.gpu_resource_id,
       depth_rt.gpu_resource_id);
 }
 
@@ -201,15 +232,32 @@ uint32_t DeferredRenderer::create_albedo_material_(
   return id;
 }
 
-void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
+uint32_t DeferredRenderer::create_ambient_material_(
+    const std::string& vertex_shader_path,
+    const std::string& fragment_shader_path)
+{
+  ambient_program_id_ = resource_manager_->load_gpu_program_from_file(
+    vertex_shader_path,
+    fragment_shader_path);
+  std::uint32_t id = resource_manager_->create_material(ambient_program_id_);
+  const render::Material& material = resource_manager_->get_material(id);
+  render::AMaterial& gpu_material = gpu_resource_manager_.get_material(
+      material.gpu_resource_id);
+  const Texture& albedo_rt = resource_manager_->get_texture(light_plus_albedo_rt_id_);
+  const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id_);
+  gpu_material.register_texture_slot("albedo_texture", albedo_rt.gpu_resource_id,
+      0);
+  gpu_material.register_texture_slot("depth_texture", depth_rt.gpu_resource_id,
+      1);
+  return id;
+}
+
+void DeferredRenderer::create_light_accu_pass_frame_packet_(int width, int height)
 {
   // create material for light accumulation pass
   uint32_t light_material_id = create_light_material_(
     "shaders/simple.vert.glsl",
     "shaders/light-pass.frag.glsl");
-  uint32_t ambient_material_id = create_light_material_(
-    "shaders/simple.vert.glsl",
-    "shaders/ambient-pass.frag.glsl");
   frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0));
   StackFramePacket& light_frame_packet_ = frame_packets_.back();
   light_frame_packet_.create_mesh_node(1,
@@ -218,14 +266,35 @@ void DeferredRenderer::create_light_pass_frame_packet_(int width, int height)
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_,
       light_material_id);
-  light_frame_packet_.create_mesh_node(1,
+  light_frame_packet_.add_camera_node(
+      donkey::CameraNode(
+        1,
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::tvec2<int>(0, 0),
+        glm::tvec2<GLsizei>(width, height),
+        0.0f,
+        -1.0f,
+        1.0f,
+        donkey::CameraNode::Type::kOrthographic));
+}
+
+void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
+{
+  // create material for light accumulation pass
+  uint32_t ambient_material_id = create_ambient_material_(
+    "shaders/simple.vert.glsl",
+    "shaders/ambient-pass.frag.glsl");
+  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0));
+  StackFramePacket& ambient_frame_packet_ = frame_packets_.back();
+  ambient_frame_packet_.create_mesh_node(3,
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, ambient_material_id);
-  light_frame_packet_.add_camera_node(
+  ambient_frame_packet_.add_camera_node(
       donkey::CameraNode(
-        1,
+        3,
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::tvec2<int>(0, 0),
