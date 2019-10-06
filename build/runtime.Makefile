@@ -5,17 +5,17 @@ DYNAMIC_TARGET = $(TARGET_PREFIX)$(BASE_TARGET)$(DYNAMIC_TARGET_SUFFIX)
 SRC_DIR = src/
 LIB_DIR = lib/
 
+COMMON_CFLAGS +=
+
 CFLAGS += \
-	-g3 \
-	-O0 \
+	$(COMMON_CFLAGS) \
 	-Ilib/gl3w \
 	-Wall \
 	-Werror \
 	-pedantic
 
 BASIC_CXXFLAGS += \
-	-g3 \
-	-O0 \
+	$(COMMON_CFLAGS) \
 	-std=c++14
 
 CXXFLAGS += \
