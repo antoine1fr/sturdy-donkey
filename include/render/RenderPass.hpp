@@ -61,35 +61,5 @@ void render_mesh_node(
   ResourceManager* resource_manager,
   AResourceManager* gpu_resource_manager);
 
-void execute_light_pass(
-  size_t pass_num,
-  const RenderPass& render_pass,
-  const StackFramePacket& frame_packet,
-  const CameraNode* last_camera_node,
-  const StackVector<DirectionalLightNode>& light_nodes,
-  CommandBucket& render_commands,
-  ResourceManager* resource_manager,
-  AResourceManager* gpu_resource_manager);
-
-void execute_albedo_pass(
-  size_t pass_num,
-  const RenderPass& render_pass,
-  const StackFramePacket& frame_packet,
-  const CameraNode* last_camera_node,
-  const StackVector<DirectionalLightNode>& light_nodes,
-  CommandBucket& render_commands,
-  ResourceManager* resource_manager,
-  AResourceManager* gpu_resource_manager);
-
-void execute_gbuffer_pass(
-  size_t pass_num,
-  const RenderPass& render_pass,
-  const StackFramePacket& frame_packet,
-  const CameraNode* last_camera_node,
-  const StackVector<DirectionalLightNode>& light_nodes,
-  CommandBucket& render_commands,
-  ResourceManager* resource_manager,
-  AResourceManager* gpu_resource_manager);
-
 }
 }

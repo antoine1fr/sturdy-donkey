@@ -89,6 +89,25 @@ class DeferredRenderer
         const std::string& fragment_shader_path);
     void create_light_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
+    void render_geometry_(
+        size_t pass_num,
+        const RenderPass& render_pass,
+        const StackVector<MeshNode>& mesh_nodes,
+        const CameraNode& camera_node,
+        const CameraNode* last_camera_node,
+        const StackVector<DirectionalLightNode>& light_nodes,
+        CommandBucket& render_commands,
+        ResourceManager* resource_manager,
+        AResourceManager* gpu_resource_manager);
+    void execute_pass_(
+        size_t pass_num,
+        const RenderPass& render_pass,
+        const StackFramePacket& frame_packet,
+        const CameraNode* last_camera_node,
+        const StackVector<DirectionalLightNode>& light_nodes,
+        CommandBucket& render_commands,
+        ResourceManager* resource_manager,
+        AResourceManager* gpu_resource_manager);
 
   public:
     DeferredRenderer(

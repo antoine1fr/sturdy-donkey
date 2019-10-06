@@ -61,7 +61,7 @@ DeferredRenderer::DeferredRenderer(
       true,
       false,
       false,
-      &execute_gbuffer_pass});
+      nullptr});
   // register light accumulation pass
   add_render_pass({light_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
@@ -69,7 +69,7 @@ DeferredRenderer::DeferredRenderer(
       false,
       true,
       true,
-      &execute_light_pass});
+      nullptr});
   // register final albedo pass
   add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
@@ -77,7 +77,7 @@ DeferredRenderer::DeferredRenderer(
       false,
       true,
       false,
-      &execute_albedo_pass});
+      nullptr});
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -261,12 +261,89 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
         donkey::CameraNode::Type::kOrthographic));
 }
 
+void DeferredRenderer::render_geometry_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const StackVector<MeshNode>& mesh_nodes,
+    const CameraNode& camera_node,
+    const CameraNode* last_camera_node,
+    const StackVector<DirectionalLightNode>& light_nodes,
+    CommandBucket& render_commands,
+    ResourceManager* resource_manager,
+    AResourceManager* gpu_resource_manager)
+{
+  for (const MeshNode& mesh_node: mesh_nodes)
+  {
+    if (camera_node.pass_num != pass_num)
+      continue;
+
+    if (render_pass.lighting)
+    {
+      for (const DirectionalLightNode &light_node : light_nodes)
+      {
+        render_mesh_node(render_pass,
+                         mesh_node,
+                         camera_node,
+                         last_camera_node,
+                         &light_node,
+                         render_commands,
+                         resource_manager,
+                         gpu_resource_manager);
+      }
+    }
+    else
+    {
+      render_mesh_node(
+        render_pass,
+        mesh_node,
+        camera_node,
+        last_camera_node,
+        nullptr,
+        render_commands,
+        resource_manager,
+        gpu_resource_manager);
+    }
+  }
+}
+
+void DeferredRenderer::execute_pass_(
+    size_t pass_num,
+    const RenderPass& render_pass,
+    const StackFramePacket& frame_packet,
+    const CameraNode* last_camera_node,
+    const StackVector<DirectionalLightNode>& light_nodes,
+    CommandBucket& render_commands,
+    ResourceManager* resource_manager,
+    AResourceManager* gpu_resource_manager)
+{
+  render_commands.bind_framebuffer(render_pass.framebuffer_id);
+  render_commands.set_depth_test(render_pass.depth_test);
+  render_commands.set_blending(render_pass.blending);
+
+  const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
+  assert(camera_node.pass_num == pass_num);
+  render_commands.set_viewport(camera_node.viewport_position,
+      camera_node.viewport_size);
+  render_commands.clear_framebuffer(render_pass.clear_color);
+
+  render_geometry_(
+      pass_num,
+      render_pass,
+      frame_packet.get_mesh_nodes(),
+      camera_node,
+      last_camera_node,
+      light_nodes,
+      render_commands,
+      resource_manager,
+      gpu_resource_manager);
+}
+
 void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     CommandBucket& render_commands)
 {
   FramePacketList::iterator frame_packet_it = frame_packets_.begin();
   signpost_start(1, 0, 0, 0, 0);
-  execute_gbuffer_pass(
+  execute_pass_(
     0,
     render_passes_[0],
     *gbuffer_frame_packet,
@@ -277,7 +354,7 @@ void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     &gpu_resource_manager_);
   for (size_t i = 1; i < render_passes_.size(); ++i)
   {
-    render_passes_[i].execute(
+    execute_pass_(
       i,
       render_passes_[i],
       *(frame_packet_it++),
