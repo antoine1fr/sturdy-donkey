@@ -16,7 +16,7 @@ CFLAGS += \
 
 BASIC_CXXFLAGS += \
 	$(COMMON_CFLAGS) \
-	-std=c++14
+	-std=c++17
 
 CXXFLAGS += \
 	$(BASIC_CXXFLAGS) \
