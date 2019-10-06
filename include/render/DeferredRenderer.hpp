@@ -34,6 +34,7 @@
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
+#include "StackVector.hpp"
 
 namespace donkey {
 namespace render {
@@ -48,17 +49,22 @@ class DeferredRenderer
     gl::Driver* driver_;
     AResourceManager& gpu_resource_manager_;
     ResourceManager* resource_manager_;
-    StackFramePacket light_frame_packet_;
-    StackFramePacket albedo_frame_packet_;
+
+    typedef std::list<StackFramePacket> FramePacketList;
+    std::list<StackFramePacket> frame_packets_;
+
     std::thread* render_thread_;
     uint32_t light_program_id_;
     uint32_t albedo_program_id_;
+    uint32_t ambient_program_id_;
     uint32_t light_rt_id_;
     uint32_t albedo_rt_id_;
     uint32_t normal_rt_id_;
     uint32_t depth_rt_id_;
+    uint32_t light_plus_albedo_rt_id_;
     uint32_t gbuffer_id_;
     uint32_t light_framebuffer_id_;
+    uint32_t albedo_framebuffer_id_;
     uint32_t screen_mesh_id_;
 
   private:
@@ -77,15 +83,39 @@ class DeferredRenderer
         const MeshNode& mesh_node) const;
     void create_light_pass_mesh_(int width, int height);
     void create_gbuffer_(int width, int height);
-    void create_light_render_target_(int width, int height);
+    void create_light_accu_render_target_(int width, int height);
+    void create_albedo_render_target_(int width, int height);
     uint32_t create_light_material_(
+        const std::string& vertex_shader_path,
+        const std::string& fragment_shader_path);
+    uint32_t create_ambient_material_(
         const std::string& vertex_shader_path,
         const std::string& fragment_shader_path);
     uint32_t create_albedo_material_(
         const std::string& vertex_shader_path,
         const std::string& fragment_shader_path);
-    void create_light_pass_frame_packet_(int width, int height);
+    void create_light_accu_pass_frame_packet_(int width, int height);
     void create_albedo_pass_frame_packet_(int width, int height);
+    void create_ambient_pass_frame_packet_(int width, int height);
+    void render_geometry_(
+        size_t pass_num,
+        const RenderPass& render_pass,
+        const StackVector<MeshNode>& mesh_nodes,
+        const CameraNode& camera_node,
+        const CameraNode* last_camera_node,
+        const StackVector<DirectionalLightNode>& light_nodes,
+        CommandBucket& render_commands,
+        ResourceManager* resource_manager,
+        AResourceManager* gpu_resource_manager);
+    void execute_pass_(
+        size_t pass_num,
+        const RenderPass& render_pass,
+        const StackFramePacket& frame_packet,
+        const CameraNode* last_camera_node,
+        const StackVector<DirectionalLightNode>& light_nodes,
+        CommandBucket& render_commands,
+        ResourceManager* resource_manager,
+        AResourceManager* gpu_resource_manager);
 
   public:
     DeferredRenderer(
