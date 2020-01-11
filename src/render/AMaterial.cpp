@@ -24,9 +24,7 @@ namespace donkey
 namespace render
 {
 
-AMaterial::AMaterial(const AResourceManager& resource_manager,
-    uint32_t program_id):
-  resource_manager_(static_cast<const gl::ResourceManager&>(resource_manager)),
+AMaterial::AMaterial(uint32_t program_id):
   program_id(program_id)
 {
 }

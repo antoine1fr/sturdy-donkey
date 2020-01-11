@@ -18,6 +18,7 @@
 #pragma once
 
 #include "render/AMaterial.hpp"
+#include "render/gl/ResourceManager.hpp"
 
 namespace donkey {
 namespace render {
@@ -25,9 +26,12 @@ namespace gl {
 
 class Material: public AMaterial
 {
+  private:
+    const ResourceManager& resource_manager_;
+
   public:
     Material(
-        const AResourceManager& resource_manager,
+        const ResourceManager& resource_manager,
         uint32_t program_id);
     virtual ~Material()
     {

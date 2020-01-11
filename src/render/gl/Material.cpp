@@ -19,16 +19,16 @@
 
 #include "render/gl/Material.hpp"
 #include "render/gl/GpuProgram.hpp"
-#include "render/gl/ResourceManager.hpp"
 
 namespace donkey {
 namespace render {
 namespace gl {
 
 Material::Material(
-    const AResourceManager& resource_manager,
+    const ResourceManager& resource_manager,
     uint32_t program_id):
-  AMaterial(resource_manager, program_id)
+  AMaterial(program_id),
+  resource_manager_(resource_manager)
 {
   const GpuProgram& program = resource_manager_.get_gpu_program(program_id);
   position_location = glGetAttribLocation(program.handle, "position");

@@ -29,12 +29,6 @@
 namespace donkey {
 namespace render {
 
-class AResourceManager;
-
-namespace gl {
-  class ResourceManager;
-}
-
 class AMaterial
 {
   protected:
@@ -47,7 +41,6 @@ class AMaterial
     std::vector<ScalarMaterialSlot<glm::mat3>> mat3_slots_;
     std::vector<ScalarMaterialSlot<glm::mat4>> mat4_slots_;
     std::vector<ScalarMaterialSlot<int>> int_slots_;
-    const gl::ResourceManager& resource_manager_;
 
   public:
     uint32_t program_id;
@@ -69,7 +62,7 @@ class AMaterial
     int camera_position_location;
 
   public:
-    AMaterial(const AResourceManager& resource_manager, uint32_t program_id);
+    AMaterial(uint32_t program_id);
     virtual ~AMaterial() {}
 
     void bind_slots(CommandBucket& render_commands) const;
