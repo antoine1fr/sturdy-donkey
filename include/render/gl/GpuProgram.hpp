@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <GL/gl3w.h>
+
 namespace donkey {
 namespace render {
 namespace gl {
