@@ -19,6 +19,7 @@
 
 #include <GL/gl3w.h>
 #include <SDL.h>
+#include <array>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -50,9 +51,9 @@ class ResourceManager: public AResourceManager
     std::vector<Framebuffer> framebuffers_;
     std::vector<Material> materials_;
     std::vector<State> states_;
-    static const std::vector<GLenum> pixel_internal_formats_;
-    static const std::vector<GLenum> pixel_formats_;
-    static const std::vector<GLenum> pixel_component_types_;
+    static const std::array<GLenum, 4> pixel_internal_formats_;
+    static const std::array<GLenum, 3> pixel_formats_;
+    static const std::array<GLenum, 3> pixel_component_types_;
 
   private:
     template <GLenum type>

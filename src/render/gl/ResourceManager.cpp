@@ -25,20 +25,20 @@ namespace donkey {
 namespace render {
 namespace gl {
 
-const std::vector<GLenum> ResourceManager::pixel_internal_formats_ = {
+const std::array<GLenum, 4> ResourceManager::pixel_internal_formats_ = {
   GL_RGB8,
   GL_RGB16F,
   GL_RGBA8,
   GL_DEPTH_COMPONENT24
 };
 
-const std::vector<GLenum> ResourceManager::pixel_formats_ = {
+const std::array<GLenum, 3> ResourceManager::pixel_formats_ = {
   GL_RGB,
   GL_RGBA,
   GL_DEPTH_COMPONENT
 };
 
-const std::vector<GLenum> ResourceManager::pixel_component_types_ = {
+const std::array<GLenum, 3> ResourceManager::pixel_component_types_ = {
   GL_BYTE,
   GL_UNSIGNED_BYTE,
   GL_FLOAT
