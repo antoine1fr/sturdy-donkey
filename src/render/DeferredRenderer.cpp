@@ -87,32 +87,28 @@ void DeferredRenderer::create_render_passes_()
       glm::vec3(0.0f, 0.0f, 0.0f),
       true,
       false,
-      false,
-      nullptr});
+      false});
   // register light accumulation pass
   add_render_pass({light_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       true,
-      true,
-      nullptr});
+      true});
   // register albedo accumulation pass
   add_render_pass({albedo_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       false,
-      false,
-      nullptr});
+      false});
   // register ambient accumulation pass
   add_render_pass({std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       false,
       false,
-      false,
-      nullptr});
+      false});
 }
 
 void DeferredRenderer::create_light_pass_mesh_(int width, int height)

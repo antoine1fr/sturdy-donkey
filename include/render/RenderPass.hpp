@@ -48,7 +48,6 @@ struct RenderPass
   bool depth_test;
   bool lighting; // loop through lights if true
   bool blending;
-  ExecuteRenderPass execute;
 };
 
 void render_mesh_node(
