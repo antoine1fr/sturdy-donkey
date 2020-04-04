@@ -358,37 +358,27 @@ uint32_t ResourceManager::create_texture(
   return id;
 }
 
-uint32_t ResourceManager::create_framebuffer(uint32_t albedo_rt_id,
-    uint32_t normal_rt_id, uint32_t depth_rt_id)
+uint32_t ResourceManager::create_framebuffer(
+  uint32_t depth_rt_id,
+  const std::vector<uint32_t>& color_rt_ids)
 {
   GLuint framebuffer;
   glGenFramebuffers(1, &framebuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-      GL_TEXTURE_2D, get_texture(albedo_rt_id).texture, 0);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-      GL_TEXTURE_2D, get_texture(normal_rt_id).texture, 0);
+  for (size_t i = 0; i < color_rt_ids.size(); ++i)
+  {
+    uint32_t id = color_rt_ids[i];
+    glFramebufferTexture2D(GL_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0 + i,
+                           GL_TEXTURE_2D,
+                           get_texture(id).texture,
+                           0);
+  }
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
       GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
   check_gl_framebuffer(GL_FRAMEBUFFER);
   uint32_t id = framebuffers_.size();
-  framebuffers_.push_back(Framebuffer(framebuffer, 2));
-  return id;
-}
-
-uint32_t ResourceManager::create_framebuffer(uint32_t color_rt_id,
-    uint32_t depth_rt_id)
-{
-  GLuint framebuffer;
-  glGenFramebuffers(1, &framebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-      GL_TEXTURE_2D, get_texture(color_rt_id).texture, 0);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-      GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
-  check_gl_framebuffer(GL_FRAMEBUFFER);
-  uint32_t id = framebuffers_.size();
-  framebuffers_.push_back(Framebuffer(framebuffer, 1));
+  framebuffers_.push_back(Framebuffer(framebuffer, color_rt_ids.size()));
   return id;
 }
 

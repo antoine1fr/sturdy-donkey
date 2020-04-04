@@ -159,9 +159,9 @@ void DeferredRenderer::create_gbuffer_(int width, int height)
   const Texture& normal_rt = resource_manager_->get_texture(normal_rt_id_);
   const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id_);
   gbuffer_id_ = gpu_resource_manager_.create_framebuffer(
-      albedo_rt.gpu_resource_id,
-      normal_rt.gpu_resource_id,
-      depth_rt.gpu_resource_id);
+    depth_rt.gpu_resource_id,
+    {albedo_rt.gpu_resource_id,
+     normal_rt.gpu_resource_id});
 }
 
 void DeferredRenderer::create_light_accu_render_target_(int width, int height)
@@ -177,8 +177,8 @@ void DeferredRenderer::create_light_accu_render_target_(int width, int height)
   const Texture& light_rt = resource_manager_->get_texture(light_rt_id_);
   const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id);
   light_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
-      light_rt.gpu_resource_id,
-      depth_rt.gpu_resource_id);
+    depth_rt.gpu_resource_id,
+    {light_rt.gpu_resource_id});
 }
 
 void DeferredRenderer::create_albedo_render_target_(int width, int height)
@@ -194,8 +194,8 @@ void DeferredRenderer::create_albedo_render_target_(int width, int height)
   const Texture& color_rt = resource_manager_->get_texture(light_plus_albedo_rt_id_);
   const Texture& depth_rt = resource_manager_->get_texture(depth_rt_id);
   albedo_framebuffer_id_ = gpu_resource_manager_.create_framebuffer(
-      color_rt.gpu_resource_id,
-      depth_rt.gpu_resource_id);
+    depth_rt.gpu_resource_id,
+    {color_rt.gpu_resource_id});
 }
 
 uint32_t DeferredRenderer::create_light_material_(

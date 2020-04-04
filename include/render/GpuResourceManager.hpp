@@ -63,13 +63,8 @@ class GpuResourceManager
         pixel::ComponentType component_type) = 0;
 
     virtual uint32_t create_framebuffer(
-        uint32_t albedo_rt_id,
-        uint32_t normal_rt_id,
-        uint32_t depth_rt_id) = 0;
-
-    virtual uint32_t create_framebuffer(
-        uint32_t color_rt_id,
-        uint32_t depth_rt_id) = 0;
+      uint32_t depth_rt_id,
+      const std::vector<uint32_t>& color_rt_ids) = 0;
 
     virtual uint32_t create_state(const render::State& state) = 0;
 

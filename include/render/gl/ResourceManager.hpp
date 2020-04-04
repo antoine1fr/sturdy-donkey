@@ -94,12 +94,8 @@ class ResourceManager: public GpuResourceManager
         pixel::InternalFormat internal_format,
         pixel::ComponentType component_type);
     virtual uint32_t create_framebuffer(
-        uint32_t albedo_rt_id,
-        uint32_t normal_rt_id,
-        uint32_t depth_rt_id);
-    virtual uint32_t create_framebuffer(
-        uint32_t color_rt_id,
-        uint32_t depth_rt_id);
+      uint32_t depth_rt_id,
+      const std::vector<uint32_t>& color_rt_ids);
 
     virtual uint32_t create_state(const render::State& state);
 
