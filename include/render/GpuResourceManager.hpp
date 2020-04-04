@@ -29,7 +29,7 @@
 namespace donkey {
 namespace render {
 
-class AResourceManager
+class GpuResourceManager
 {
   public:
     virtual void cleanup() = 0;

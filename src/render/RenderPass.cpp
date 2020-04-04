@@ -94,7 +94,7 @@ void render_mesh_node(
     const DirectionalLightNode* light_node,
     CommandBucket& render_commands,
     ResourceManager* resource_manager,
-    AResourceManager* gpu_resource_manager)
+    GpuResourceManager* gpu_resource_manager)
 {
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
   const Mesh& mesh = resource_manager->get_mesh(mesh_node.mesh_id);

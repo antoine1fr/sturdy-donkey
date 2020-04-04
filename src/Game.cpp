@@ -21,7 +21,7 @@
 
 #include "debug.hpp"
 #include "common.hpp"
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 #include "render/Material.hpp"
 #include "Game.hpp"
 #include "Buffer.hpp"

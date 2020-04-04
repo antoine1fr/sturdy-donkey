@@ -26,7 +26,7 @@
 #include <iostream>
 
 #include "common.hpp"
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 #include "render/gl/GpuProgram.hpp"
 #include "render/gl/Mesh.hpp"
 #include "render/gl/Texture.hpp"
@@ -42,7 +42,7 @@ namespace gl {
 
 class Material;
 
-class ResourceManager: public AResourceManager
+class ResourceManager: public GpuResourceManager
 {
   private:
     std::vector<GpuProgram> gpu_programs_;

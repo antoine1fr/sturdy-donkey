@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 #include "render/Material.hpp"
 #include "render/State.hpp"
 
@@ -27,7 +27,7 @@ namespace render {
 class ResourceManager
 {
   private:
-    AResourceManager& gpu_resource_manager_;
+    GpuResourceManager& gpu_resource_manager_;
     std::vector<GpuProgram> gpu_programs_;
     std::vector<Mesh> meshes_;
     std::vector<Texture> textures_;
@@ -35,7 +35,7 @@ class ResourceManager
     std::vector<State> states_;
 
   public:
-    ResourceManager(AResourceManager& gpu_resource_manager);
+    ResourceManager(GpuResourceManager& gpu_resource_manager);
 
     const GpuProgram& get_gpu_program(uint32_t id) const;
     const Material& get_material(uint32_t id) const;

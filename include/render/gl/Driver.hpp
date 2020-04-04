@@ -43,7 +43,7 @@ class Driver
   public:
     Driver();
     void execute_commands(const CommandBucket& commands);
-    AResourceManager& get_resource_manager();
+    GpuResourceManager& get_resource_manager();
 
   private:
     void output_debug_info_() const;

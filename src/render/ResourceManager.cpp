@@ -20,7 +20,7 @@
 namespace donkey {
 namespace render {
 
-ResourceManager::ResourceManager(AResourceManager& gpu_resource_manager):
+ResourceManager::ResourceManager(GpuResourceManager& gpu_resource_manager):
   gpu_resource_manager_(gpu_resource_manager)
 {
 }

@@ -347,7 +347,7 @@ void DeferredRenderer::render_geometry_(
     const StackVector<DirectionalLightNode>& light_nodes,
     CommandBucket& render_commands,
     ResourceManager* resource_manager,
-    AResourceManager* gpu_resource_manager)
+    GpuResourceManager* gpu_resource_manager)
 {
   for (const MeshNode& mesh_node: mesh_nodes)
   {
@@ -391,7 +391,7 @@ void DeferredRenderer::execute_pass_(
     const StackVector<DirectionalLightNode>& light_nodes,
     CommandBucket& render_commands,
     ResourceManager* resource_manager,
-    AResourceManager* gpu_resource_manager)
+    GpuResourceManager* gpu_resource_manager)
 {
   render_commands.bind_framebuffer(render_pass.framebuffer_id);
   render_commands.set_depth_test(render_pass.depth_test);

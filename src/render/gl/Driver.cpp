@@ -337,7 +337,7 @@ void Driver::set_state_(const Command& command)
     glDisable(GL_STENCIL_TEST);
 }
 
-AResourceManager& Driver::get_resource_manager()
+GpuResourceManager& Driver::get_resource_manager()
 {
   return resource_manager_;
 }

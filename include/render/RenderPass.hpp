@@ -45,7 +45,7 @@ void render_mesh_node(
   const DirectionalLightNode* light_node,
   CommandBucket& render_commands,
   ResourceManager* resource_manager,
-  AResourceManager* gpu_resource_manager);
+  GpuResourceManager* gpu_resource_manager);
 
 }
 }

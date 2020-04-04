@@ -33,7 +33,7 @@ namespace donkey
 namespace render
 {
 
-class AResourceManager;
+class GpuResourceManager;
 
 class Command
 {

@@ -30,7 +30,7 @@
 #include "IResourceLoaderDelegate.hpp"
 #include "render/gl/Driver.hpp"
 #include "render/FramePacket.hpp"
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
@@ -47,7 +47,7 @@ class DeferredRenderer
     Window* window_;
     SDL_GLContext render_context_;
     gl::Driver* driver_;
-    AResourceManager& gpu_resource_manager_;
+    GpuResourceManager& gpu_resource_manager_;
     ResourceManager* resource_manager_;
 
     typedef std::list<StackFramePacket> FramePacketList;
@@ -109,7 +109,7 @@ class DeferredRenderer
         const StackVector<DirectionalLightNode>& light_nodes,
         CommandBucket& render_commands,
         ResourceManager* resource_manager,
-        AResourceManager* gpu_resource_manager);
+        GpuResourceManager* gpu_resource_manager);
     void execute_pass_(
         size_t pass_num,
         const RenderPass& render_pass,
@@ -118,7 +118,7 @@ class DeferredRenderer
         const StackVector<DirectionalLightNode>& light_nodes,
         CommandBucket& render_commands,
         ResourceManager* resource_manager,
-        AResourceManager* gpu_resource_manager);
+        GpuResourceManager* gpu_resource_manager);
 
   public:
     DeferredRenderer(

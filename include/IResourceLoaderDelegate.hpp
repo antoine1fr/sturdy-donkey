@@ -18,7 +18,7 @@
 #pragma once
 
 #include "render/Window.hpp"
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 #include "render/ResourceManager.hpp"
 #include "Scene.hpp"
 
@@ -32,7 +32,7 @@ class IResourceLoaderDelegate
     virtual void load_render_resources(
         render::Window* window,
         render::ResourceManager* resource_manager,
-        render::AResourceManager* gpu_resource_manager) = 0;
+        render::GpuResourceManager* gpu_resource_manager) = 0;
 };
 
 }

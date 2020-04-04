@@ -15,7 +15,7 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "render/AResourceManager.hpp"
+#include "render/GpuResourceManager.hpp"
 
 namespace donkey
 {
