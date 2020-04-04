@@ -27,19 +27,6 @@ namespace donkey
 namespace render
 {
 
-struct RenderPass;
-
-typedef void (*ExecuteRenderPass)(
-  size_t pass_num,
-  const RenderPass& render_pass,
-  const StackFramePacket& frame_packet,
-  const CameraNode* last_camera_node,
-  const StackVector<DirectionalLightNode>& light_nodes,
-  CommandBucket& render_commands,
-  ResourceManager* resource_manager,
-  AResourceManager* gpu_resource_manager);
-
-
 struct RenderPass
 {
   uint32_t framebuffer_id;
