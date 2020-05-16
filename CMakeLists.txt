@@ -11,10 +11,15 @@ find_package(tinyobjloader REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED MODULE)
 
-add_library(sturdy-donkey SHARED
+add_library(imgui INTERFACE IMPORTED)
+target_sources(imgui
+  INTERFACE
   lib/imgui/imgui.cpp
   lib/imgui/imgui_draw.cpp
   lib/imgui/imgui_widgets.cpp
+)
+
+add_library(sturdy-donkey SHARED
   src/Buffer.cpp
   src/BufferPool.cpp
   src/Game.cpp
@@ -53,6 +58,7 @@ target_include_directories(sturdy-donkey
 
 target_link_libraries(sturdy-donkey
   PRIVATE
+  imgui
   gl3w
   glm
   tinyobjloader
