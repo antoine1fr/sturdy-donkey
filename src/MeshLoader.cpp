@@ -23,7 +23,6 @@
 #include "hash.hpp"
 #include "MeshLoader.hpp"
 
-#define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
 namespace
@@ -107,10 +106,10 @@ uint32_t MeshLoader::load(
   tinyobj::attrib_t attributes;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
-  //std::string warning;
+  std::string warning;
   std::string error;
 
-  tinyobj::LoadObj(&attributes, &shapes, &materials, &error,
+  tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error,
       path.c_str());
   // TODO: implement support for sub-meshes.
   std::vector<uint32_t> indices;
