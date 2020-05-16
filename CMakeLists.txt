@@ -11,7 +11,7 @@ find_package(tinyobjloader REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED MODULE)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(sturdy-donkey SHARED
   lib/imgui/imgui.cpp
   lib/imgui/imgui_draw.cpp
   lib/imgui/imgui_widgets.cpp
@@ -51,7 +51,7 @@ target_include_directories(sturdy-donkey
   lib/imgui
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(sturdy-donkey
   PRIVATE
   gl3w
   glm
