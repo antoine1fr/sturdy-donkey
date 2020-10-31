@@ -11,10 +11,10 @@ find_package(tinyobjloader REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED MODULE)
 
-add_library(imgui INTERFACE IMPORTED)
-set_target_properties(imgui PROPERTIES
+add_library(imgui::imgui INTERFACE IMPORTED)
+set_target_properties(imgui::imgui PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/imgui")
-target_sources(imgui
+target_sources(imgui::imgui
   INTERFACE
   lib/imgui/imgui.cpp
   lib/imgui/imgui_draw.cpp
@@ -58,10 +58,10 @@ target_include_directories(sturdy-donkey
 
 target_link_libraries(sturdy-donkey
   PRIVATE
-  imgui
   gl3w
   glm
   tinyobjloader
   SDL2::SDL2
   SDL2_image::SDL2_image
+  imgui::imgui
 )
