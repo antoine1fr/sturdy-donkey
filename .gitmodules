@@ -9,4 +9,5 @@
 	url = https://github.com/skaslev/gl3w.git
 [submodule "tinyobjloader"]
 	path = lib/tinyobjloader
-	url = https://github.com/tinyobjloader/tinyobjloader.git
+	url = https://github.com/antoine1fr/tinyobjloader.git
+	branch = fix-cmake
