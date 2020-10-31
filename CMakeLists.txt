@@ -65,9 +65,9 @@ target_include_directories(sturdy-donkey
 
 target_link_libraries(sturdy-donkey
   PRIVATE
-  gl3w
   SDL2::SDL2
   SDL2_image::SDL2_image
+  gl3w
   glm::glm
   imgui::imgui
   tinyobjloader::tinyobjloader
