@@ -7,7 +7,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(gl3w REQUIRED)
 find_package(glm REQUIRED MODULE)
-find_package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED MODULE)
 find_package(SDL2_image REQUIRED MODULE)
 
 add_library(tinyobjloader::tinyobjloader INTERFACE IMPORTED)
