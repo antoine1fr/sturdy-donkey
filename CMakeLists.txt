@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.12)
 project(sturdy-donkey VERSION 0.4.0 LANGUAGES C CXX)
 
 # Search for dependencies in submodules when falling back to config mode.
