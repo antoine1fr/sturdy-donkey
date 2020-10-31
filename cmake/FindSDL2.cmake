@@ -1,0 +1,33 @@
+find_package(PkgConfig)
+
+pkg_check_modules(PC_SDL2 QUIET sdl2)
+find_path(SDL2_INCLUDE_DIR
+  NAMES SDL.h
+  PATHS ${PC_SDL2_INCLUDE_DIRS}
+)
+find_library(SDL2_LIBRARY
+  NAMES SDL2
+  PATHS ${PC_SDL2_LIBRARY_DIRS}
+)
+
+set(SDL2_VERSION ${PC_SDL2_VERSION})
+mark_as_advanced(SDL2_FOUND SDL2_INCLUDE_DIR SDL2_VERSION)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SDL2
+  REQUIRED_VARS SDL2_INCLUDE_DIR
+  VERSION_VAR SDL2_VERSION
+)
+
+if(SDL2_FOUND)
+  set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+  set(SDL2_LIBRARIES ${SDL2_LIBRARY})
+endif()
+
+if(SDL2_FOUND AND NOT TARGET SDL2::SDL2)
+  add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+  set_target_properties(SDL2::SDL2 PROPERTIES
+    IMPORTED_LOCATION "${SDL2_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
+  )
+endif()

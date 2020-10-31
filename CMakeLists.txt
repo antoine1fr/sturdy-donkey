@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.12)
 project(sturdy-donkey VERSION 0.4.0 LANGUAGES C CXX)
 
 # Search for dependencies in submodules when falling back to config mode.
@@ -7,7 +7,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(gl3w REQUIRED)
 find_package(glm REQUIRED MODULE)
-find_package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED MODULE)
 find_package(SDL2_image REQUIRED MODULE)
 
 add_library(tinyobjloader::tinyobjloader INTERFACE IMPORTED)
@@ -15,7 +15,7 @@ set_target_properties(tinyobjloader::tinyobjloader PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 target_sources(tinyobjloader::tinyobjloader
   INTERFACE
-  lib/tinyobjloader/tiny_obj_loader.cc
+  "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader/tiny_obj_loader.cc"
 )
 
 add_library(imgui::imgui INTERFACE IMPORTED)
@@ -23,9 +23,9 @@ set_target_properties(imgui::imgui PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/imgui")
 target_sources(imgui::imgui
   INTERFACE
-  lib/imgui/imgui.cpp
-  lib/imgui/imgui_draw.cpp
-  lib/imgui/imgui_widgets.cpp
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_draw.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_widgets.cpp"
 )
 
 add_library(sturdy-donkey SHARED

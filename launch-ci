@@ -2,8 +2,12 @@
 
 set -euo pipefail
 
-if [ $(uname) == "Linux" ]; then
-  make -f linux.Makefile
-else
-  make -f macos.Makefile
-fi
+cd lib/gl3w
+cmake -G Ninja .
+ninja
+
+cd ../..
+mkdir _build
+cd _build
+cmake -G Ninja ..
+ninja
