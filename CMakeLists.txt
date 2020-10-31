@@ -6,10 +6,17 @@ list(INSERT CMAKE_PREFIX_PATH 0 ${PROJECT_SOURCE_DIR})
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(gl3w REQUIRED)
-find_package(tinyobjloader REQUIRED)
 find_package(glm REQUIRED MODULE)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED MODULE)
+
+add_library(tinyobjloader::tinyobjloader INTERFACE IMPORTED)
+set_target_properties(tinyobjloader::tinyobjloader PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
+target_sources(tinyobjloader::tinyobjloader
+  INTERFACE
+  lib/tinyobjloader/tiny_obj_loader.cc
+)
 
 add_library(imgui::imgui INTERFACE IMPORTED)
 set_target_properties(imgui::imgui PROPERTIES
@@ -59,9 +66,9 @@ target_include_directories(sturdy-donkey
 target_link_libraries(sturdy-donkey
   PRIVATE
   gl3w
-  tinyobjloader
   SDL2::SDL2
   SDL2_image::SDL2_image
   glm::glm
   imgui::imgui
+  tinyobjloader::tinyobjloader
 )
