@@ -15,7 +15,7 @@ set_target_properties(tinyobjloader::tinyobjloader PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 target_sources(tinyobjloader::tinyobjloader
   INTERFACE
-  lib/tinyobjloader/tiny_obj_loader.cc
+  "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader/tiny_obj_loader.cc"
 )
 
 add_library(imgui::imgui INTERFACE IMPORTED)
@@ -23,9 +23,9 @@ set_target_properties(imgui::imgui PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/imgui")
 target_sources(imgui::imgui
   INTERFACE
-  lib/imgui/imgui.cpp
-  lib/imgui/imgui_draw.cpp
-  lib/imgui/imgui_widgets.cpp
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_draw.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_widgets.cpp"
 )
 
 add_library(sturdy-donkey SHARED
