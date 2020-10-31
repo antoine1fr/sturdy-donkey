@@ -12,6 +12,8 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED MODULE)
 
 add_library(imgui INTERFACE IMPORTED)
+set_target_properties(imgui PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/imgui")
 target_sources(imgui
   INTERFACE
   lib/imgui/imgui.cpp
@@ -52,8 +54,6 @@ target_include_directories(sturdy-donkey
   PUBLIC
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE
-  lib/imgui
 )
 
 target_link_libraries(sturdy-donkey
