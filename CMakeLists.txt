@@ -9,14 +9,8 @@ find_package(glm REQUIRED MODULE)
 find_package(SDL2 REQUIRED MODULE)
 find_package(SDL2_image REQUIRED MODULE)
 
-add_library(tinyobjloader::tinyobjloader INTERFACE IMPORTED)
-set_target_properties(tinyobjloader::tinyobjloader PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
-target_sources(tinyobjloader::tinyobjloader
-  INTERFACE
-  "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader/tiny_obj_loader.cc"
-)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/gl3w")
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 
 add_library(imgui::imgui INTERFACE IMPORTED)
 set_target_properties(imgui::imgui PROPERTIES
@@ -69,6 +63,6 @@ target_link_libraries(sturdy-donkey
   SDL2_image::SDL2_image
   gl3w
   glm::glm
+  tinyobjloader
   imgui::imgui
-  tinyobjloader::tinyobjloader
 )
