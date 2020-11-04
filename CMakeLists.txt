@@ -58,11 +58,12 @@ target_include_directories(sturdy-donkey
 )
 
 target_link_libraries(sturdy-donkey
-  PRIVATE
+  PUBLIC
   SDL2::SDL2
   SDL2_image::SDL2_image
   gl3w
   glm::glm
   tinyobjloader
+  PRIVATE
   imgui::imgui
 )
