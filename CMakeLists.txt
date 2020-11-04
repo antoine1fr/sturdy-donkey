@@ -5,7 +5,6 @@ project(sturdy-donkey VERSION 0.4.0 LANGUAGES C CXX)
 list(INSERT CMAKE_PREFIX_PATH 0 ${PROJECT_SOURCE_DIR})
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(gl3w REQUIRED)
 find_package(glm REQUIRED MODULE)
 find_package(SDL2 REQUIRED MODULE)
 find_package(SDL2_image REQUIRED MODULE)
@@ -17,6 +16,7 @@ target_sources(tinyobjloader::tinyobjloader
   INTERFACE
   "${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader/tiny_obj_loader.cc"
 )
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/gl3w")
 
 add_library(imgui::imgui INTERFACE IMPORTED)
 set_target_properties(imgui::imgui PROPERTIES
