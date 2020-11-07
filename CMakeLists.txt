@@ -12,16 +12,6 @@ find_package(SDL2_image REQUIRED MODULE)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/gl3w")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 
-add_library(imgui::imgui INTERFACE IMPORTED)
-set_target_properties(imgui::imgui PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/lib/imgui")
-target_sources(imgui::imgui
-  INTERFACE
-  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_draw.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/lib/imgui/imgui_widgets.cpp"
-)
-
 add_library(sturdy-donkey SHARED
   src/Buffer.cpp
   src/BufferPool.cpp
@@ -33,7 +23,6 @@ add_library(sturdy-donkey SHARED
   src/render/AMaterial.cpp
   src/render/AResourceManager.cpp
   src/render/CommandBucket.cpp
-  src/render/DebugHudRenderer.cpp
   src/render/DeferredRenderer.cpp
   src/render/Mesh.cpp
   src/render/RenderPass.cpp
@@ -64,8 +53,6 @@ target_link_libraries(sturdy-donkey
   gl3w
   glm::glm
   tinyobjloader
-  PRIVATE
-  imgui::imgui
 )
 
 set(SHADER_DIR "${CMAKE_CURRENT_LIST_DIR}/shaders")

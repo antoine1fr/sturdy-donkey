@@ -22,7 +22,6 @@
 #include "Game.hpp"
 #include "IResourceLoaderDelegate.hpp"
 #include "render/DeferredRenderer.hpp"
-#include "render/DebugHudRenderer.hpp"
 #include "render/Window.hpp"
 #include "render/ResourceManager.hpp"
 
@@ -35,7 +34,6 @@ class GameManager
     render::Window* window_;
     render::gl::Driver* driver_;
     render::DeferredRenderer* renderer_;
-    render::DebugHudRenderer* debug_hud_renderer_;
     IResourceLoaderDelegate& resource_loader_;
     std::atomic_bool run_;
     std::atomic_size_t simulated_frame_count_;

@@ -41,15 +41,12 @@ GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
     new render::ResourceManager(driver_->get_resource_manager());
   renderer_ = new render::DeferredRenderer(window_, driver_,
       resource_manager_);
-  debug_hud_renderer_ = new render::DebugHudRenderer(window_, driver_,
-      resource_manager_);
   resource_loader.load_render_resources(window_, resource_manager_,
                                         &(driver_->get_resource_manager()));
 }
 
 GameManager::~GameManager()
 {
-  delete debug_hud_renderer_;
   delete renderer_;
   resource_manager_->cleanup();
   delete resource_manager_;
@@ -85,7 +82,6 @@ void GameManager::render_loop()
     frame_packet->sort_mesh_nodes();
     render::CommandBucket render_commands;
     renderer_->render(frame_packet, render_commands);
-    debug_hud_renderer_->render(render_commands);
     driver_->execute_commands(render_commands);
     window_->swap();
     increment_rendered_frame_count_();
