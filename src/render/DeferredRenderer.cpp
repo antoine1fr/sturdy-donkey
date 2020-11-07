@@ -266,7 +266,19 @@ void DeferredRenderer::create_light_accu_pass_frame_packet_(int width, int heigh
   uint32_t light_material_id = create_light_material_(
     "shaders/simple.vert.glsl",
     "shaders/light-pass.frag.glsl");
-  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0));
+  frame_packets_.push_back(
+    StackFramePacket(
+      StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0),
+      donkey::CameraNode(
+          1,
+          glm::vec3(0.0f, 0.0f, 0.0f),
+          glm::vec3(0.0f, 0.0f, 0.0f),
+          glm::tvec2<int>(0, 0),
+          glm::tvec2<GLsizei>(width, height),
+          0.0f,
+          -1.0f,
+          1.0f,
+          donkey::CameraNode::Type::kOrthographic)));
   StackFramePacket& light_frame_packet_ = frame_packets_.back();
   light_frame_packet_.create_mesh_node(1,
       glm::vec3(0.0f, 0.0f, 0.0f),
@@ -274,17 +286,6 @@ void DeferredRenderer::create_light_accu_pass_frame_packet_(int width, int heigh
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_,
       light_material_id);
-  light_frame_packet_.add_camera_node(
-      donkey::CameraNode(
-        1,
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::tvec2<int>(0, 0),
-        glm::tvec2<GLsizei>(width, height),
-        0.0f,
-        -1.0f,
-        1.0f,
-        donkey::CameraNode::Type::kOrthographic));
 }
 
 void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
@@ -293,14 +294,9 @@ void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
   uint32_t ambient_material_id = create_ambient_material_(
     "shaders/simple.vert.glsl",
     "shaders/ambient-pass.frag.glsl");
-  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0));
-  StackFramePacket& ambient_frame_packet_ = frame_packets_.back();
-  ambient_frame_packet_.create_mesh_node(3,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 1.0f, 1.0f),
-      screen_mesh_id_, ambient_material_id);
-  ambient_frame_packet_.add_camera_node(
+  frame_packets_.push_back(
+    StackFramePacket(
+      StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0),
       donkey::CameraNode(
         3,
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -310,7 +306,13 @@ void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
         0.0f,
         -1.0f,
         1.0f,
-        donkey::CameraNode::Type::kOrthographic));
+        donkey::CameraNode::Type::kOrthographic)));
+  StackFramePacket& ambient_frame_packet_ = frame_packets_.back();
+  ambient_frame_packet_.create_mesh_node(3,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
+      screen_mesh_id_, ambient_material_id);
 }
 
 void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
@@ -318,14 +320,9 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
   uint32_t albedo_material_id = create_albedo_material_(
     "shaders/simple.vert.glsl",
     "shaders/albedo-pass.frag.glsl");
-  frame_packets_.push_back(StackAllocator<MeshNode>(Buffer::Tag::kAlbedoFramePacket, 0));
-  StackFramePacket& albedo_frame_packet_ = frame_packets_.back();
-  albedo_frame_packet_.create_mesh_node(2,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(1.0f, 1.0f, 1.0f),
-      screen_mesh_id_, albedo_material_id);
-  albedo_frame_packet_.add_camera_node(
+  frame_packets_.push_back(
+    StackFramePacket(
+      StackAllocator<MeshNode>(Buffer::Tag::kAlbedoFramePacket, 0),
       donkey::CameraNode(
         2,
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -335,7 +332,13 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
         0.0f,
         -1.0f,
         1.0f,
-        donkey::CameraNode::Type::kOrthographic));
+        donkey::CameraNode::Type::kOrthographic)));
+  StackFramePacket& albedo_frame_packet_ = frame_packets_.back();
+  albedo_frame_packet_.create_mesh_node(2,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(1.0f, 1.0f, 1.0f),
+      screen_mesh_id_, albedo_material_id);
 }
 
 void DeferredRenderer::render_geometry_(
@@ -397,7 +400,7 @@ void DeferredRenderer::execute_pass_(
   render_commands.set_depth_test(render_pass.depth_test);
   render_commands.set_blending(render_pass.blending);
 
-  const CameraNode& camera_node = frame_packet.get_camera_nodes()[0];
+  const CameraNode& camera_node = frame_packet.get_camera_node();
   assert(camera_node.pass_num == pass_num);
   render_commands.set_viewport(camera_node.viewport_position,
       camera_node.viewport_size);
@@ -424,7 +427,7 @@ void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     0,
     render_passes_[0],
     *gbuffer_frame_packet,
-    &(gbuffer_frame_packet->get_camera_nodes()[0]),
+    &(gbuffer_frame_packet->get_camera_node()),
     gbuffer_frame_packet->get_directional_light_nodes(),
     render_commands,
     resource_manager_,
@@ -435,7 +438,7 @@ void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
       i,
       render_passes_[i],
       *(frame_packet_it++),
-      &(gbuffer_frame_packet->get_camera_nodes()[0]),
+      &(gbuffer_frame_packet->get_camera_node()),
       gbuffer_frame_packet->get_directional_light_nodes(),
       render_commands,
       resource_manager_,

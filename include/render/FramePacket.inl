@@ -33,12 +33,12 @@ std::array<FramePacket<Allocator>*, 2>
   };
 
 template <template <typename> class Allocator>
-FramePacket<Allocator>::FramePacket(const MeshNodeAllocator& allocator):
+FramePacket<Allocator>::FramePacket(const MeshNodeAllocator& allocator,
+                                    donkey::CameraNode&& camera_node):
   mesh_node_allocator_(allocator),
-  camera_node_allocator_(allocator),
   directional_light_node_allocator_(allocator),
   mesh_nodes_(mesh_node_allocator_),
-  camera_nodes_(camera_node_allocator_),
+  camera_node_(camera_node),
   directional_light_nodes_(directional_light_node_allocator_)
 {
 }
@@ -50,20 +50,15 @@ FramePacket<Allocator>::FramePacket(
     std::list<::donkey::DirectionalLightNode> directional_light_nodes,
     const MeshNodeAllocator& allocator):
   mesh_node_allocator_(allocator),
-  camera_node_allocator_(allocator),
   directional_light_node_allocator_(allocator),
   mesh_nodes_(mesh_node_allocator_),
-  camera_nodes_(camera_node_allocator_),
+  camera_node_(camera_nodes.front()),
   directional_light_nodes_(directional_light_node_allocator_)
 {
+  assert(camera_nodes.size() > 0);
   copy_nodes_(mesh_nodes, mesh_nodes_);
-  copy_nodes_(camera_nodes, camera_nodes_);
   copy_nodes_(directional_light_nodes, directional_light_nodes_);
 }
-
-//void FramePacket::copy_mesh_nodes_(const std::list<::donkey::MeshNode>&)
-//{
-//}
 
 template <template <typename> class Allocator>
 MeshNode& FramePacket<Allocator>::create_mesh_node(
@@ -92,9 +87,9 @@ const typename FramePacket<Allocator>::template Vector<MeshNode>& FramePacket<Al
 }
 
 template <template <typename> class Allocator>
-const typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Allocator>::get_camera_nodes() const
+const CameraNode& FramePacket<Allocator>::get_camera_node() const
 {
-  return camera_nodes_;
+  return camera_node_;
 }
 
 template <template <typename> class Allocator>
@@ -107,12 +102,6 @@ template <template <typename> class Allocator>
 typename FramePacket<Allocator>::template Vector<MeshNode>& FramePacket<Allocator>::get_mesh_nodes()
 {
   return mesh_nodes_;
-}
-
-template <template <typename> class Allocator>
-typename FramePacket<Allocator>::template Vector<CameraNode>& FramePacket<Allocator>::get_camera_nodes()
-{
-  return camera_nodes_;
 }
 
 template <template <typename> class Allocator>
@@ -131,9 +120,9 @@ void FramePacket<Allocator>::sort_mesh_nodes()
 }
 
 template <template <typename> class Allocator>
-void FramePacket<Allocator>::add_camera_node(CameraNode&& node)
+void FramePacket<Allocator>::set_camera_node(CameraNode&& node)
 {
-  camera_nodes_.push_back(node);
+  camera_node_ = node;
 }
 
 }

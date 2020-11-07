@@ -190,25 +190,25 @@ class FramePacket
 
   private:
     typedef Allocator<MeshNode> MeshNodeAllocator;
-    typedef Allocator<CameraNode> CameraNodeAllocator;
     typedef Allocator<DirectionalLightNode> DirectionalLightNodeAllocator;
 
   private:
     MeshNodeAllocator mesh_node_allocator_;
-    CameraNodeAllocator camera_node_allocator_;
     DirectionalLightNodeAllocator directional_light_node_allocator_;
     Vector<MeshNode> mesh_nodes_;
-    Vector<CameraNode> camera_nodes_;
+    CameraNode camera_node_;
     Vector<DirectionalLightNode> directional_light_nodes_;
 
   public:
-    FramePacket(const MeshNodeAllocator& allocator);
+    FramePacket(const MeshNodeAllocator& allocator, donkey::CameraNode&& camera_node);
 
     FramePacket(
         std::list<::donkey::MeshNode> mesh_nodes,
         std::list<::donkey::CameraNode> camerea_nodes,
         std::list<::donkey::DirectionalLightNode> directional_light_nodes,
         const MeshNodeAllocator& allocator);
+
+    void set_camera_node(CameraNode&& node);
 
     MeshNode& create_mesh_node(uint32_t pass_num,
         const glm::vec3& position,
@@ -217,13 +217,10 @@ class FramePacket
         uint32_t mesh_id,
         uint32_t material_id);
 
-    void add_camera_node(CameraNode&& camera_node);
-
     const Vector<MeshNode>& get_mesh_nodes() const;
-    const Vector<CameraNode>& get_camera_nodes() const;
+    const CameraNode& get_camera_node() const;
     const Vector<DirectionalLightNode>& get_directional_light_nodes() const;
     Vector<MeshNode>& get_mesh_nodes();
-    Vector<CameraNode>& get_camera_nodes();
     Vector<DirectionalLightNode>& get_directional_light_nodes();
 
     void sort_mesh_nodes();
