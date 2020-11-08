@@ -48,10 +48,10 @@ DeferredRenderer::DeferredRenderer(
   int width = window->get_width();
   int height = window->get_height();
   window_->make_current(render_context_);
+  create_render_passes_();
   create_light_pass_mesh_(width, height);
   create_render_targets_(width, height);
   create_frame_packets_(width, height);
-  create_render_passes_();
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -82,31 +82,12 @@ void DeferredRenderer::create_frame_packets_(int width, int height)
 void DeferredRenderer::create_render_passes_()
 {
   // register gbuffer pass
-  add_render_pass({gbuffer_id_,
+  add_render_pass({
+      nullptr,
+      gbuffer_id_,
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
       glm::vec3(0.0f, 0.0f, 0.0f),
       true,
-      false,
-      false});
-  // register light accumulation pass
-  add_render_pass({light_framebuffer_id_,
-      GL_COLOR_BUFFER_BIT,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      false,
-      true,
-      true});
-  // register albedo accumulation pass
-  add_render_pass({albedo_framebuffer_id_,
-      GL_COLOR_BUFFER_BIT,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      false,
-      false,
-      false});
-  // register ambient accumulation pass
-  add_render_pass({std::numeric_limits<uint32_t>::max(),
-      GL_COLOR_BUFFER_BIT,
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      false,
       false,
       false});
 }
@@ -286,6 +267,14 @@ void DeferredRenderer::create_light_accu_pass_frame_packet_(int width, int heigh
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_,
       light_material_id);
+  add_render_pass({
+      &light_frame_packet_,
+      light_framebuffer_id_,
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      true,
+      true});
 }
 
 void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
@@ -313,6 +302,14 @@ void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, ambient_material_id);
+  add_render_pass({
+      &ambient_frame_packet_,
+      std::numeric_limits<uint32_t>::max(),
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      false,
+      false});
 }
 
 void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
@@ -339,6 +336,14 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, albedo_material_id);
+  add_render_pass({
+      &albedo_frame_packet_,
+      albedo_framebuffer_id_,
+      GL_COLOR_BUFFER_BIT,
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      false,
+      false,
+      false});
 }
 
 void DeferredRenderer::render_geometry_(
@@ -421,28 +426,25 @@ void DeferredRenderer::execute_pass_(
 void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
     CommandBucket& render_commands)
 {
-  FramePacketList::iterator frame_packet_it = frame_packets_.begin();
+  const CameraNode* last_camera_node = &(gbuffer_frame_packet->get_camera_node());
   signpost_start(1, 0, 0, 0, 0);
-  execute_pass_(
-    0,
-    render_passes_[0],
-    *gbuffer_frame_packet,
-    &(gbuffer_frame_packet->get_camera_node()),
-    gbuffer_frame_packet->get_directional_light_nodes(),
-    render_commands,
-    resource_manager_,
-    &gpu_resource_manager_);
-  for (size_t i = 1; i < render_passes_.size(); ++i)
-  {
+  for (size_t i = 0; i < render_passes_.size(); ++i)
+ {
+    const StackFramePacket* frame_packet;
+    if (render_passes_[i].frame_packet)
+      frame_packet = render_passes_[i].frame_packet;
+    else
+      frame_packet = gbuffer_frame_packet;
     execute_pass_(
       i,
       render_passes_[i],
-      *(frame_packet_it++),
-      &(gbuffer_frame_packet->get_camera_node()),
+      *frame_packet,
+      last_camera_node,
       gbuffer_frame_packet->get_directional_light_nodes(),
       render_commands,
       resource_manager_,
       &gpu_resource_manager_);
+    last_camera_node = &(frame_packet->get_camera_node());
   }
   signpost_end(1, 0, 0, 0, 0);
 }

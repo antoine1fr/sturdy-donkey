@@ -29,6 +29,7 @@ namespace render
 
 struct RenderPass
 {
+  const StackFramePacket* frame_packet;
   uint32_t framebuffer_id;
   GLint clear_bits;
   glm::vec3 clear_color;
