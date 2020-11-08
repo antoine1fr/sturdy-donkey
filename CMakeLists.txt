@@ -76,3 +76,6 @@ endforeach()
 
 add_custom_target(shaders ALL
   DEPENDS ${SHADER_FILES})
+
+
+add_subdirectory("test")
