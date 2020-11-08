@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(sturdy-donkey VERSION 0.4.0 LANGUAGES C CXX)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Search for dependencies in submodules when falling back to config mode.
 list(INSERT CMAKE_PREFIX_PATH 0 ${PROJECT_SOURCE_DIR})
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)

@@ -9,6 +9,7 @@ addons:
       - glm
       - ninja
       - cmake
+      - googletest
   apt:
     packages:
       - libsdl2-dev
@@ -18,6 +19,8 @@ addons:
       - ninja-build
       - cmake
       - g++
+      - libgtest-dev
+      - m4
 
 matrix:
   include:
