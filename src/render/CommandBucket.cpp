@@ -30,11 +30,11 @@ Command::Command(Type type):
 
 BindMeshCommand::BindMeshCommand(
     uint32_t mesh_id,
-    int position_location,
-    int normal_location,
-    int uv_location,
-    int tangent_location,
-    int bitangent_location):
+    unsigned int position_location,
+    unsigned int normal_location,
+    unsigned int uv_location,
+    unsigned int tangent_location,
+    unsigned int bitangent_location):
   Command(Type::kBindMesh),
   mesh_id(mesh_id),
   position_location(position_location),
@@ -172,11 +172,11 @@ SetStateCommand::SetStateCommand(uint32_t state_id):
 
 void CommandBucket::bind_mesh(
     uint32_t mesh_id,
-    int position_location,
-    int normal_location,
-    int uv_location,
-    int tangent_location,
-    int bitangent_location)
+    unsigned int position_location,
+    unsigned int normal_location,
+    unsigned int uv_location,
+    unsigned int tangent_location,
+    unsigned int bitangent_location)
 {
   bind_mesh_commands_.push_back(BindMeshCommand(
     mesh_id,

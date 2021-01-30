@@ -85,11 +85,11 @@ void Driver::bind_mesh_(const Command& command)
     static_cast<const BindMeshCommand&>(command);
   const Mesh& mesh =
     resource_manager_.get_mesh(bind_command.mesh_id);
-  int position_location = bind_command.position_location;
-  int normal_location = bind_command.normal_location;
-  int uv_location = bind_command.uv_location;
-  int tangent_location = bind_command.tangent_location;
-  int bitangent_location = bind_command.bitangent_location;
+  unsigned int position_location = bind_command.position_location;
+  unsigned int normal_location = bind_command.normal_location;
+  unsigned int uv_location = bind_command.uv_location;
+  unsigned int tangent_location = bind_command.tangent_location;
+  unsigned int bitangent_location = bind_command.bitangent_location;
 
   glBindVertexArray(mesh.vertex_array);
   // vertex positions

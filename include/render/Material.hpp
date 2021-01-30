@@ -25,22 +25,22 @@ namespace render {
 struct Material: Resource
 {
   std::uint32_t program_id;
-  int position_location;
-  int normal_location;
-  int uv_location;
-  int tangent_location;
-  int bitangent_location;
-  int model_location;
-  int view_location;
-  int projection_location;
-  int gbuffer_projection_inverse_location;
-  int gbuffer_view_location;
-  int gbuffer_projection_params_location;
-  int ambient_location;
-  int light_dir_location;
-  int light_diffuse_location;
-  int light_specular_location;
-  int camera_position_location;
+  unsigned int position_location;
+  unsigned int normal_location;
+  unsigned int uv_location;
+  unsigned int tangent_location;
+  unsigned int bitangent_location;
+  unsigned int model_location;
+  unsigned int view_location;
+  unsigned int projection_location;
+  unsigned int gbuffer_projection_inverse_location;
+  unsigned int gbuffer_view_location;
+  unsigned int gbuffer_projection_params_location;
+  unsigned int ambient_location;
+  unsigned int light_dir_location;
+  unsigned int light_diffuse_location;
+  unsigned int light_specular_location;
+  unsigned int camera_position_location;
 
   Material(
       std::uint32_t id,
