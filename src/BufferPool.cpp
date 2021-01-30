@@ -63,7 +63,7 @@ Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
   size_t real_size = size + sizeof(Buffer);
 
   // Loop through unused buffers by increasing capacity and return the first
-  // large enough to fulfil the request.
+  // large enough to fulfill the request.
   for (std::list<Buffer*>::iterator it = unused_buffers_.begin();
       it != unused_buffers_.end();
       it++)
