@@ -35,7 +35,7 @@ GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
   assert((bit_mask & img_flags) == img_flags);
   window_ = new render::Window("Pipelined rendering demo", 1600, 900);
   driver_ = new render::gl::Driver;
-  SDL_GLContext render_context = window_->get_render_context();
+  render::Window::Context render_context = window_->get_render_context();
   window_->make_current(render_context);
   resource_manager_ =
     new render::ResourceManager(driver_->get_resource_manager());
@@ -43,6 +43,7 @@ GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
       resource_manager_);
   resource_loader.load_render_resources(window_, resource_manager_,
                                         &(driver_->get_resource_manager()));
+  window_->free_context();
 }
 
 GameManager::~GameManager()
@@ -70,7 +71,7 @@ size_t GameManager::wait_for_frame_packet_()
 
 void GameManager::render_loop()
 {
-  SDL_GLContext render_context = window_->get_render_context();
+  render::Window::Context render_context = window_->get_render_context();
   window_->make_current(render_context);
   while (run_.load(std::memory_order_relaxed))
   {
@@ -90,12 +91,10 @@ void GameManager::render_loop()
 
 void GameManager::simulation_loop()
 {
-  SDL_GLContext render_context = window_->get_render_context();
   SDL_Event event;
   auto last_time = Clock::now();
   Game game(resource_loader_);
 
-  window_->make_current(render_context);
 
   while (run_.load(std::memory_order_relaxed))
   {

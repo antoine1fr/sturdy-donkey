@@ -17,6 +17,7 @@
 
 #include <GL/gl3w.h>
 #include <cassert>
+#include <iostream>
 #include "render/Window.hpp"
 
 namespace donkey
@@ -53,12 +54,12 @@ Window::~Window()
   SDL_DestroyWindow(window_);
 }
 
-SDL_GLContext& Window::get_render_context()
+Window::Context Window::get_render_context()
 {
   return render_context_;
 }
 
-SDL_GLContext& Window::get_ancillary_context()
+Window::Context Window::get_ancillary_context()
 {
   return ancillary_context_;
 }
@@ -75,7 +76,17 @@ int Window::get_height() const
 
 void Window::make_current(SDL_GLContext context) const
 {
-  SDL_GL_MakeCurrent(window_, context);
+  if (SDL_GL_MakeCurrent(window_, context))
+  {
+    const char* error = SDL_GetError();
+    std::cerr << "Can't use GL context.\n" << error << '\n';
+    assert(false);
+  }
+}
+
+void Window::free_context() const
+{
+  SDL_GL_MakeCurrent(window_, nullptr);
 }
 
 void Window::swap()

@@ -36,11 +36,14 @@ class Window
     SDL_GLContext ancillary_context_;
 
   public:
+    typedef SDL_GLContext Context;
+
     Window(const std::string& title, int width, int height);
     ~Window();
-    SDL_GLContext& get_render_context();
-    SDL_GLContext& get_ancillary_context();
-    void make_current(SDL_GLContext context) const;
+    Context get_render_context();
+    Context get_ancillary_context();
+    void make_current(Context context) const;
+    void free_context() const;
     int get_width() const;
     int get_height() const;
     void swap();
