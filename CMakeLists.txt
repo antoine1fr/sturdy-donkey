@@ -14,7 +14,7 @@ find_package(SDL2_image REQUIRED MODULE)
 
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 
-add_library(sturdy-donkey SHARED
+add_library(sturdy-donkey STATIC
   src/Buffer.cpp
   src/BufferPool.cpp
   src/Game.cpp
@@ -58,7 +58,6 @@ target_include_directories(sturdy-donkey
 )
 
 target_link_libraries(sturdy-donkey
-  PUBLIC
   SDL2::SDL2
   SDL2_image::SDL2_image
   gl3w::gl3w
