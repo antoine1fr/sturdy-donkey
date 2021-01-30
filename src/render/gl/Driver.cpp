@@ -213,6 +213,10 @@ void Driver::bind_framebuffer_(const Command& command)
   const BindFramebufferCommand& bind_command =
     static_cast<const BindFramebufferCommand&>(command);
   uint32_t framebuffer_id = bind_command.framebuffer_id;
+  // Workaround annoying max macro defined somewhere in Windows headers.
+#if defined(max)
+# undef max
+#endif
   if (framebuffer_id == std::numeric_limits<uint32_t>::max())
   {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -96,6 +96,10 @@ void render_mesh_node(
     ResourceManager* resource_manager,
     GpuResourceManager* gpu_resource_manager)
 {
+  // Workaround annoying max macro defined somewhere in Windows headers.
+#if defined(max)
+# undef max
+#endif
   static uint32_t last_material_id = std::numeric_limits<uint32_t>::max();
   const Mesh& mesh = resource_manager->get_mesh(mesh_node.mesh_id);
   const Material& material =
