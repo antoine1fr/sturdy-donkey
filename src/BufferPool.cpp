@@ -20,6 +20,8 @@
 #include "BufferPool.hpp"
 #if defined(STURDY_DONKEY_UNIX)
 # include "UnixPageAllocator.hpp"
+#elif defined(STURDY_DONKEY_WINDOWS)
+# include "WindowsPageAllocator.hpp"
 #endif
 
 namespace donkey
@@ -31,6 +33,8 @@ BufferPool::BufferPool():
   used_buffers_(static_cast<size_t>(Buffer::Tag::kCount)),
 #if defined(STURDY_DONKEY_UNIX)
   page_allocator_(new UnixPageAllocator())
+#elif defined(STURDY_DONKEY_WINDOWS)
+  page_allocator_(new WindowsPageAllocator())
 #endif
 {
 }

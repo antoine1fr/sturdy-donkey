@@ -15,16 +15,20 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "WindowsPageAllocator.hpp"
 
-#if defined(__APPLE__)
-# define STURDY_DONKEY_MACOS
-#elif defined(_MSC_VER)
-# define STURDY_DONKEY_WINDOWS
-#else
-# define STURDY_DONKEY_LINUX
-#endif
+namespace donkey
+{
 
-#if defined(STURDY_DONKEY_MACOS) || defined(STURDY_DONKEY_LINUX)
-# define STURDY_DONKEY_UNIX
-#endif
+  void* WindowsPageAllocator::allocate(size_t size)
+  {
+    char* page = new char[size];
+    return reinterpret_cast<void*>(page);
+  }
+
+  size_t WindowsPageAllocator::get_page_size() const
+  {
+    return 2 * 1024 * 1024;
+  }
+
+}

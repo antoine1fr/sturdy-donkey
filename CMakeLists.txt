@@ -42,6 +42,8 @@ target_compile_options(sturdy-donkey PRIVATE -Werror -Wall -pedantic)
 
 # Platform-specific source files:
 if(MSVC)
+  target_sources(sturdy-donkey PRIVATE
+    "src/WindowsPageAllocator.cpp")
 else()
   target_sources(sturdy-donkey PRIVATE
 	"src/UnixPageAllocator.cpp")

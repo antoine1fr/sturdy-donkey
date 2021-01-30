@@ -17,14 +17,15 @@
 
 #pragma once
 
-#if defined(__APPLE__)
-# define STURDY_DONKEY_MACOS
-#elif defined(_MSC_VER)
-# define STURDY_DONKEY_WINDOWS
-#else
-# define STURDY_DONKEY_LINUX
-#endif
+#include "IPageAllocator.hpp"
 
-#if defined(STURDY_DONKEY_MACOS) || defined(STURDY_DONKEY_LINUX)
-# define STURDY_DONKEY_UNIX
-#endif
+namespace donkey
+{
+
+  class WindowsPageAllocator : public IPageAllocator
+  {
+    virtual void* allocate(size_t size);
+    virtual size_t get_page_size() const;
+  };
+
+}
