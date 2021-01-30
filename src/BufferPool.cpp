@@ -17,14 +17,10 @@
 
 #include "build.hpp"
 
-#include <sys/mman.h>
-#if defined(STURDY_DONKEY_MACOS)
-# include <mach/vm_statistics.h>
-#endif
-#include <cerrno>
-#include <unistd.h>
-
 #include "BufferPool.hpp"
+#if defined(STURDY_DONKEY_UNIX)
+# include "UnixPageAllocator.hpp"
+#endif
 
 namespace donkey
 {
@@ -32,8 +28,16 @@ namespace donkey
 BufferPool* BufferPool::instance_ = nullptr;
 
 BufferPool::BufferPool():
-  used_buffers_(static_cast<size_t>(Buffer::Tag::kCount))
+  used_buffers_(static_cast<size_t>(Buffer::Tag::kCount)),
+#if defined(STURDY_DONKEY_UNIX)
+  page_allocator_(new UnixPageAllocator())
+#endif
 {
+}
+
+BufferPool::~BufferPool()
+{
+  delete page_allocator_;
 }
 
 BufferPool* BufferPool::get_instance()
@@ -71,19 +75,12 @@ Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
   }
 
   // No unused buffer meeting the requirements. Let's allocate one.
-  int prot = PROT_READ | PROT_WRITE;
-  int flags = MAP_ANONYMOUS | MAP_PRIVATE;
-#if defined(STURDY_DONKEY_MACOS)
-  flags |=  VM_MAKE_TAG(VM_MEMORY_MALLOC_HUGE);
-#endif
-  size_t block_size = getpagesize();
+  size_t block_size = page_allocator_->get_page_size();
   size_t block_count = real_size / block_size;
   if (real_size % block_size > 0)
     block_count += 1;
   size_t capacity = block_count * block_size;
-  void* ptr = mmap(nullptr, capacity, prot, flags, -1, 0);
-  if (ptr == MAP_FAILED)
-    perror(nullptr);
+  void* ptr = page_allocator_->allocate(capacity);
   return new(ptr) Buffer(
     tag,
     id,

@@ -23,6 +23,7 @@
 #include <mutex>
 
 #include "Buffer.hpp"
+#include "IPageAllocator.hpp"
 
 namespace donkey
 {
@@ -34,6 +35,7 @@ class BufferPool
     std::vector<std::list<Buffer*>> used_buffers_;
     std::list<Buffer*> unused_buffers_;
     std::mutex mutex_;
+    IPageAllocator* page_allocator_;
 
   public:
     static BufferPool* get_instance();
@@ -44,6 +46,7 @@ class BufferPool
 
   private:
     BufferPool();
+    ~BufferPool();
 };
 
 }

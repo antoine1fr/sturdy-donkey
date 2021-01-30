@@ -39,6 +39,13 @@ add_library(sturdy-donkey SHARED
   src/render/gl/Texture.cpp
 )
 target_compile_options(sturdy-donkey PRIVATE -Werror -Wall -pedantic)
+
+# Platform-specific source files:
+if(MSVC)
+else()
+  target_sources(sturdy-donkey PRIVATE
+	"src/UnixPageAllocator.cpp")
+endif()
 target_compile_features(sturdy-donkey PRIVATE cxx_std_17)
 set_target_properties(sturdy-donkey PROPERTIES CXX_EXTENSIONS OFF)
 

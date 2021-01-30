@@ -17,12 +17,13 @@
 
 #pragma once
 
-#if defined(__APPLE__)
-# define STURDY_DONKEY_MACOS
-#else
-# define STURDY_DONKEY_LINUX
-#endif
+namespace donkey
+{
 
-#if defined(STURDY_DONKEY_MACOS) || defined(STURDY_DONKEY_LINUX)
-# define STURDY_DONKEY_UNIX
-#endif
+  struct IPageAllocator
+  {
+    virtual void* allocate(size_t size) = 0;
+    virtual size_t get_page_size() const = 0;
+  };
+
+}

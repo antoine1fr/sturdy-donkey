@@ -15,14 +15,34 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "UnixPageAllocator.hpp"
 
-#if defined(__APPLE__)
-# define STURDY_DONKEY_MACOS
-#else
-# define STURDY_DONKEY_LINUX
+#include <sys/mman.h>
+#if defined(STURDY_DONKEY_MACOS)
+# include <mach/vm_statistics.h>
 #endif
+#include <cerrno>
+#include <unistd.h>
 
-#if defined(STURDY_DONKEY_MACOS) || defined(STURDY_DONKEY_LINUX)
-# define STURDY_DONKEY_UNIX
+namespace donkey
+{
+
+  void* UnixPageAllocator::allocate(size_t size)
+  {
+    int prot = PROT_READ | PROT_WRITE;
+    int flags = MAP_ANONYMOUS | MAP_PRIVATE;
+#if defined(STURDY_DONKEY_MACOS)
+    flags |= VM_MAKE_TAG(VM_MEMORY_MALLOC_HUGE);
 #endif
+    void* ptr = mmap(nullptr, size, prot, flags, -1, 0);
+    if (ptr == MAP_FAILED)
+      perror(nullptr);
+    return ptr;
+  }
+
+  size_t WindowsPageAllocator::get_page_size() const
+  {
+    return getpagesize();
+  }
+
+}
