@@ -15,7 +15,7 @@ mark_as_advanced(SDL2_FOUND SDL2_INCLUDE_DIR SDL2_VERSION)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SDL2
-  REQUIRED_VARS SDL2_INCLUDE_DIR
+  REQUIRED_VARS SDL2_INCLUDE_DIR SDL2_LIBRARY
   VERSION_VAR SDL2_VERSION
 )
 
