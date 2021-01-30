@@ -113,10 +113,10 @@ void Driver::bind_mesh_(const Command& command)
       nullptr);
   glEnableVertexAttribArray(tangent_location);
   // vertex bitangents
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.bitangent_buffer);
-  glVertexAttribPointer(bitangent_location, 3, GL_FLOAT, GL_FALSE, 0,
-      nullptr);
-  glEnableVertexAttribArray(bitangent_location);
+  //glBindBuffer(GL_ARRAY_BUFFER, mesh.bitangent_buffer);
+  //glVertexAttribPointer(bitangent_location, 3, GL_FLOAT, GL_FALSE, 0,
+  //    nullptr);
+  //glEnableVertexAttribArray(bitangent_location);
   // indices
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
 }
