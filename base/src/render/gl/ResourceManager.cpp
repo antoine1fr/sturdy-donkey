@@ -170,6 +170,7 @@ GLenum ResourceManager::sdl_to_gl_pixel_format_(SDL_PixelFormat* format)
     return GL_RGB;
   std::cerr << "Sorry, we only support RGB, RGBA, BGR and BGRA images.\n";
   assert(false);
+  return 0; // will never happen but makes MSVC happy
 }
 
 GLenum ResourceManager::sdl_to_gl_pixel_type_(SDL_PixelFormat* format)
@@ -183,6 +184,7 @@ GLenum ResourceManager::sdl_to_gl_pixel_type_(SDL_PixelFormat* format)
       std::cerr << "Sorry, we only support 24- and 32-bit images.";
       assert(false);
   }
+  return 0; // should never arrive because of assert(false)
 }
 
 GLuint ResourceManager::load_texture_(uint8_t* pixels, int width, int height)
