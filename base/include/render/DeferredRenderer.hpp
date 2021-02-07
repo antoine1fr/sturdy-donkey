@@ -34,6 +34,7 @@
 #include "render/gl/Driver.hpp"
 #include "render/FramePacket.hpp"
 #include "render/GpuResourceManager.hpp"
+#include "render/Pipeline.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/RenderPass.hpp"
 #include "render/Window.hpp"
@@ -46,9 +47,7 @@ namespace render {
 class DeferredRenderer
 {
   private:
-    std::vector<RenderPass> render_passes_;
     Window* window_;
-    SDL_GLContext render_context_;
     gl::Driver* driver_;
     GpuResourceManager& gpu_resource_manager_;
     ResourceManager* resource_manager_;
@@ -56,7 +55,6 @@ class DeferredRenderer
     typedef std::list<StackFramePacket> FramePacketList;
     std::list<StackFramePacket> frame_packets_;
 
-    std::thread* render_thread_;
     uint32_t light_program_id_;
     uint32_t albedo_program_id_;
     uint32_t ambient_program_id_;
@@ -69,6 +67,8 @@ class DeferredRenderer
     uint32_t light_framebuffer_id_;
     uint32_t albedo_framebuffer_id_;
     uint32_t screen_mesh_id_;
+
+    Pipeline pipeline_;
 
   private:
     void bind_light_uniforms_(
@@ -103,25 +103,6 @@ class DeferredRenderer
     void create_render_targets_(int width, int height);
     void create_frame_packets_(int width, int height);
     void create_render_passes_();
-    void render_geometry_(
-        size_t pass_num,
-        const RenderPass& render_pass,
-        const StackVector<MeshNode>& mesh_nodes,
-        const CameraNode& camera_node,
-        const CameraNode* last_camera_node,
-        const StackVector<DirectionalLightNode>& light_nodes,
-        CommandBucket& render_commands,
-        ResourceManager* resource_manager,
-        GpuResourceManager* gpu_resource_manager);
-    void execute_pass_(
-        size_t pass_num,
-        const RenderPass& render_pass,
-        const StackFramePacket& frame_packet,
-        const CameraNode* last_camera_node,
-        const StackVector<DirectionalLightNode>& light_nodes,
-        CommandBucket& render_commands,
-        ResourceManager* resource_manager,
-        GpuResourceManager* gpu_resource_manager);
 
   public:
     DeferredRenderer(
@@ -130,9 +111,7 @@ class DeferredRenderer
         ResourceManager* resource_manager);
     ~DeferredRenderer();
     void render(StackFramePacket* frame_packet,
-        CommandBucket& render_commands);
-    void add_render_pass(const RenderPass& render_pass);
-    void add_render_pass(RenderPass&& render_pass);
+      CommandBucket& render_commands);
     uint32_t get_albedo_rt_id() const;
     uint32_t get_normal_rt_id() const;
     uint32_t get_depth_rt_id() const;

@@ -21,7 +21,7 @@ add_library(sturdy-donkey STATIC
   src/render/gl/ResourceManager.cpp
   src/render/gl/State.cpp
   src/render/gl/Texture.cpp
- "src/render/PipelineGenerator.cpp")
+ "src/render/PipelineGenerator.cpp" "src/render/Pipeline.cpp")
 
 # Platform-specific source files:
 if(MSVC)

@@ -39,11 +39,10 @@ DeferredRenderer::DeferredRenderer(
     gl::Driver* driver,
     ResourceManager* resource_manager):
   window_(window),
-  render_context_(window->get_render_context()),
   driver_(driver),
   gpu_resource_manager_(driver_->get_resource_manager()),
   resource_manager_(resource_manager),
-  render_thread_(nullptr)
+  pipeline_(window, driver, resource_manager)
 {
   int width = window->get_width();
   int height = window->get_height();
@@ -55,11 +54,6 @@ DeferredRenderer::DeferredRenderer(
 
 DeferredRenderer::~DeferredRenderer()
 {
-  if (render_thread_)
-  {
-    render_thread_->join();
-    delete render_thread_;
-  }
 }
 
 void DeferredRenderer::create_render_targets_(int width, int height)
@@ -81,7 +75,7 @@ void DeferredRenderer::create_frame_packets_(int width, int height)
 void DeferredRenderer::create_render_passes_()
 {
   // register gbuffer pass
-  add_render_pass({
+  pipeline_.add_render_pass({
       nullptr,
       gbuffer_id_,
       GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
@@ -266,7 +260,7 @@ void DeferredRenderer::create_light_accu_pass_frame_packet_(int width, int heigh
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_,
       light_material_id);
-  add_render_pass({
+  pipeline_.add_render_pass({
       &light_frame_packet_,
       light_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
@@ -301,7 +295,7 @@ void DeferredRenderer::create_ambient_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, ambient_material_id);
-  add_render_pass({
+  pipeline_.add_render_pass({
       &ambient_frame_packet_,
       std::numeric_limits<uint32_t>::max(),
       GL_COLOR_BUFFER_BIT,
@@ -335,7 +329,7 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
       glm::vec3(0.0f, 0.0f, 0.0f),
       glm::vec3(1.0f, 1.0f, 1.0f),
       screen_mesh_id_, albedo_material_id);
-  add_render_pass({
+  pipeline_.add_render_pass({
       &albedo_frame_packet_,
       albedo_framebuffer_id_,
       GL_COLOR_BUFFER_BIT,
@@ -345,117 +339,10 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
       false});
 }
 
-void DeferredRenderer::render_geometry_(
-    size_t pass_num,
-    const RenderPass& render_pass,
-    const StackVector<MeshNode>& mesh_nodes,
-    const CameraNode& camera_node,
-    const CameraNode* last_camera_node,
-    const StackVector<DirectionalLightNode>& light_nodes,
-    CommandBucket& render_commands,
-    ResourceManager* resource_manager,
-    GpuResourceManager* gpu_resource_manager)
+void DeferredRenderer::render(StackFramePacket* frame_packet,
+  CommandBucket& render_commands)
 {
-  for (const MeshNode& mesh_node: mesh_nodes)
-  {
-    if (camera_node.pass_num != pass_num)
-      continue;
-
-    if (render_pass.lighting)
-    {
-      for (const DirectionalLightNode &light_node : light_nodes)
-      {
-        render_mesh_node(render_pass,
-                         mesh_node,
-                         camera_node,
-                         last_camera_node,
-                         &light_node,
-                         render_commands,
-                         resource_manager,
-                         gpu_resource_manager);
-      }
-    }
-    else
-    {
-      render_mesh_node(
-        render_pass,
-        mesh_node,
-        camera_node,
-        last_camera_node,
-        nullptr,
-        render_commands,
-        resource_manager,
-        gpu_resource_manager);
-    }
-  }
-}
-
-void DeferredRenderer::execute_pass_(
-    size_t pass_num,
-    const RenderPass& render_pass,
-    const StackFramePacket& frame_packet,
-    const CameraNode* last_camera_node,
-    const StackVector<DirectionalLightNode>& light_nodes,
-    CommandBucket& render_commands,
-    ResourceManager* resource_manager,
-    GpuResourceManager* gpu_resource_manager)
-{
-  render_commands.bind_framebuffer(render_pass.framebuffer_id);
-  render_commands.set_depth_test(render_pass.depth_test);
-  render_commands.set_blending(render_pass.blending);
-
-  const CameraNode& camera_node = frame_packet.get_camera_node();
-  assert(camera_node.pass_num == pass_num);
-  render_commands.set_viewport(camera_node.viewport_position,
-      camera_node.viewport_size);
-  render_commands.clear_framebuffer(render_pass.clear_color);
-
-  render_geometry_(
-      pass_num,
-      render_pass,
-      frame_packet.get_mesh_nodes(),
-      camera_node,
-      last_camera_node,
-      light_nodes,
-      render_commands,
-      resource_manager,
-      gpu_resource_manager);
-}
-
-void DeferredRenderer::render(StackFramePacket* gbuffer_frame_packet,
-    CommandBucket& render_commands)
-{
-  const CameraNode* last_camera_node = &(gbuffer_frame_packet->get_camera_node());
-  signpost_start(1, 0, 0, 0, 0);
-  for (size_t i = 0; i < render_passes_.size(); ++i)
- {
-    const StackFramePacket* frame_packet;
-    if (render_passes_[i].frame_packet)
-      frame_packet = render_passes_[i].frame_packet;
-    else
-      frame_packet = gbuffer_frame_packet;
-    execute_pass_(
-      i,
-      render_passes_[i],
-      *frame_packet,
-      last_camera_node,
-      gbuffer_frame_packet->get_directional_light_nodes(),
-      render_commands,
-      resource_manager_,
-      &gpu_resource_manager_);
-    last_camera_node = &(frame_packet->get_camera_node());
-  }
-  signpost_end(1, 0, 0, 0, 0);
-}
-
-void DeferredRenderer::add_render_pass(const RenderPass& render_pass)
-{
-  render_passes_.push_back(render_pass);
-}
-
-void DeferredRenderer::add_render_pass(RenderPass&& render_pass)
-{
-  render_passes_.push_back(render_pass);
+  pipeline_.render(frame_packet, render_commands);
 }
 
 uint32_t DeferredRenderer::get_albedo_rt_id() const
