@@ -2,3 +2,7 @@
 	path = lib/tinyobjloader
 	url = https://github.com/antoine1fr/tinyobjloader.git
 	branch = fix-cmake
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = v1.80
