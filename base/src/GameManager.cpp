@@ -15,8 +15,11 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#pragma warning(push)
+#pragma warning(disable : 26812)
 #include <SDL.h>
 #include <SDL_image.h>
+#pragma warning(pop)
 #include <chrono>
 
 #include "GameManager.hpp"

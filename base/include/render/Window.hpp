@@ -17,6 +17,7 @@
 
 #pragma once
 
+#pragma warning(suppress : 26812)
 #include <SDL.h>
 #include <string>
 

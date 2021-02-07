@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#pragma warning(suppress : 26812)
 #include <SDL_image.h>
 
 #include "render/gl/Material.hpp"
