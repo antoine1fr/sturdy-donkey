@@ -33,7 +33,9 @@ else()
 endif()
 
 if(MSVC)
-	target_compile_options(sturdy-donkey PRIVATE /Wall)
+	# Don't bother with /Wall on MSVC since it's incompatible with system headers.
+	# Also their magical /external: switch family doesn't seem to work anymore.
+	# Sad times.
 else()
 	target_compile_options(sturdy-donkey PRIVATE -Werror -Wall -pedantic)
 endif()

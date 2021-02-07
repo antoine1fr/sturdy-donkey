@@ -7,7 +7,9 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 add_executable(test "${CMAKE_CURRENT_LIST_DIR}/simple_test.cpp")
 
 if(MSVC)
-	target_compile_options(test PRIVATE /Wall)
+	# Don't bother with /Wall on MSVC since it's incompatible with system headers.
+	# Also their magical /external: switch family doesn't seem to work anymore.
+	# Sad times.
 else()
 	target_compile_options(test PRIVATE -Werror -Wall -pedantic)
 endif()
