@@ -19,16 +19,27 @@
 
 #include <cstddef>
 #include "render/Resource.hpp"
+#include "render/pixel.hpp"
 
 namespace donkey {
 namespace render {
 
 struct Texture: public Resource
 {
-  Texture(uint32_t id):
-    Resource(id)
+  Texture(uint32_t id,
+    pixel::Format format,
+    pixel::InternalFormat internal_format,
+    pixel::ComponentType component_type):
+    Resource(id),
+    format(format),
+    internal_format(internal_format),
+    component_type(component_type)
   {
   }
+
+  pixel::Format format;
+  pixel::InternalFormat internal_format;
+  pixel::ComponentType component_type;
 };
 
 }

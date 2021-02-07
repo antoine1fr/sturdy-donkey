@@ -15,6 +15,8 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+#include <SDL_image.h>
 #include "render/ResourceManager.hpp"
 
 namespace donkey {
@@ -50,11 +52,53 @@ void ResourceManager::cleanup()
   gpu_resource_manager_.cleanup();
 }
 
+//uint32_t ResourceManager::load_texture_from_file(const std::string& path)
+//{
+//  uint32_t id = gpu_resource_manager_.load_texture_from_file(path);
+//  textures_.push_back(Texture(id));
+//  return textures_.size() - 1;
+//}
+
 uint32_t ResourceManager::load_texture_from_file(const std::string& path)
 {
-  uint32_t id = gpu_resource_manager_.load_texture_from_file(path);
-  textures_.push_back(Texture(id));
-  return textures_.size() - 1;
+  std::cout << "Loading texture from file: " << path << '\n';
+  SDL_Surface* original_surface = IMG_Load(path.c_str());
+  SDL_Surface* img_surface = SDL_ConvertSurfaceFormat(original_surface,
+    SDL_PIXELFORMAT_RGBA32, 0);
+  SDL_FreeSurface(original_surface);
+  SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
+  uint32_t id = load_texture_from_memory(
+    reinterpret_cast<uint8_t*>(mirror_surface->pixels),
+    mirror_surface->w,
+    mirror_surface->h);
+  SDL_FreeSurface(img_surface);
+  SDL_FreeSurface(mirror_surface);
+  return id;
+}
+
+SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
+{
+  int width = surface->w;
+  int height = surface->h;
+  SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height,
+    32, SDL_PIXELFORMAT_RGBA32);
+  uint32_t* src_pixels = reinterpret_cast<uint32_t*>(surface->pixels);
+  uint32_t* dst_pixels = reinterpret_cast<uint32_t*>(new_surface->pixels);
+
+  SDL_LockSurface(new_surface);
+  SDL_LockSurface(surface);
+  for (size_t y = 0; y < height; ++y)
+  {
+    for (size_t x = 0; x < width; ++x)
+    {
+      uint32_t* src_ptr = src_pixels + y * width + x;
+      uint32_t* dst_ptr = dst_pixels + ((height - y - 1) * width) + x;
+      *dst_ptr = *src_ptr;
+    }
+  }
+  SDL_UnlockSurface(surface);
+  SDL_UnlockSurface(new_surface);
+  return new_surface;
 }
 
 uint32_t ResourceManager::load_texture_from_memory(
@@ -64,8 +108,11 @@ uint32_t ResourceManager::load_texture_from_memory(
 {
   uint32_t id = gpu_resource_manager_.load_texture_from_memory(
       pixels, width, height);
-  textures_.push_back(Texture(id));
-  return textures_.size() - 1;
+  textures_.push_back(Texture(id,
+    pixel::Format::kRGBA,
+    pixel::InternalFormat::kRGBA8,
+    pixel::ComponentType::kByte));
+  return static_cast<uint32_t>(textures_.size()) - 1;
 }
 
 uint32_t ResourceManager::load_gpu_program_from_file(
@@ -132,7 +179,7 @@ uint32_t ResourceManager::create_texture(
 {
   uint32_t id = gpu_resource_manager_.create_texture(width, height, format,
       internal_format, component_type);
-  textures_.push_back(Texture(id));
+  textures_.push_back(Texture(id, format, internal_format, component_type));
   return static_cast<uint32_t>(textures_.size()) - 1;
 }
 

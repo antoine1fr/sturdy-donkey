@@ -34,8 +34,6 @@ class GpuResourceManager
   public:
     virtual void cleanup() = 0;
 
-    virtual uint32_t load_texture_from_file(const std::string& path) = 0;
-
     virtual uint32_t load_texture_from_memory(
         uint8_t* pixels,
         int width,
@@ -65,6 +63,9 @@ class GpuResourceManager
     virtual uint32_t create_framebuffer(
       uint32_t depth_rt_id,
       const std::vector<uint32_t>& color_rt_ids) = 0;
+
+    virtual uint32_t create_framebuffer(
+      const std::list<const donkey::render::Texture*>& rt_ids) = 0;
 
     virtual uint32_t create_state(const render::State& state) = 0;
 

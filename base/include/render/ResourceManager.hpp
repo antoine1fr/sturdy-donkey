@@ -21,6 +21,8 @@
 #include "render/Material.hpp"
 #include "render/State.hpp"
 
+struct SDL_Surface;
+
 namespace donkey {
 namespace render {
 
@@ -67,6 +69,8 @@ class ResourceManager
         pixel::Format format,
         pixel::InternalFormat internal_format,
         pixel::ComponentType component_type);
+    GLuint load_texture_(uint8_t* pixels, int width, int height);
+    SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 
     uint32_t create_state(const State& state);
 };

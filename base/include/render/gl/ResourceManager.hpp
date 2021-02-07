@@ -64,15 +64,12 @@ class ResourceManager: public GpuResourceManager
     GLuint build_fragment_shader_(const std::string& sources);
     GLenum sdl_to_gl_pixel_format_(SDL_PixelFormat* format);
     GLenum sdl_to_gl_pixel_type_(SDL_PixelFormat* format);
-    GLuint load_texture_(const std::string& path);
     GLuint load_texture_(uint8_t* pixels, int width, int height);
-    SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 
   public:
     ResourceManager();
     virtual ~ResourceManager();
     virtual void cleanup();
-    virtual uint32_t load_texture_from_file(const std::string& path);
     virtual uint32_t load_texture_from_memory(
         uint8_t* pixels,
         int width,
@@ -96,6 +93,8 @@ class ResourceManager: public GpuResourceManager
     virtual uint32_t create_framebuffer(
       uint32_t depth_rt_id,
       const std::vector<uint32_t>& color_rt_ids);
+    virtual uint32_t create_framebuffer(
+      const std::list<const donkey::render::Texture*>& rt_ids);
 
     virtual uint32_t create_state(const render::State& state);
 

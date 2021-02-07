@@ -182,59 +182,17 @@ GLenum ResourceManager::sdl_to_gl_pixel_type_(SDL_PixelFormat* format)
   }
 }
 
-SDL_Surface* ResourceManager::create_mirror_surface_(SDL_Surface* surface)
-{
-  int width = surface->w;
-  int height = surface->h;
-  SDL_Surface* new_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height,
-      32, SDL_PIXELFORMAT_RGBA32);
-  uint32_t* src_pixels = reinterpret_cast<uint32_t*>(surface->pixels);
-  uint32_t* dst_pixels = reinterpret_cast<uint32_t*>(new_surface->pixels);
-
-  SDL_LockSurface(new_surface);
-  SDL_LockSurface(surface);
-  for (int y = 0; y < height; ++y)
-  {
-    for (int x = 0; x < width; ++x)
-    {
-      uint32_t* src_ptr = src_pixels + y * width + x;
-      uint32_t* dst_ptr = dst_pixels + ((height - y - 1) * width) + x;
-      *dst_ptr = *src_ptr;
-    }
-  }
-  SDL_UnlockSurface(surface);
-  SDL_UnlockSurface(new_surface);
-  return new_surface;
-}
-
-GLuint ResourceManager::load_texture_(const std::string& path)
-{
-  SDL_Surface* original_surface = IMG_Load(path.c_str());
-  SDL_Surface* img_surface = SDL_ConvertSurfaceFormat(original_surface,
-      SDL_PIXELFORMAT_RGBA32, 0);
-  SDL_FreeSurface(original_surface);
-  SDL_Surface* mirror_surface = create_mirror_surface_(img_surface);
-  GLuint id = load_texture_(
-      reinterpret_cast<uint8_t*>(mirror_surface->pixels),
-      mirror_surface->w,
-      mirror_surface->h);
-  SDL_FreeSurface(img_surface);
-  SDL_FreeSurface(mirror_surface);
-  return id;
-}
-
 GLuint ResourceManager::load_texture_(uint8_t* pixels, int width, int height)
 {
-  GLenum format = GL_RGBA;
   GLenum type = GL_UNSIGNED_BYTE;
   GLuint texture;
 
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, format, width, height,
-      0, format, type, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+      0, GL_RGBA, type, nullptr);
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
-      format, type, pixels);
+    GL_RGBA, type, pixels);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -242,14 +200,14 @@ GLuint ResourceManager::load_texture_(uint8_t* pixels, int width, int height)
   return texture;
 }
 
-uint32_t ResourceManager::load_texture_from_file(const std::string& path)
-{
-  std::cout << "Loading texture from file: " << path << '\n';
-  GLuint texture = load_texture_(path);
-  uint32_t id = textures_.size();
-  textures_.push_back(Texture(texture));
-  return id;
-}
+//uint32_t ResourceManager::load_texture_from_file(const std::string& path)
+//{
+//  std::cout << "Loading texture from file: " << path << '\n';
+//  GLuint texture = load_texture_(path);
+//  uint32_t id = textures_.size();
+//  textures_.push_back(Texture(texture));
+//  return id;
+//}
 
 uint32_t ResourceManager::load_texture_from_memory(
     uint8_t* pixels,
@@ -379,6 +337,36 @@ uint32_t ResourceManager::create_framebuffer(
   check_gl_framebuffer(GL_FRAMEBUFFER);
   uint32_t id = framebuffers_.size();
   framebuffers_.push_back(Framebuffer(framebuffer, color_rt_ids.size()));
+  return id;
+}
+
+uint32_t ResourceManager::create_framebuffer(
+  const std::list<const donkey::render::Texture*>& render_targets)
+{
+  GLuint framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  size_t color_rt_id = 0;
+  for (auto texture: render_targets)
+  {
+    if (texture->format == pixel::Format::kDepthComponent)
+    {
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+        GL_TEXTURE_2D, get_texture(texture->gpu_resource_id).texture, 0);
+    }
+    else
+    {
+      glFramebufferTexture2D(GL_FRAMEBUFFER,
+        GL_COLOR_ATTACHMENT0 + color_rt_id,
+        GL_TEXTURE_2D,
+        get_texture(texture->gpu_resource_id).texture,
+        0);
+      color_rt_id += 1;
+    }
+  }
+  check_gl_framebuffer(GL_FRAMEBUFFER);
+  uint32_t id = framebuffers_.size();
+  framebuffers_.push_back(Framebuffer(framebuffer, color_rt_id));
   return id;
 }
 
