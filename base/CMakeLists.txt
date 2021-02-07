@@ -52,4 +52,5 @@ target_link_libraries(sturdy-donkey
   gl3w::gl3w
   glm::glm
   tinyobjloader
+  imgui
 )
