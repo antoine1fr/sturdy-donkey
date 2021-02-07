@@ -142,7 +142,7 @@ uint32_t ResourceManager::load_gpu_program_from_file(const std::string& vs_path,
   program.position_location = glGetAttribLocation(program_id, "position");
   program.uv_location = glGetAttribLocation(program_id, "uv");
 
-  uint32_t id = gpu_programs_.size();
+  uint32_t id = static_cast<uint32_t>(gpu_programs_.size());
   gpu_programs_.push_back(program);
   return id;
 }
@@ -258,7 +258,7 @@ uint32_t ResourceManager::load_texture_from_memory(
 {
   std::cout << "Loading texture from memory.\n";
   GLuint texture = load_texture_(pixels, width, height);
-  uint32_t id = textures_.size();
+  uint32_t id = static_cast<uint32_t>(textures_.size());
   textures_.push_back(Texture(texture));
   return id;
 }
@@ -385,7 +385,7 @@ uint32_t ResourceManager::create_framebuffer(
 uint32_t ResourceManager::create_state(const render::State& state)
 {
   states_.push_back(State(state));
-  return states_.size() - 1;
+  return static_cast<uint32_t>(states_.size()) - 1;
 }
 
 const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const
