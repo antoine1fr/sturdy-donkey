@@ -22,7 +22,7 @@
 namespace donkey
 {
 
-Buffer::Buffer(Tag tag, int id, Size capacity, char* ptr):
+Buffer::Buffer(Tag tag, size_t id, Size capacity, char* ptr):
   tag_(tag),
   id_(id),
   capacity_(capacity),

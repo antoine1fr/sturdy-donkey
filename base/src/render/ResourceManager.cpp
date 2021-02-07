@@ -151,7 +151,7 @@ uint32_t ResourceManager::create_material(uint32_t gpu_program)
     gpu_material.light_diffuse_location,
     gpu_material.light_specular_location,
     gpu_material.camera_position_location));
-  return materials_.size() - 1;
+  return static_cast<uint32_t>(materials_.size()) - 1;
 }
 
 uint32_t ResourceManager::create_mesh(
