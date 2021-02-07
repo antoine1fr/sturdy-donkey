@@ -17,7 +17,7 @@
 
 #version 410 core
 
-uniform sampler2D albedo_texture;
+uniform sampler2D light_plus_albedo_texture;
 uniform sampler2D depth_texture;
 uniform vec4 ambient;
 
@@ -26,7 +26,7 @@ out vec4 color;
 
 void main()
 {
-  vec4 albedo = texture(albedo_texture, fragment_uv);
+  vec4 albedo = texture(light_plus_albedo_texture, fragment_uv);
   float depth = 1 - trunc(texture(depth_texture, fragment_uv).x);
   color = albedo + ambient * depth;
 }

@@ -17,8 +17,8 @@
 
 #version 410 core
 
-uniform sampler2D normals_tex; // normals in gbuffer_view space
-uniform sampler2D depth_tex;
+uniform sampler2D normals_texture; // normals in gbuffer_view space
+uniform sampler2D depth_texture;
 uniform vec3 camera_position; // Eye's position in view space.
 uniform vec4 light_dir; // Light's direction in gbuffer_view space in xyz.
                         // Material's shininess in w.
@@ -68,7 +68,7 @@ vec4 compute_diffuse_term(Fragment fragment, Light light, Material material)
 
 vec3 unpack_position()
 {
-  float depth = texture(depth_tex, fragment_uv).x;
+  float depth = texture(depth_texture, fragment_uv).x;
   vec4 clip_space_position = vec4(fragment_uv * 2 - 1, depth, 1);
   vec4 view_space_position = gbuffer_projection_inverse * clip_space_position;
   vec3 position = view_space_position.xyz / view_space_position.w;
@@ -77,7 +77,7 @@ vec3 unpack_position()
 
 void main()
 {
-  vec3 normal = texture(normals_tex, fragment_uv).xyz;
+  vec3 normal = texture(normals_texture, fragment_uv).xyz;
   Material material = Material(light_dir.w);
   Light light = Light(light_diffuse, light_specular, light_dir.xyz);
   Fragment fragment = Fragment(unpack_position(), normal);
