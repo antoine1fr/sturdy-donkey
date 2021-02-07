@@ -21,7 +21,10 @@
 #include <thread>
 #include <condition_variable>
 #include <atomic>
+#pragma warning(push)
+#pragma warning(disable : 26812 26819)
 #include <SDL.h>
+#pragma warning(pop)
 #include <limits>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

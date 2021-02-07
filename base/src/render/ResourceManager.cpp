@@ -16,7 +16,10 @@
  */
 
 #include <iostream>
+#pragma warning(push)
+#pragma warning(disable : 26812 26819)
 #include <SDL_image.h>
+#pragma warning(pop)
 #include "render/ResourceManager.hpp"
 
 namespace donkey {
