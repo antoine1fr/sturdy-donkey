@@ -61,10 +61,10 @@ Driver::Driver():
 
 void Driver::output_debug_info_() const
 {
-  const char* string = (const char*)glGetString(GL_VENDOR);
-  std::cout << "GL renderer: " << string << '\n';
-  std::cout << "GL vendor: " << glGetString(GL_VERSION) << '\n';
-  std::cout << "GL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
+  std::cout << "GL vendor: " << glGetString(GL_VENDOR) << '\n';
+  std::cout << "GL renderer: " << glGetString(GL_RENDERER) << '\n';
+  std::cout << "GL version: " << glGetString(GL_VERSION) << '\n';
+  std::cout << "GL shading language version: " << glGetString(GL_SHADING_LANGUAGE_VERSION)
     << '\n';
 }
 
