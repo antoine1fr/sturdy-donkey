@@ -15,6 +15,4 @@ find_package(SDL2_image REQUIRED MODULE)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/base")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/shaders")
-
-
 add_subdirectory("test")
