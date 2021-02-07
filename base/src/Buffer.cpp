@@ -90,7 +90,7 @@ void Buffer::set_pointer(void* ptr)
   ptr_ = static_cast<char*>(ptr);
 }
 
-void Buffer::set_tag_and_id(Tag tag, int id)
+void Buffer::set_tag_and_id(Tag tag, size_t id)
 {
   tag_ = tag;
   id_ = id;

@@ -35,7 +35,7 @@ class Buffer
 
     typedef std::size_t Size;
 
-    Buffer(Tag tag, int id, Size capacity, char* ptr);
+    Buffer(Tag tag, size_t id, Size capacity, char* ptr);
     Buffer(Buffer&& buffer) noexcept;
     Buffer(const Buffer&) = delete;
     ~Buffer();
@@ -47,7 +47,7 @@ class Buffer
     void set_pointer(void* ptr);
     Tag get_tag() const;
     size_t get_id() const;
-    void set_tag_and_id(Tag tag, int id);
+    void set_tag_and_id(Tag tag, size_t id);
 
 
   private:
