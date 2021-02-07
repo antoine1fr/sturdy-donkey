@@ -80,14 +80,14 @@ set(SHADER_FILES
 	"${SHADER_DIR}/simple.vert.glsl"
 )
 
-foreach(FILE ${SHADER_FILES})
-  add_custom_command(
-    OUTPUT ${FILE}
-    COMMAND m4 --prefix-builtins -I${SHADER_DIR} "${FILE}.m4" > ${FILE}
-    DEPENDS "${FILE}.m4"
-    WORKING_DIRECTORY "${SHADER_DIR}"
-  )
-endforeach()
+#foreach(FILE ${SHADER_FILES})
+#  add_custom_command(
+#    OUTPUT ${FILE}
+#    COMMAND m4 --prefix-builtins -I${SHADER_DIR} "${FILE}.m4" > ${FILE}
+#    DEPENDS "${FILE}.m4"
+#    WORKING_DIRECTORY "${SHADER_DIR}"
+#  )
+#endforeach()
 
 add_custom_target(shaders ALL
   DEPENDS ${SHADER_FILES})
