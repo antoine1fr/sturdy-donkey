@@ -56,22 +56,22 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::cleanup()
 {
-  for (auto framebuffer: framebuffers_)
+  for (const auto& framebuffer: framebuffers_)
   {
-    glDeleteFramebuffers(1, &framebuffer.handle);
+    glDeleteFramebuffers(1, &(framebuffer.handle));
   }
-  for (auto program: gpu_programs_)
+  for (const auto& program: gpu_programs_)
   {
     glDeleteProgram(program.handle);
   }
-  for (auto mesh: meshes_)
+  for (const auto& mesh: meshes_)
   {
-    glDeleteBuffers(1, &mesh.position_buffer);
-    glDeleteBuffers(1, &mesh.uv_buffer);
-    glDeleteBuffers(1, &mesh.index_buffer);
-    glDeleteVertexArrays(1, &mesh.vertex_array);
+    glDeleteBuffers(1, &(mesh.position_buffer));
+    glDeleteBuffers(1, &(mesh.uv_buffer));
+    glDeleteBuffers(1, &(mesh.index_buffer));
+    glDeleteVertexArrays(1, &(mesh.vertex_array));
   }
-  for (const Texture& texture: textures_)
+  for (const auto& texture: textures_)
   {
     glDeleteTextures(1, &(texture.texture));
   }
