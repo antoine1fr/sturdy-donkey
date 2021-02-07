@@ -36,7 +36,8 @@ typedef std::chrono::duration<float> Duration;
 #define REGISTER_FRAMEBUFFER_ERROR(x) \
   case x: \
     std::cerr << "Framebuffer error: " #x "\n"; \
-    assert(false);
+    assert(false); \
+    break;
 
 inline void check_gl_framebuffer(GLenum target)
 {
