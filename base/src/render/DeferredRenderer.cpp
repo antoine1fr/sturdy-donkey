@@ -42,26 +42,115 @@ DeferredRenderer::DeferredRenderer(
   driver_(driver),
   gpu_resource_manager_(driver_->get_resource_manager()),
   resource_manager_(resource_manager),
-  pipeline_(window, driver, resource_manager)
+  pipeline_(window, driver, resource_manager),
+  pipeline_generator_(
+    *resource_manager_,
+    gpu_resource_manager_,
+    pipeline_,
+    window->get_width(),
+    window->get_height())
 {
   int width = window->get_width();
   int height = window->get_height();
-  create_light_pass_mesh_(width, height);
-  create_render_targets_(width, height);
-  create_render_passes_();
-  create_frame_packets_(width, height);
+  //create_light_pass_mesh_(width, height);
+  //create_render_targets_(width, height);
+  //create_render_passes_();
+  //create_frame_packets_(width, height);
+
+  pipeline_generator_.register_texture(
+    "albedo_texture",
+    width,
+    height,
+    pixel::Format::kRGBA,
+    pixel::InternalFormat::kRGBA8,
+    pixel::ComponentType::kUnsignedByte
+  );
+  pipeline_generator_.register_texture(
+    "normals_texture",
+    width,
+    height,
+    pixel::Format::kRGBA,
+    pixel::InternalFormat::kRGBA8,
+    pixel::ComponentType::kFloat
+  );
+  pipeline_generator_.register_texture(
+    "depth_texture",
+    width,
+    height,
+    pixel::Format::kDepthComponent,
+    pixel::InternalFormat::kDepthComponent24,
+    pixel::ComponentType::kFloat
+  );
+  pipeline_generator_.register_texture(
+    "light_texture",
+    width,
+    height,
+    pixel::Format::kRGBA,
+    pixel::InternalFormat::kRGBA8,
+    pixel::ComponentType::kUnsignedByte
+  );
+  pipeline_generator_.register_texture(
+    "light_plus_albedo_texture",
+    width,
+    height,
+    pixel::Format::kRGBA,
+    pixel::InternalFormat::kRGBA8,
+    pixel::ComponentType::kUnsignedByte
+  );
+
+  // gbuffer pass
+  pipeline_generator_.register_pass(
+    { "albedo_texture", "normals_texture", "depth_texture" },
+    GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT,
+    true,
+    false,
+    false
+  );
+  // light accumulation pass
+  pipeline_generator_.register_pass(
+    { "albedo_texture", "normals_texture", "depth_texture" },
+    { "light_texture" },
+    "shaders/simple.vert.glsl",
+    "shaders/light-pass.frag.glsl",
+    GL_COLOR_BUFFER_BIT,
+    false,
+    true,
+    true
+  );
+  // albedo pass
+  pipeline_generator_.register_pass(
+    { "albedo_texture", "light_texture" },
+    { "light_plus_albedo_texture" },
+    "shaders/simple.vert.glsl",
+    "shaders/albedo-pass.frag.glsl",
+    GL_COLOR_BUFFER_BIT,
+    false,
+    false,
+    false
+  );
+  // ambiant pass
+  pipeline_generator_.register_pass(
+    { "light_plus_albedo_texture", "depth_texture" },
+    {},
+    "shaders/simple.vert.glsl",
+    "shaders/ambient-pass.frag.glsl",
+    GL_COLOR_BUFFER_BIT,
+    false,
+    false,
+    false
+  );
 }
 
 DeferredRenderer::~DeferredRenderer()
 {
 }
 
-void DeferredRenderer::create_render_targets_(int width, int height)
+/*void DeferredRenderer::create_render_targets_(int width, int height)
 {
   // render targets
   create_gbuffer_(width, height);
-  create_light_accu_render_target_(width, height);
-  create_albedo_render_target_(width, height);
+  //create_light_accu_render_target_(width, height);
+  //create_albedo_render_target_(width, height);
 }
 
 void DeferredRenderer::create_frame_packets_(int width, int height)
@@ -337,7 +426,7 @@ void DeferredRenderer::create_albedo_pass_frame_packet_(int width, int height)
       false,
       false,
       false});
-}
+}*/
 
 void DeferredRenderer::render(StackFramePacket* frame_packet,
   CommandBucket& render_commands)
@@ -345,7 +434,7 @@ void DeferredRenderer::render(StackFramePacket* frame_packet,
   pipeline_.render(frame_packet, render_commands);
 }
 
-uint32_t DeferredRenderer::get_albedo_rt_id() const
+/*uint32_t DeferredRenderer::get_albedo_rt_id() const
 {
   return albedo_rt_id_;
 }
@@ -358,7 +447,7 @@ uint32_t DeferredRenderer::get_normal_rt_id() const
 uint32_t DeferredRenderer::get_depth_rt_id() const
 {
   return depth_rt_id_;
-}
+}*/
 
 }
 }

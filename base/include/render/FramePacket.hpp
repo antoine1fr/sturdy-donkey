@@ -200,7 +200,7 @@ class FramePacket
     Vector<DirectionalLightNode> directional_light_nodes_;
 
   public:
-    FramePacket(const MeshNodeAllocator& allocator, donkey::CameraNode&& camera_node);
+    FramePacket(const MeshNodeAllocator& allocator, donkey::CameraNode camera_node);
 
     FramePacket(
         std::list<::donkey::MeshNode> mesh_nodes,

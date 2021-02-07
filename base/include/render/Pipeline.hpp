@@ -82,6 +82,21 @@ namespace donkey {
         CommandBucket& render_commands);
       void add_render_pass(const RenderPass& render_pass);
       void add_render_pass(RenderPass&& render_pass);
+      void add_render_pass(
+        donkey::CameraNode camera_node,
+        uint32_t screen_mesh_id,
+        uint32_t material_id,
+        uint32_t framebuffer_id,
+        GLint clear_bits,
+        bool depth_test,
+        bool lighting,
+        bool blending);
+      void add_render_pass(
+        uint32_t framebuffer_id,
+        GLint clear_bits,
+        bool depth_test,
+        bool lighting,
+        bool blending);
       uint32_t get_albedo_rt_id() const;
       uint32_t get_normal_rt_id() const;
       uint32_t get_depth_rt_id() const;

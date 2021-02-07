@@ -34,7 +34,7 @@ std::array<FramePacket<Allocator>*, 2>
 
 template <template <typename> class Allocator>
 FramePacket<Allocator>::FramePacket(const MeshNodeAllocator& allocator,
-                                    donkey::CameraNode&& camera_node):
+                                    donkey::CameraNode camera_node):
   mesh_node_allocator_(allocator),
   directional_light_node_allocator_(allocator),
   mesh_nodes_(mesh_node_allocator_),

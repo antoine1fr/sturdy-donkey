@@ -63,8 +63,8 @@ namespace donkey
     {
       for (const MeshNode& mesh_node : mesh_nodes)
       {
-        if (camera_node.pass_num != pass_num)
-          continue;
+        //if (camera_node.pass_num != pass_num)
+        //  continue;
 
         if (render_pass.lighting)
         {
@@ -110,7 +110,7 @@ namespace donkey
       render_commands.set_blending(render_pass.blending);
 
       const CameraNode& camera_node = frame_packet.get_camera_node();
-      assert(camera_node.pass_num == pass_num);
+      //assert(camera_node.pass_num == pass_num);
       render_commands.set_viewport(camera_node.viewport_position,
         camera_node.viewport_size);
       render_commands.clear_framebuffer(render_pass.clear_color);
@@ -161,6 +161,54 @@ namespace donkey
     void Pipeline::add_render_pass(RenderPass&& render_pass)
     {
       render_passes_.push_back(render_pass);
+    }
+
+    void Pipeline::add_render_pass(
+      donkey::CameraNode camera_node,
+      uint32_t screen_mesh_id,
+      uint32_t material_id,
+      uint32_t framebuffer_id,
+      GLint clear_bits,
+      bool depth_test,
+      bool lighting,
+      bool blending)
+    {
+      frame_packets_.push_back(
+        StackFramePacket(
+          StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0),
+          camera_node));
+      StackFramePacket& light_frame_packet_ = frame_packets_.back();
+      light_frame_packet_.create_mesh_node(1,
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        screen_mesh_id,
+        material_id);
+      add_render_pass({
+          &light_frame_packet_,
+          framebuffer_id,
+          clear_bits,
+          glm::vec3(0.0f, 0.0f, 0.0f),
+          depth_test,
+          lighting,
+          blending });
+    }
+
+    void Pipeline::add_render_pass(
+      uint32_t framebuffer_id,
+      GLint clear_bits,
+      bool depth_test,
+      bool lighting,
+      bool blending)
+    {
+      add_render_pass({
+          nullptr,
+          framebuffer_id,
+          clear_bits,
+          glm::vec3(0.0f, 0.0f, 0.0f),
+          depth_test,
+          lighting,
+          blending });
     }
 
   }
