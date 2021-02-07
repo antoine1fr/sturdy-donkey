@@ -47,9 +47,9 @@ DeferredRenderer::DeferredRenderer(
 {
   int width = window->get_width();
   int height = window->get_height();
-  create_render_passes_();
   create_light_pass_mesh_(width, height);
   create_render_targets_(width, height);
+  create_render_passes_();
   create_frame_packets_(width, height);
 }
 
