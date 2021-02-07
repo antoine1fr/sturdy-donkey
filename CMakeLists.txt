@@ -8,10 +8,10 @@ list(INSERT CMAKE_PREFIX_PATH 0 ${PROJECT_SOURCE_DIR})
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(glm REQUIRED MODULE)
+find_package(gl3w REQUIRED MODULE)
 find_package(SDL2 REQUIRED MODULE)
 find_package(SDL2_image REQUIRED MODULE)
 
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/gl3w")
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/lib/tinyobjloader")
 
 add_library(sturdy-donkey SHARED
@@ -61,7 +61,7 @@ target_link_libraries(sturdy-donkey
   PUBLIC
   SDL2::SDL2
   SDL2_image::SDL2_image
-  gl3w
+  gl3w::gl3w
   glm::glm
   tinyobjloader
 )
