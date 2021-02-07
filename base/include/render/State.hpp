@@ -107,6 +107,8 @@ struct State: public Resource
     blend_destination_alpha(state.blend_destination_alpha),
     blend_destination_rgb(state.blend_destination_rgb),
     cull_mode(state.cull_mode),
+    viewport{ 0, 0, 0, 0 },
+    scissor_box{ 0, 0, 0, 0 },
     depth_test_enabled(state.depth_test_enabled),
     stencil_test_enabled(state.stencil_test_enabled),
     scissor_test_enabled(state.scissor_test_enabled),

@@ -32,6 +32,8 @@ Buffer::Buffer(Tag tag, int id, Size capacity, char* ptr):
 }
 
 Buffer::Buffer(Buffer&& buffer) noexcept:
+  tag_(buffer.tag_),
+  id_(buffer.id_),
   capacity_(buffer.capacity_),
   size_(buffer.size_),
   ptr_(buffer.ptr_)
