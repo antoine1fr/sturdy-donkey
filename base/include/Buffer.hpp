@@ -46,13 +46,13 @@ class Buffer
     void* ptr() const;
     void set_pointer(void* ptr);
     Tag get_tag() const;
-    int get_id() const;
+    size_t get_id() const;
     void set_tag_and_id(Tag tag, int id);
 
 
   private:
     Tag tag_;
-    int id_;
+    size_t id_;
     Size capacity_;
     Size size_;
     char* ptr_;

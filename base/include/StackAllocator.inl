@@ -20,7 +20,7 @@ namespace donkey {
 extern thread_local std::vector<Buffer*> buffers_;
 
 template <typename T, size_t alignment>
-StackAllocator<T, alignment>::StackAllocator(Buffer::Tag tag, int id):
+StackAllocator<T, alignment>::StackAllocator(Buffer::Tag tag, size_t id):
   tag(tag),
   id(id)
 {

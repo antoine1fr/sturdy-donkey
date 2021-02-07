@@ -99,7 +99,7 @@ Buffer::Tag Buffer::get_tag() const
   return tag_;
 }
 
-int Buffer::get_id() const
+size_t Buffer::get_id() const
 {
   return id_;
 }

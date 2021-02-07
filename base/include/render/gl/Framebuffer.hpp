@@ -25,11 +25,11 @@ struct Framebuffer
   GLuint handle;
   std::vector<GLenum> descriptor;
 
-  Framebuffer(GLuint handle, size_t color_buffer_count):
+  Framebuffer(GLuint handle, GLenum color_buffer_count):
     handle(handle)
   {
     descriptor.resize(color_buffer_count);
-    for (size_t i = 0; i < color_buffer_count; i++)
+    for (GLenum i = 0; i < color_buffer_count; i++)
     {
       descriptor[i] = GL_COLOR_ATTACHMENT0 + i;
     }

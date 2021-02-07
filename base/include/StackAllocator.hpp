@@ -39,9 +39,9 @@ struct StackAllocator
   typedef std::size_t size_type;
 
   Buffer::Tag tag;
-  int id;
+  size_t id;
 
-  StackAllocator(Buffer::Tag tag, int id);
+  StackAllocator(Buffer::Tag tag, size_t id);
 
   template <typename U>
     StackAllocator(const StackAllocator<U, alignment>& allocator);

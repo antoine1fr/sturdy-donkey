@@ -269,7 +269,7 @@ uint32_t ResourceManager::create_mesh(
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(),
       &indices[0], GL_STATIC_DRAW);
 
-  uint32_t id = meshes_.size();
+  uint32_t id = static_cast<uint32_t>(meshes_.size());
   meshes_.push_back(Mesh(
     position_buffer,
     normal_buffer,
@@ -283,7 +283,7 @@ uint32_t ResourceManager::create_mesh(
 
 uint32_t ResourceManager::create_material(uint32_t gpu_program)
 {
-  uint32_t id = materials_.size();
+  uint32_t id = static_cast<uint32_t>(materials_.size());
   materials_.push_back(Material(*this, gpu_program));
   return id;
 }
@@ -302,8 +302,8 @@ uint32_t ResourceManager::create_texture(
     GL_TEXTURE_2D,
     0,
     pixel_internal_formats_[static_cast<std::size_t>(internal_format)],
-    width,
-    height,
+    static_cast<GLsizei>(width),
+    static_cast<GLsizei>(height),
     0,
     pixel_formats_[static_cast<std::size_t>(format)],
     pixel_component_types_[static_cast<std::size_t>(component_type)],
@@ -311,7 +311,7 @@ uint32_t ResourceManager::create_texture(
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  uint32_t id = textures_.size();
+  uint32_t id = static_cast<uint32_t>(textures_.size());
   textures_.push_back(Texture(texture));
   return id;
 }
@@ -327,7 +327,7 @@ uint32_t ResourceManager::create_framebuffer(
   {
     uint32_t id = color_rt_ids[i];
     glFramebufferTexture2D(GL_FRAMEBUFFER,
-                           GL_COLOR_ATTACHMENT0 + i,
+                           GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(i),
                            GL_TEXTURE_2D,
                            get_texture(id).texture,
                            0);
@@ -335,8 +335,9 @@ uint32_t ResourceManager::create_framebuffer(
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
       GL_TEXTURE_2D, get_texture(depth_rt_id).texture, 0);
   check_gl_framebuffer(GL_FRAMEBUFFER);
-  uint32_t id = framebuffers_.size();
-  framebuffers_.push_back(Framebuffer(framebuffer, color_rt_ids.size()));
+  uint32_t id = static_cast<uint32_t>(framebuffers_.size());
+  framebuffers_.push_back(Framebuffer(framebuffer,
+    static_cast<GLenum>(color_rt_ids.size())));
   return id;
 }
 
@@ -357,7 +358,7 @@ uint32_t ResourceManager::create_framebuffer(
     else
     {
       glFramebufferTexture2D(GL_FRAMEBUFFER,
-        GL_COLOR_ATTACHMENT0 + color_rt_id,
+        GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(color_rt_id),
         GL_TEXTURE_2D,
         get_texture(texture->gpu_resource_id).texture,
         0);
@@ -365,8 +366,8 @@ uint32_t ResourceManager::create_framebuffer(
     }
   }
   check_gl_framebuffer(GL_FRAMEBUFFER);
-  uint32_t id = framebuffers_.size();
-  framebuffers_.push_back(Framebuffer(framebuffer, color_rt_id));
+  uint32_t id = static_cast<uint32_t>(framebuffers_.size());
+  framebuffers_.push_back(Framebuffer(framebuffer, static_cast<GLenum>(color_rt_id)));
   return id;
 }
 

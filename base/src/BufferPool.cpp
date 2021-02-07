@@ -57,7 +57,7 @@ void BufferPool::cleanup()
     delete instance_;
 }
 
-Buffer* BufferPool::get_buffer(Buffer::Tag tag, int id, size_t size)
+Buffer* BufferPool::get_buffer(Buffer::Tag tag, size_t id, size_t size)
 {
   std::lock_guard<std::mutex> lock(mutex_);
   size_t real_size = size + sizeof(Buffer);
@@ -99,7 +99,7 @@ void BufferPool::give_back_buffer(Buffer* buffer)
   used_buffers_[t].push_front(buffer);
 }
 
-void BufferPool::free_tag(Buffer::Tag tag, int id)
+void BufferPool::free_tag(Buffer::Tag tag, size_t id)
 {
   std::lock_guard<std::mutex> lock(mutex_);
 

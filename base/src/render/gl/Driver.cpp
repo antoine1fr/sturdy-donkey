@@ -126,7 +126,7 @@ void Driver::draw_elements_(const Command& command)
   assert(command.type == Command::Type::kDrawElements);
   const DrawElementsCommand& draw_command =
     static_cast<const DrawElementsCommand&>(command);
-  glDrawElements(GL_TRIANGLES, draw_command.count, GL_UNSIGNED_INT,
+  glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(draw_command.count), GL_UNSIGNED_INT,
       nullptr);
 }
 
@@ -228,7 +228,8 @@ void Driver::bind_framebuffer_(const Command& command)
       resource_manager_.get_framebuffer(framebuffer_id);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer.handle);
     check_gl_framebuffer(GL_FRAMEBUFFER);
-    glDrawBuffers(framebuffer.descriptor.size(), &framebuffer.descriptor[0]);
+    glDrawBuffers(static_cast<GLsizei>(framebuffer.descriptor.size()),
+      &framebuffer.descriptor[0]);
   }
 }
 
@@ -263,13 +264,13 @@ void Driver::set_viewport_(const Command& command)
   assert(command.type == Command::Type::kSetViewport);
   const SetViewportCommand& set_command =
     static_cast<const SetViewportCommand&>(command);
-  glm::vec2 position = set_command.position;
-  glm::vec2 size = set_command.size;
+  auto position = set_command.position;
+  auto size = set_command.size;
   glViewport(
     position.x,
     position.y,
-    size.x,
-    size.y);
+    static_cast<GLsizei>(size.x),
+    static_cast<GLsizei>(size.y));
 }
 
 void Driver::clear_framebuffer_(const Command& command)

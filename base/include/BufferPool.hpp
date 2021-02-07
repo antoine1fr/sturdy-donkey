@@ -40,9 +40,9 @@ class BufferPool
   public:
     static BufferPool* get_instance();
     static void cleanup();
-    Buffer* get_buffer(Buffer::Tag tag, int id, size_t size);
+    Buffer* get_buffer(Buffer::Tag tag, size_t id, size_t size);
     void give_back_buffer(Buffer* buffer);
-    void free_tag(Buffer::Tag tag, int id);
+    void free_tag(Buffer::Tag tag, size_t id);
 
   private:
     BufferPool();
