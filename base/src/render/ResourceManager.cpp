@@ -75,7 +75,7 @@ uint32_t ResourceManager::load_gpu_program_from_file(
   std::uint32_t id = gpu_resource_manager_.load_gpu_program_from_file(
       vs_path, fs_path);
   gpu_programs_.push_back(GpuProgram(id));
-  return gpu_programs_.size() - 1;
+  return static_cast<uint32_t>(gpu_programs_.size()) - 1;
 }
 
 uint32_t ResourceManager::create_material(uint32_t gpu_program)
@@ -120,7 +120,7 @@ uint32_t ResourceManager::create_mesh(
       bitangents,
       indices);
   meshes_.push_back(Mesh(id, indices.size()));
-  return meshes_.size() - 1;
+  return static_cast<uint32_t>(meshes_.size()) - 1;
 }
 
 uint32_t ResourceManager::create_texture(
@@ -133,14 +133,14 @@ uint32_t ResourceManager::create_texture(
   uint32_t id = gpu_resource_manager_.create_texture(width, height, format,
       internal_format, component_type);
   textures_.push_back(Texture(id));
-  return textures_.size() - 1;
+  return static_cast<uint32_t>(textures_.size()) - 1;
 }
 
 uint32_t ResourceManager::create_state(const State& state)
 {
   uint32_t id = gpu_resource_manager_.create_state(state);
   states_.push_back(State(id, state));
-  return states_.size() - 1;
+  return static_cast<uint32_t>(states_.size()) - 1;
 }
 
 }
