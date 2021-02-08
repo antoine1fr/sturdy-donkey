@@ -110,7 +110,6 @@ namespace donkey
       render_commands.set_blending(render_pass.blending);
 
       const CameraNode& camera_node = frame_packet.get_camera_node();
-      //assert(camera_node.pass_num == pass_num);
       render_commands.set_viewport(camera_node.viewport_position,
         camera_node.viewport_size);
       render_commands.clear_framebuffer(render_pass.clear_color);

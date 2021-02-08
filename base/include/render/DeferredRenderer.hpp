@@ -56,19 +56,6 @@ class DeferredRenderer
     typedef std::list<StackFramePacket> FramePacketList;
     std::list<StackFramePacket> frame_packets_;
 
-    //uint32_t light_program_id_;
-    //uint32_t albedo_program_id_;
-    //uint32_t ambient_program_id_;
-    //uint32_t light_rt_id_;
-    //uint32_t albedo_rt_id_;
-    //uint32_t normal_rt_id_;
-    //uint32_t depth_rt_id_;
-    //uint32_t light_plus_albedo_rt_id_;
-    //uint32_t gbuffer_id_;
-    //uint32_t light_framebuffer_id_;
-    //uint32_t albedo_framebuffer_id_;
-    //uint32_t screen_mesh_id_;
-
     Pipeline pipeline_;
     PipelineGenerator pipeline_generator_;
 
@@ -86,25 +73,6 @@ class DeferredRenderer
         CommandBucket& render_commands,
         const Material& material,
         const MeshNode& mesh_node) const;
-    //void create_light_pass_mesh_(int width, int height);
-    //void create_gbuffer_(int width, int height);
-    //void create_light_accu_render_target_(int width, int height);
-    //void create_albedo_render_target_(int width, int height);
-    //uint32_t create_light_material_(
-    //    const std::string& vertex_shader_path,
-    //    const std::string& fragment_shader_path);
-    //uint32_t create_ambient_material_(
-    //    const std::string& vertex_shader_path,
-    //    const std::string& fragment_shader_path);
-    //uint32_t create_albedo_material_(
-    //    const std::string& vertex_shader_path,
-    //    const std::string& fragment_shader_path);
-    //void create_light_accu_pass_frame_packet_(int width, int height);
-    //void create_albedo_pass_frame_packet_(int width, int height);
-    //void create_ambient_pass_frame_packet_(int width, int height);
-    //void create_render_targets_(int width, int height);
-    //void create_frame_packets_(int width, int height);
-    //void create_render_passes_();
 
   public:
     DeferredRenderer(
@@ -114,9 +82,6 @@ class DeferredRenderer
     ~DeferredRenderer();
     void render(StackFramePacket* frame_packet,
       CommandBucket& render_commands);
-    //uint32_t get_albedo_rt_id() const;
-    //uint32_t get_normal_rt_id() const;
-    //uint32_t get_depth_rt_id() const;
 };
 
 }
