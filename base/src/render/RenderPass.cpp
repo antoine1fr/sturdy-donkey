@@ -132,7 +132,7 @@ void render_mesh_node(
     render_commands.bind_uniform(material.camera_position_location,
         glm::vec3(0.0f));
     render_commands.bind_uniform(material.ambient_location,
-        glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
     if (light_node) {
       bind_light_uniforms_(render_commands, material, last_camera_node->view,
                            light_node);
