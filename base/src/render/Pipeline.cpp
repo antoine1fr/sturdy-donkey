@@ -177,21 +177,21 @@ namespace donkey
         StackFramePacket(
           StackAllocator<MeshNode>(Buffer::Tag::kLightFramePacket, 0),
           camera_node));
-      StackFramePacket& light_frame_packet_ = frame_packets_.back();
-      light_frame_packet_.create_mesh_node(1,
+      StackFramePacket& frame_packet = frame_packets_.back();
+      frame_packet.create_mesh_node(1,
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(1.0f, 1.0f, 1.0f),
         screen_mesh_id,
         material_id);
       add_render_pass({
-          &light_frame_packet_,
+          &frame_packet,
           framebuffer_id,
           clear_bits,
           glm::vec3(0.0f, 0.0f, 0.0f),
           depth_test,
           lighting,
-          blending });
+          blending});
     }
 
     void Pipeline::add_render_pass(
@@ -208,7 +208,7 @@ namespace donkey
           glm::vec3(0.0f, 0.0f, 0.0f),
           depth_test,
           lighting,
-          blending });
+          blending});
     }
 
   }
