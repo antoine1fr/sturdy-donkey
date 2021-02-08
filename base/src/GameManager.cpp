@@ -47,10 +47,15 @@ GameManager::GameManager(IResourceLoaderDelegate& resource_loader):
   resource_loader.load_render_resources(window_, resource_manager_,
                                         &(driver_->get_resource_manager()));
   window_->free_context();
+  simulation_modules_.push_back(new Game(resource_loader_));
 }
 
 GameManager::~GameManager()
 {
+  for (auto simulation_module : simulation_modules_)
+  {
+    delete simulation_module;
+  }
   delete renderer_;
   resource_manager_->cleanup();
   delete resource_manager_;
@@ -113,8 +118,16 @@ void GameManager::simulation_loop()
       }
     }
 
-    game.update(elapsed_time);
+    update_simulation_(elapsed_time);
     prepare_frame_packet_(game);
+  }
+}
+
+void GameManager::update_simulation_(Duration elapsed_time)
+{
+  for (auto simulation_module : simulation_modules_)
+  {
+    simulation_module->update(elapsed_time);
   }
 }
 
@@ -142,7 +155,10 @@ void GameManager::prepare_frame_packet_(Game& game)
   StackAllocator<FramePacket> allocator(Buffer::Tag::kFramePacket,
       frame_packet_id);
   FramePacket* frame_packet = allocator.allocate(1);
-  game.prepare_frame_packet(frame_packet, allocator);
+  for (auto simulation_module : simulation_modules_)
+  {
+    simulation_module->prepare_frame_packet(frame_packet, allocator);
+  }
   FramePacket::frame_packets[frame_packet_id] = frame_packet;
   wait_render_thread_();
   increment_simulated_frame_count_();

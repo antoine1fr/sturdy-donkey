@@ -20,6 +20,7 @@
 #include <atomic>
 
 #include "Game.hpp"
+#include "ISimulationModule.hpp"
 #include "IResourceLoaderDelegate.hpp"
 #include "render/DeferredRenderer.hpp"
 #include "render/Window.hpp"
@@ -39,10 +40,12 @@ class GameManager
     std::atomic_size_t simulated_frame_count_;
     std::atomic_size_t rendered_frame_count_;
     render::ResourceManager* resource_manager_;
+    std::list<ISimulationModule*> simulation_modules_;
 
   private:
     size_t wait_for_frame_packet_();
     void wait_render_thread_() const;
+    void update_simulation_(Duration elapsed_time);
     void prepare_frame_packet_(Game& game);
     size_t get_rendered_frame_count_() const;
     size_t get_simulated_frame_count_() const;
