@@ -19,34 +19,32 @@
 
 #include <atomic>
 #include <list>
-#include <vector>
 #include <mutex>
+#include <vector>
 
 #include "Buffer.hpp"
 #include "IPageAllocator.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-class BufferPool
-{
-  private:
-    static BufferPool* instance_;
-    std::vector<std::list<Buffer*>> used_buffers_;
-    std::list<Buffer*> unused_buffers_;
-    std::mutex mutex_;
-    IPageAllocator* page_allocator_;
+class BufferPool {
+ private:
+  static BufferPool* instance_;
+  std::vector<std::list<Buffer*>> used_buffers_;
+  std::list<Buffer*> unused_buffers_;
+  std::mutex mutex_;
+  IPageAllocator* page_allocator_;
 
-  public:
-    static BufferPool* get_instance();
-    static void cleanup();
-    Buffer* get_buffer(Buffer::Tag tag, size_t id, size_t size);
-    void give_back_buffer(Buffer* buffer);
-    void free_tag(Buffer::Tag tag, size_t id);
+ public:
+  static BufferPool* get_instance();
+  static void cleanup();
+  Buffer* get_buffer(Buffer::Tag tag, size_t id, size_t size);
+  void give_back_buffer(Buffer* buffer);
+  void free_tag(Buffer::Tag tag, size_t id);
 
-  private:
-    BufferPool();
-    ~BufferPool();
+ private:
+  BufferPool();
+  ~BufferPool();
 };
 
-}
+}  // namespace donkey

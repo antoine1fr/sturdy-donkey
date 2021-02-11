@@ -18,7 +18,5 @@
 #include "render/GpuResourceManager.hpp"
 
 namespace donkey {
-namespace render {
-
-}
-}
+namespace render {}
+}  // namespace donkey

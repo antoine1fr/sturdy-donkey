@@ -15,21 +15,18 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "render/gl/Material.hpp"
+
 #include <GL/gl3w.h>
 
-#include "render/gl/Material.hpp"
 #include "render/gl/GpuProgram.hpp"
 
 namespace donkey {
 namespace render {
 namespace gl {
 
-Material::Material(
-    const ResourceManager& resource_manager,
-    uint32_t program_id):
-  AMaterial(program_id),
-  resource_manager_(resource_manager)
-{
+Material::Material(const ResourceManager& resource_manager, uint32_t program_id)
+    : AMaterial(program_id), resource_manager_(resource_manager) {
   const GpuProgram& program = resource_manager_.get_gpu_program(program_id);
   position_location = glGetAttribLocation(program.handle, "position");
   normal_location = glGetAttribLocation(program.handle, "normal");
@@ -38,35 +35,31 @@ Material::Material(
   bitangent_location = glGetAttribLocation(program.handle, "bitangent");
   model_location = glGetUniformLocation(program.handle, "model");
   view_location = glGetUniformLocation(program.handle, "view");
-  projection_location =
-    glGetUniformLocation(program.handle, "projection");
-  gbuffer_projection_inverse_location = glGetUniformLocation(program.handle,
-    "gbuffer_projection_inverse");
-  gbuffer_view_location =
-    glGetUniformLocation(program.handle, "gbuffer_view");
-  gbuffer_projection_params_location = glGetUniformLocation(program.handle,
-    "gbuffer_projection_params");
-  light_dir_location = glGetUniformLocation(program.handle,
-    "light_dir");
-  light_diffuse_location = glGetUniformLocation(program.handle,
-    "light_diffuse");
-  light_specular_location = glGetUniformLocation(program.handle,
-    "light_specular");
-  ambient_location = glGetUniformLocation(program.handle,
-    "ambient");
-  camera_position_location = glGetUniformLocation(program.handle,
-    "camera_position");
+  projection_location = glGetUniformLocation(program.handle, "projection");
+  gbuffer_projection_inverse_location =
+      glGetUniformLocation(program.handle, "gbuffer_projection_inverse");
+  gbuffer_view_location = glGetUniformLocation(program.handle, "gbuffer_view");
+  gbuffer_projection_params_location =
+      glGetUniformLocation(program.handle, "gbuffer_projection_params");
+  light_dir_location = glGetUniformLocation(program.handle, "light_dir");
+  light_diffuse_location =
+      glGetUniformLocation(program.handle, "light_diffuse");
+  light_specular_location =
+      glGetUniformLocation(program.handle, "light_specular");
+  ambient_location = glGetUniformLocation(program.handle, "ambient");
+  camera_position_location =
+      glGetUniformLocation(program.handle, "camera_position");
 }
 
 // TODO: find a pure c++ (i.e. no preprocessor) implementation that is as
 // concise and doesn't use RTTIs.
 
-#define DEFINE_REGISTER_SLOT(x,y,z) \
-  void Material::register_ ## z ##_slot(const std::string& name, const x& storage) \
-  { \
+#define DEFINE_REGISTER_SLOT(x, y, z)                                          \
+  void Material::register_##z##_slot(const std::string& name,                  \
+                                     const x& storage) {                       \
     const GpuProgram& program = resource_manager_.get_gpu_program(program_id); \
-    int location = glGetUniformLocation(program.handle, name.c_str()); \
-    y ## _slots_.push_back(ScalarMaterialSlot<x>(location, storage)); \
+    int location = glGetUniformLocation(program.handle, name.c_str());         \
+    y##_slots_.push_back(ScalarMaterialSlot<x>(location, storage));            \
   }
 
 DEFINE_REGISTER_SLOT(float, float, float)
@@ -81,15 +74,14 @@ DEFINE_REGISTER_SLOT(int, int, int)
 #undef DEFINE_REGISTER_SLOT
 
 void Material::register_texture_slot(const std::string& name,
-    uint32_t texture_id,
-    int texture_unit)
-{
+                                     uint32_t texture_id,
+                                     int texture_unit) {
   const GpuProgram& program = resource_manager_.get_gpu_program(program_id);
   int location = glGetUniformLocation(program.handle, name.c_str());
-  texture_slots_.push_back(TextureMaterialSlot(location, texture_id,
-    texture_unit));
+  texture_slots_.push_back(
+      TextureMaterialSlot(location, texture_id, texture_unit));
 }
 
-}
-}
-}
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

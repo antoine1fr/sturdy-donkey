@@ -15,33 +15,26 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 #include <glm/mat2x2.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
 template <class Storage>
 ScalarMaterialSlot<Storage>::ScalarMaterialSlot(int location,
-  const Storage& storage):
-  location(location),
-  storage(storage)
-{
-}
+                                                const Storage& storage)
+    : location(location), storage(storage) {}
 
 template <class Storage>
-void ScalarMaterialSlot<Storage>::bind(CommandBucket& render_commands)
-{
+void ScalarMaterialSlot<Storage>::bind(CommandBucket& render_commands) {
   render_commands.bind_uniform(location, storage);
 }
 
-
-}
-}
+}  // namespace render
+}  // namespace donkey

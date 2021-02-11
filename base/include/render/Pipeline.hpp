@@ -22,85 +22,74 @@
 #include "render/gl/Driver.hpp"
 
 namespace donkey {
-  namespace render {
+namespace render {
 
+class Pipeline {
+ private:
+  std::vector<RenderPass> render_passes_;
+  Window* window_;
+  Window::Context render_context_;
+  gl::Driver* driver_;
+  GpuResourceManager& gpu_resource_manager_;
+  ResourceManager* resource_manager_;
 
-    class Pipeline
-    {
-    private:
-      std::vector<RenderPass> render_passes_;
-      Window* window_;
-      Window::Context render_context_;
-      gl::Driver* driver_;
-      GpuResourceManager& gpu_resource_manager_;
-      ResourceManager* resource_manager_;
+  typedef std::list<StackFramePacket> FramePacketList;
+  std::list<StackFramePacket> frame_packets_;
 
-      typedef std::list<StackFramePacket> FramePacketList;
-      std::list<StackFramePacket> frame_packets_;
+ private:
+  void bind_light_uniforms_(CommandBucket& render_commands,
+                            const Material& material,
+                            const glm::mat4& view,
+                            const DirectionalLightNode* light_node) const;
+  void bind_camera_uniforms_(CommandBucket& render_commands,
+                             const Material& material,
+                             const CameraNode& camera_node) const;
+  void bind_mesh_uniforms_(CommandBucket& render_commands,
+                           const Material& material,
+                           const MeshNode& mesh_node) const;
+  void render_geometry_(size_t pass_num,
+                        const RenderPass& render_pass,
+                        const StackVector<MeshNode>& mesh_nodes,
+                        const CameraNode& camera_node,
+                        const CameraNode* last_camera_node,
+                        const StackVector<DirectionalLightNode>& light_nodes,
+                        CommandBucket& render_commands,
+                        ResourceManager* resource_manager,
+                        GpuResourceManager* gpu_resource_manager);
+  void execute_pass_(size_t pass_num,
+                     const RenderPass& render_pass,
+                     const StackFramePacket& frame_packet,
+                     const CameraNode* last_camera_node,
+                     const StackVector<DirectionalLightNode>& light_nodes,
+                     CommandBucket& render_commands,
+                     ResourceManager* resource_manager,
+                     GpuResourceManager* gpu_resource_manager);
 
-    private:
-      void bind_light_uniforms_(
-        CommandBucket& render_commands,
-        const Material& material,
-        const glm::mat4& view,
-        const DirectionalLightNode* light_node) const;
-      void bind_camera_uniforms_(
-        CommandBucket& render_commands,
-        const Material& material,
-        const CameraNode& camera_node) const;
-      void bind_mesh_uniforms_(
-        CommandBucket& render_commands,
-        const Material& material,
-        const MeshNode& mesh_node) const;
-      void render_geometry_(
-        size_t pass_num,
-        const RenderPass& render_pass,
-        const StackVector<MeshNode>& mesh_nodes,
-        const CameraNode& camera_node,
-        const CameraNode* last_camera_node,
-        const StackVector<DirectionalLightNode>& light_nodes,
-        CommandBucket& render_commands,
-        ResourceManager* resource_manager,
-        GpuResourceManager* gpu_resource_manager);
-      void execute_pass_(
-        size_t pass_num,
-        const RenderPass& render_pass,
-        const StackFramePacket& frame_packet,
-        const CameraNode* last_camera_node,
-        const StackVector<DirectionalLightNode>& light_nodes,
-        CommandBucket& render_commands,
-        ResourceManager* resource_manager,
-        GpuResourceManager* gpu_resource_manager);
+ public:
+  Pipeline(Window* window,
+           gl::Driver* driver,
+           ResourceManager* resource_manager);
+  ~Pipeline();
+  void render(StackFramePacket* frame_packet, CommandBucket& render_commands);
+  void add_render_pass(const RenderPass& render_pass);
+  void add_render_pass(RenderPass&& render_pass);
+  void add_render_pass(donkey::CameraNode camera_node,
+                       uint32_t screen_mesh_id,
+                       uint32_t material_id,
+                       uint32_t framebuffer_id,
+                       GLint clear_bits,
+                       bool depth_test,
+                       bool lighting,
+                       bool blending);
+  void add_render_pass(uint32_t framebuffer_id,
+                       GLint clear_bits,
+                       bool depth_test,
+                       bool lighting,
+                       bool blending);
+  uint32_t get_albedo_rt_id() const;
+  uint32_t get_normal_rt_id() const;
+  uint32_t get_depth_rt_id() const;
+};
 
-    public:
-      Pipeline(
-        Window* window,
-        gl::Driver* driver,
-        ResourceManager* resource_manager);
-      ~Pipeline();
-      void render(StackFramePacket* frame_packet,
-        CommandBucket& render_commands);
-      void add_render_pass(const RenderPass& render_pass);
-      void add_render_pass(RenderPass&& render_pass);
-      void add_render_pass(
-        donkey::CameraNode camera_node,
-        uint32_t screen_mesh_id,
-        uint32_t material_id,
-        uint32_t framebuffer_id,
-        GLint clear_bits,
-        bool depth_test,
-        bool lighting,
-        bool blending);
-      void add_render_pass(
-        uint32_t framebuffer_id,
-        GLint clear_bits,
-        bool depth_test,
-        bool lighting,
-        bool blending);
-      uint32_t get_albedo_rt_id() const;
-      uint32_t get_normal_rt_id() const;
-      uint32_t get_depth_rt_id() const;
-    };
-
-  }
-}
+}  // namespace render
+}  // namespace donkey

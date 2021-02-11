@@ -19,28 +19,25 @@
 
 #include "render/CommandBucket.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
 template <class Storage_>
-class ScalarMaterialSlot
-{
-  public:
-    typedef Storage_ Storage;
+class ScalarMaterialSlot {
+ public:
+  typedef Storage_ Storage;
 
-  public:
-    int location;
-    Storage storage;
+ public:
+  int location;
+  Storage storage;
 
-  public:
-    ScalarMaterialSlot(int location, const Storage& storage);
-    void bind(CommandBucket& render_commands);
+ public:
+  ScalarMaterialSlot(int location, const Storage& storage);
+  void bind(CommandBucket& render_commands);
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey
 
 #include "ScalarMaterialSlot.inl"

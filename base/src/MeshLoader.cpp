@@ -15,92 +15,79 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "MeshLoader.hpp"
+
+#include <tiny_obj_loader.h>
+
 #include <iostream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "hash.hpp"
-#include "MeshLoader.hpp"
 
-#include <tiny_obj_loader.h>
+namespace {
+struct Vertex {
+  glm::vec3 position;
+  glm::vec3 normal;
+  glm::vec2 uv;
+  glm::vec3 tangent;
+  glm::vec3 bitangent;
+};
 
-namespace
-{
-  struct Vertex
-  {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 uv;
-    glm::vec3 tangent;
-    glm::vec3 bitangent;
-  };
-
-  bool operator == (const Vertex& lhs, const Vertex& rhs)
-  {
-    return (lhs.position == rhs.position
-        && lhs.normal == rhs.normal
-        && lhs.uv == rhs.uv);
-  }
-
-  struct Index
-  {
-    int position;
-    int normal;
-    int uv;
-    int tangent;
-    int bitangent;
-  };
-
-  bool operator == (const Index& lhs, const Index& rhs)
-  {
-    return (lhs.position == rhs.position
-        && lhs.normal == rhs.normal
-        && lhs.uv == rhs.uv);
-  }
+bool operator==(const Vertex& lhs, const Vertex& rhs) {
+  return (lhs.position == rhs.position && lhs.normal == rhs.normal &&
+          lhs.uv == rhs.uv);
 }
 
-namespace std
-{
-  template <>
-    struct hash<Vertex>
-    {
-      typedef Vertex argument_type;
-      typedef std::size_t result_type;
+struct Index {
+  int position;
+  int normal;
+  int uv;
+  int tangent;
+  int bitangent;
+};
 
-      std::size_t operator () (const Vertex& vertex) const noexcept
-      {
-        std::size_t seed = 0;
-        donkey::hash_combine(seed, vertex.position);
-        donkey::hash_combine(seed, vertex.normal);
-        donkey::hash_combine(seed, vertex.uv);
-        return seed;
-      }
-    };
-
-  template <>
-    struct hash<Index>
-    {
-      typedef Index argument_type;
-      typedef std::size_t result_type;
-
-      std::size_t operator () (const Index& index) const noexcept
-      {
-        std::size_t seed = 0;
-        donkey::hash_combine(seed, index.position);
-        donkey::hash_combine(seed, index.normal);
-        donkey::hash_combine(seed, index.uv);
-        return seed;
-      }
-    };
+bool operator==(const Index& lhs, const Index& rhs) {
+  return (lhs.position == rhs.position && lhs.normal == rhs.normal &&
+          lhs.uv == rhs.uv);
 }
+}  // namespace
+
+namespace std {
+template <>
+struct hash<Vertex> {
+  typedef Vertex argument_type;
+  typedef std::size_t result_type;
+
+  std::size_t operator()(const Vertex& vertex) const noexcept {
+    std::size_t seed = 0;
+    donkey::hash_combine(seed, vertex.position);
+    donkey::hash_combine(seed, vertex.normal);
+    donkey::hash_combine(seed, vertex.uv);
+    return seed;
+  }
+};
+
+template <>
+struct hash<Index> {
+  typedef Index argument_type;
+  typedef std::size_t result_type;
+
+  std::size_t operator()(const Index& index) const noexcept {
+    std::size_t seed = 0;
+    donkey::hash_combine(seed, index.position);
+    donkey::hash_combine(seed, index.normal);
+    donkey::hash_combine(seed, index.uv);
+    return seed;
+  }
+};
+}  // namespace std
 
 namespace donkey {
 
-uint32_t MeshLoader::load(
-    render::ResourceManager* resource_manager,
-    const std::string& path) const
-{
+uint32_t MeshLoader::load(render::ResourceManager* resource_manager,
+                          const std::string& path) const {
   std::cout << "Loading mesh from file: " << path << '\n';
 
   tinyobj::attrib_t attributes;
@@ -110,7 +97,7 @@ uint32_t MeshLoader::load(
   std::string error;
 
   tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error,
-      path.c_str());
+                   path.c_str());
   // TODO: implement support for sub-meshes.
   std::vector<uint32_t> indices;
   std::vector<float> positions;
@@ -118,22 +105,10 @@ uint32_t MeshLoader::load(
   std::vector<float> uvs;
   std::vector<float> tangents;
   std::vector<float> bitangents;
-  consolidate_indices_(
-      attributes,
-      shapes[0].mesh.indices,
-      indices,
-      positions,
-      normals,
-      uvs,
-      tangents,
-      bitangents);
-  return resource_manager->create_mesh(
-      positions,
-      normals,
-      uvs,
-      tangents,
-      bitangents,
-      indices);
+  consolidate_indices_(attributes, shapes[0].mesh.indices, indices, positions,
+                       normals, uvs, tangents, bitangents);
+  return resource_manager->create_mesh(positions, normals, uvs, tangents,
+                                       bitangents, indices);
 }
 
 void MeshLoader::consolidate_indices_(
@@ -144,44 +119,32 @@ void MeshLoader::consolidate_indices_(
     std::vector<float>& normals,
     std::vector<float>& uvs,
     std::vector<float>& tangents,
-    std::vector<float>& bitangents) const
-{
+    std::vector<float>& bitangents) const {
   // 1. expand vertices
   std::vector<Vertex> expanded_vertices;
   expanded_vertices.reserve(tinyobj_indices.size());
-  for (const tinyobj::index_t& index: tinyobj_indices)
-  {
+  for (const tinyobj::index_t& index : tinyobj_indices) {
     uint32_t vertex_index = index.vertex_index * 3;
     uint32_t normal_index = index.normal_index * 3;
     uint32_t texcoord_index = index.texcoord_index * 2;
-    expanded_vertices.push_back({
-      {
-        attributes.vertices[vertex_index + 0],
-        attributes.vertices[vertex_index + 1],
-        attributes.vertices[vertex_index + 2]
-      },
-      {
-        attributes.normals[normal_index + 0],
-        attributes.normals[normal_index + 1],
-        attributes.normals[normal_index + 2]
-      },
-      {
-        attributes.texcoords[texcoord_index + 0],
-        attributes.texcoords[texcoord_index + 1]
-      },
-      glm::vec3(0.0f),
-      glm::vec3(0.0f)
-    });
+    expanded_vertices.push_back({{attributes.vertices[vertex_index + 0],
+                                  attributes.vertices[vertex_index + 1],
+                                  attributes.vertices[vertex_index + 2]},
+                                 {attributes.normals[normal_index + 0],
+                                  attributes.normals[normal_index + 1],
+                                  attributes.normals[normal_index + 2]},
+                                 {attributes.texcoords[texcoord_index + 0],
+                                  attributes.texcoords[texcoord_index + 1]},
+                                 glm::vec3(0.0f),
+                                 glm::vec3(0.0f)});
   }
   compute_vectors_(expanded_vertices);
 
   // 2. index vertices
   std::unordered_map<Vertex, uint32_t> index;
   uint32_t max_id = 0;
-  for (const Vertex& vertex: expanded_vertices)
-  {
-    if (index.find(vertex) == index.cend())
-    {
+  for (const Vertex& vertex : expanded_vertices) {
+    if (index.find(vertex) == index.cend()) {
       index.insert({vertex, max_id});
       max_id += 1;
     }
@@ -189,49 +152,33 @@ void MeshLoader::consolidate_indices_(
 
   // 3. map old indices to new indices
   std::unordered_map<Index, uint32_t> index_map;
-  for (const tinyobj::index_t& old_index: tinyobj_indices)
-  {
+  for (const tinyobj::index_t& old_index : tinyobj_indices) {
     uint32_t old_vertex_index = old_index.vertex_index * 3;
     uint32_t old_normal_index = old_index.normal_index * 3;
     uint32_t old_texcoord_index = old_index.texcoord_index * 2;
-    Vertex vertex = {
-      {
-        attributes.vertices[old_vertex_index + 0],
-        attributes.vertices[old_vertex_index + 1],
-        attributes.vertices[old_vertex_index + 2]
-      },
-      {
-        attributes.normals[old_normal_index + 0],
-        attributes.normals[old_normal_index + 1],
-        attributes.normals[old_normal_index + 2]
-      },
-      {
-        attributes.texcoords[old_texcoord_index + 0],
-        attributes.texcoords[old_texcoord_index + 1]
-      },
-      glm::vec3(0.0f),
-      glm::vec3(0.0f)
-    };
+    Vertex vertex = {{attributes.vertices[old_vertex_index + 0],
+                      attributes.vertices[old_vertex_index + 1],
+                      attributes.vertices[old_vertex_index + 2]},
+                     {attributes.normals[old_normal_index + 0],
+                      attributes.normals[old_normal_index + 1],
+                      attributes.normals[old_normal_index + 2]},
+                     {attributes.texcoords[old_texcoord_index + 0],
+                      attributes.texcoords[old_texcoord_index + 1]},
+                     glm::vec3(0.0f),
+                     glm::vec3(0.0f)};
     uint32_t new_index = (index.find(vertex))->second;
-    Index key = {
-      old_index.vertex_index,
-      old_index.normal_index,
-      old_index.texcoord_index
-    };
+    Index key = {old_index.vertex_index, old_index.normal_index,
+                 old_index.texcoord_index};
     index_map[key] = new_index;
   }
 
   // 5. copy indices in correct order
   indices.reserve(tinyobj_indices.size());
-  for (const tinyobj::index_t& old_index: tinyobj_indices)
-  {
-    indices.push_back(index_map[{
-      old_index.vertex_index,
-      old_index.normal_index,
-      old_index.texcoord_index,
-      old_index.vertex_index,
-      old_index.vertex_index
-    }]);
+  for (const tinyobj::index_t& old_index : tinyobj_indices) {
+    indices.push_back(
+        index_map[{old_index.vertex_index, old_index.normal_index,
+                   old_index.texcoord_index, old_index.vertex_index,
+                   old_index.vertex_index}]);
   }
 
   // 6. copy vertex attributes in correct order
@@ -240,8 +187,7 @@ void MeshLoader::consolidate_indices_(
   uvs.resize(index.size() * 2);
   tangents.resize(index.size() * 3);
   bitangents.resize(index.size() * 3);
-  for (const Vertex& vertex: expanded_vertices)
-  {
+  for (const Vertex& vertex : expanded_vertices) {
     // find the vertex' id in the index
     uint32_t i = (index.find(vertex))->second;
     positions[i * 3] = vertex.position.x;
@@ -267,13 +213,11 @@ void MeshLoader::consolidate_indices_(
   std::cout << "\tindices: " << indices.size() << '\n';
 }
 
-glm::vec3 MeshLoader::compute_tangent_(
-    const glm::vec3& dp1,
-    const glm::vec3& dp2,
-    const glm::vec2& duv1,
-    const glm::vec2& duv2,
-    float kf) const
-{
+glm::vec3 MeshLoader::compute_tangent_(const glm::vec3& dp1,
+                                       const glm::vec3& dp2,
+                                       const glm::vec2& duv1,
+                                       const glm::vec2& duv2,
+                                       float kf) const {
   glm::vec3 tangent;
   tangent.x = kf * (duv2.y * dp1.x - duv1.y * dp2.x);
   tangent.y = kf * (duv2.y * dp1.y - duv1.y * dp2.y);
@@ -281,13 +225,11 @@ glm::vec3 MeshLoader::compute_tangent_(
   return glm::normalize(tangent);
 }
 
-glm::vec3 MeshLoader::compute_bitangent_(
-    const glm::vec3& dp1,
-    const glm::vec3& dp2,
-    const glm::vec2& duv1,
-    const glm::vec2& duv2,
-    float kf) const
-{
+glm::vec3 MeshLoader::compute_bitangent_(const glm::vec3& dp1,
+                                         const glm::vec3& dp2,
+                                         const glm::vec2& duv1,
+                                         const glm::vec2& duv2,
+                                         float kf) const {
   glm::vec3 bitangent;
   bitangent.x = kf * (-duv2.y * dp1.x + duv1.y * dp2.x);
   bitangent.y = kf * (-duv2.y * dp1.y + duv1.y * dp2.y);
@@ -295,11 +237,9 @@ glm::vec3 MeshLoader::compute_bitangent_(
   return glm::normalize(bitangent);
 }
 
-void MeshLoader::compute_vectors_(std::vector<Vertex>& vertices) const
-{
+void MeshLoader::compute_vectors_(std::vector<Vertex>& vertices) const {
   size_t triangle_count = vertices.size() / 3;
-  for (size_t i = 0; i < triangle_count; i++)
-  {
+  for (size_t i = 0; i < triangle_count; i++) {
     size_t offset = i * 3;
     glm::vec3 p1 = vertices[offset + 0].position;
     glm::vec3 p2 = vertices[offset + 1].position;
@@ -323,4 +263,4 @@ void MeshLoader::compute_vectors_(std::vector<Vertex>& vertices) const
   }
 }
 
-}
+}  // namespace donkey

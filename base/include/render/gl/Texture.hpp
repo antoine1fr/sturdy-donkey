@@ -18,19 +18,19 @@
 #pragma once
 
 #include <GL/gl3w.h>
+
 #include "render/Texture.hpp"
 
 namespace donkey {
 namespace render {
 namespace gl {
 
-struct Texture
-{
+struct Texture {
   GLuint texture;
 
   Texture(GLuint texture);
 };
 
-}
-}
-}
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

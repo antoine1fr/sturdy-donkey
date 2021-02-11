@@ -22,17 +22,14 @@
 #include "Buffer.hpp"
 #include "BufferPool.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
 template <typename T, std::size_t alignment>
-struct StackAllocator
-{
+struct StackAllocator {
   template <typename U>
-    struct rebind
-    {
-      typedef StackAllocator<U, alignment> other;
-    };
+  struct rebind {
+    typedef StackAllocator<U, alignment> other;
+  };
 
   typedef T value_type;
   typedef T* pointer;
@@ -44,13 +41,13 @@ struct StackAllocator
   StackAllocator(Buffer::Tag tag, size_t id);
 
   template <typename U>
-    StackAllocator(const StackAllocator<U, alignment>& allocator);
+  StackAllocator(const StackAllocator<U, alignment>& allocator);
 
   ~StackAllocator();
   pointer allocate(size_type size);
   void deallocate(pointer, size_type size);
 };
 
-}
+}  // namespace donkey
 
 #include "StackAllocator.inl"

@@ -17,13 +17,11 @@
 
 #pragma once
 
-namespace donkey
-{
+namespace donkey {
 
-  struct IPageAllocator
-  {
-    virtual void* allocate(size_t size) = 0;
-    virtual size_t get_page_size() const = 0;
-  };
+struct IPageAllocator {
+  virtual void* allocate(size_t size) = 0;
+  virtual size_t get_page_size() const = 0;
+};
 
-}
+}  // namespace donkey

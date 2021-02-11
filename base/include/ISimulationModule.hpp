@@ -17,22 +17,20 @@
 
 #pragma once
 
+#include "StackAllocator.hpp"
 #include "common.hpp"
 #include "render/FramePacket.hpp"
-#include "StackAllocator.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-  struct ISimulationModule
-  {
-    template <typename T>
-    using StackAllocator = render::StackAllocator<T>;
-    using FramePacket = render::StackFramePacket;
+struct ISimulationModule {
+  template <typename T>
+  using StackAllocator = render::StackAllocator<T>;
+  using FramePacket = render::StackFramePacket;
 
-    virtual void update(Duration elapsed_time) = 0;
-    virtual void prepare_frame_packet(FramePacket* frame_packet,
-      StackAllocator<FramePacket>& allocator) = 0;
-  };
+  virtual void update(Duration elapsed_time) = 0;
+  virtual void prepare_frame_packet(FramePacket* frame_packet,
+                                    StackAllocator<FramePacket>& allocator) = 0;
+};
 
-}
+}  // namespace donkey

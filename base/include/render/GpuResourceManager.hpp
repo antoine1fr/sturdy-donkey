@@ -17,60 +17,55 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "render/AMaterial.hpp"
-#include "render/Mesh.hpp"
 #include "render/GpuProgram.hpp"
-#include "render/pixel.hpp"
+#include "render/Mesh.hpp"
 #include "render/State.hpp"
+#include "render/pixel.hpp"
 
 namespace donkey {
 namespace render {
 
-class GpuResourceManager
-{
-  public:
-    virtual void cleanup() = 0;
+class GpuResourceManager {
+ public:
+  virtual void cleanup() = 0;
 
-    virtual uint32_t load_texture_from_memory(
-        uint8_t* pixels,
-        int width,
-        int height) = 0;
+  virtual uint32_t load_texture_from_memory(uint8_t* pixels,
+                                            int width,
+                                            int height) = 0;
 
-    virtual uint32_t load_gpu_program_from_file(
-      const std::string& vs_path,
-      const std::string& fs_path) = 0;
+  virtual uint32_t load_gpu_program_from_file(const std::string& vs_path,
+                                              const std::string& fs_path) = 0;
 
-    virtual uint32_t create_mesh(
-      const std::vector<float>& positions,
-      const std::vector<float>& normals,
-      const std::vector<float>& uvs,
-      const std::vector<float>& tangents,
-      const std::vector<float>& bitangents,
-      const std::vector<uint32_t>& indices) = 0;
+  virtual uint32_t create_mesh(const std::vector<float>& positions,
+                               const std::vector<float>& normals,
+                               const std::vector<float>& uvs,
+                               const std::vector<float>& tangents,
+                               const std::vector<float>& bitangents,
+                               const std::vector<uint32_t>& indices) = 0;
 
-    virtual uint32_t create_material(uint32_t gpu_program) = 0;
+  virtual uint32_t create_material(uint32_t gpu_program) = 0;
 
-    virtual uint32_t create_texture(
-        std::size_t width,
-        std::size_t height,
-        pixel::Format format,
-        pixel::InternalFormat internal_format,
-        pixel::ComponentType component_type) = 0;
+  virtual uint32_t create_texture(std::size_t width,
+                                  std::size_t height,
+                                  pixel::Format format,
+                                  pixel::InternalFormat internal_format,
+                                  pixel::ComponentType component_type) = 0;
 
-    virtual uint32_t create_framebuffer(
+  virtual uint32_t create_framebuffer(
       uint32_t depth_rt_id,
       const std::vector<uint32_t>& color_rt_ids) = 0;
 
-    virtual uint32_t create_framebuffer(
+  virtual uint32_t create_framebuffer(
       const std::list<const donkey::render::Texture*>& rt_ids) = 0;
 
-    virtual uint32_t create_state(const render::State& state) = 0;
+  virtual uint32_t create_state(const render::State& state) = 0;
 
-    virtual AMaterial& get_material(std::uint32_t id) = 0;
+  virtual AMaterial& get_material(std::uint32_t id) = 0;
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey

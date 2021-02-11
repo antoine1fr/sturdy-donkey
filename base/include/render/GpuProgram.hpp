@@ -22,13 +22,9 @@
 namespace donkey {
 namespace render {
 
-struct GpuProgram: Resource
-{
-  GpuProgram(std::uint32_t id):
-    Resource(id)
-  {
-  }
+struct GpuProgram : Resource {
+  GpuProgram(std::uint32_t id) : Resource(id) {}
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey

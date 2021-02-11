@@ -21,28 +21,16 @@ namespace donkey {
 namespace render {
 namespace pixel {
 
-enum class InternalFormat
-{
-  kRGB8,
-  kRGB16F,
-  kRGBA8,
-  kDepthComponent24
-};
+enum class InternalFormat { kRGB8, kRGB16F, kRGBA8, kDepthComponent24 };
 
-enum class Format
-{
+enum class Format {
   kRGB,
   kRGBA,
   kDepthComponent,
 };
 
-enum class ComponentType
-{
-  kByte,
-  kUnsignedByte,
-  kFloat
-};
+enum class ComponentType { kByte, kUnsignedByte, kFloat };
 
-}
-}
-}
+}  // namespace pixel
+}  // namespace render
+}  // namespace donkey

@@ -21,12 +21,8 @@ namespace donkey {
 namespace render {
 namespace gl {
 
-Texture::Texture(GLuint texture):
-  texture(texture)
-{
-}
+Texture::Texture(GLuint texture) : texture(texture) {}
 
-}
-}
-}
-
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

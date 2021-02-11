@@ -18,14 +18,14 @@
 #pragma once
 
 #include <GL/gl3w.h>
+
 #include "render/State.hpp"
 
 namespace donkey {
 namespace render {
 namespace gl {
 
-struct State
-{
+struct State {
   GLenum blend_equation_rgb;
   GLenum blend_equation_alpha;
   GLenum blend_source_alpha;
@@ -44,12 +44,12 @@ struct State
   State(GLint viewport[4], GLint scissor_box[4]);
   State(const render::State& state);
 
-  private:
+ private:
   static GLint cull_mode_map_[2];
   static GLint blending_factor_map_[19];
   static GLint blending_function_map_[5];
 };
 
-}
-}
-}
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

@@ -18,13 +18,13 @@
 #pragma once
 
 #include <GL/gl3w.h>
-#include <glm/vec3.hpp>
-#include <vector>
-#include <iostream>
-#include <chrono>
 
-namespace donkey
-{
+#include <chrono>
+#include <glm/vec3.hpp>
+#include <iostream>
+#include <vector>
+
+namespace donkey {
 
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::duration<float> Duration;
@@ -33,29 +33,27 @@ typedef std::chrono::duration<float> Duration;
 #define CHECK_GL_FRAMEBUFFER_ERROR(x) \
   assert(glCheckFramebufferStatus(x) != GL_FRAMEBUFFER_COMPLETE)
 
-#define REGISTER_FRAMEBUFFER_ERROR(x) \
-  case x: \
+#define REGISTER_FRAMEBUFFER_ERROR(x)           \
+  case x:                                       \
     std::cerr << "Framebuffer error: " #x "\n"; \
-    assert(false); \
+    assert(false);                              \
     break;
 
-inline void check_gl_framebuffer(GLenum target)
-{
+inline void check_gl_framebuffer(GLenum target) {
   GLenum status = glCheckFramebufferStatus(target);
-  switch (status)
-  {
+  switch (status) {
     case GL_FRAMEBUFFER_COMPLETE:
       break;
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_UNDEFINED)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_UNSUPPORTED)
-    REGISTER_FRAMEBUFFER_ERROR( GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_UNDEFINED)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_UNSUPPORTED)
+      REGISTER_FRAMEBUFFER_ERROR(GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE)
     default:
       assert(false);
   }
 }
 
-}
+}  // namespace donkey

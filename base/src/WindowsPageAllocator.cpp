@@ -17,18 +17,15 @@
 
 #include "WindowsPageAllocator.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-  void* WindowsPageAllocator::allocate(size_t size)
-  {
-    char* page = new char[size];
-    return reinterpret_cast<void*>(page);
-  }
-
-  size_t WindowsPageAllocator::get_page_size() const
-  {
-    return 2 * 1024 * 1024;
-  }
-
+void* WindowsPageAllocator::allocate(size_t size) {
+  char* page = new char[size];
+  return reinterpret_cast<void*>(page);
 }
+
+size_t WindowsPageAllocator::get_page_size() const {
+  return 2 * 1024 * 1024;
+}
+
+}  // namespace donkey

@@ -33,13 +33,8 @@
 
 // #else
 
-inline void signpost_start(int, int, int, int, int)
-{
-}
+inline void signpost_start(int, int, int, int, int) {}
 
-inline void signpost_end(int, int, int, int, int)
-{
-}
+inline void signpost_end(int, int, int, int, int) {}
 
 // #endif // defined(STURDY_DONKEY_MACOS)
-

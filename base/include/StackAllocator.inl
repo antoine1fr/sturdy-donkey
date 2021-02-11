@@ -20,30 +20,21 @@ namespace donkey {
 extern thread_local std::vector<Buffer*> buffers_;
 
 template <typename T, size_t alignment>
-StackAllocator<T, alignment>::StackAllocator(Buffer::Tag tag, size_t id):
-  tag(tag),
-  id(id)
-{
-}
+StackAllocator<T, alignment>::StackAllocator(Buffer::Tag tag, size_t id)
+    : tag(tag), id(id) {}
 
 template <typename T, size_t alignment>
 template <typename U>
 StackAllocator<T, alignment>::StackAllocator(
-    const StackAllocator<U, alignment>& allocator):
-  tag(allocator.tag),
-  id(allocator.id)
-{
-}
+    const StackAllocator<U, alignment>& allocator)
+    : tag(allocator.tag), id(allocator.id) {}
 
 template <typename T, size_t alignment>
-StackAllocator<T, alignment>::~StackAllocator()
-{
-}
+StackAllocator<T, alignment>::~StackAllocator() {}
 
 template <typename T, size_t alignment>
 typename StackAllocator<T, alignment>::pointer
-  StackAllocator<T, alignment>::allocate(size_type n)
-{
+StackAllocator<T, alignment>::allocate(size_type n) {
   size_t size = n * sizeof(T);
   size_t real_size = size + alignment;
   size_t buffer_id = static_cast<size_t>(tag);
@@ -54,8 +45,7 @@ typename StackAllocator<T, alignment>::pointer
   if (!buffer)
     buffer = buffer_pool->get_buffer(tag, id, real_size);
   ptr = buffer->allocate(real_size, alignment);
-  if (!ptr)
-  {
+  if (!ptr) {
     buffer_pool->give_back_buffer(buffer);
     buffer = buffer_pool->get_buffer(tag, id, real_size);
     ptr = buffer->allocate(real_size, alignment);
@@ -66,9 +56,8 @@ typename StackAllocator<T, alignment>::pointer
 }
 
 template <typename T, size_t alignment>
-void StackAllocator<T, alignment>::deallocate(pointer, size_type size)
-{
+void StackAllocator<T, alignment>::deallocate(pointer, size_type size) {
   // Nothing to do.
 }
 
-}
+}  // namespace donkey

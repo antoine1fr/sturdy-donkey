@@ -23,13 +23,12 @@ namespace donkey {
 namespace render {
 namespace gl {
 
-struct GpuProgram
-{
+struct GpuProgram {
   GLuint handle;
   int position_location;
   int uv_location;
 };
 
-}
-}
-}
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

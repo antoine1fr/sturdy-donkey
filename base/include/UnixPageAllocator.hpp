@@ -19,13 +19,11 @@
 
 #include "IPageAllocator.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-  class UnixPageAllocator: public IPageAllocator
-  {
-    virtual void* allocate(size_t size);
-    virtual size_t get_page_size() const;
-  };
+class UnixPageAllocator : public IPageAllocator {
+  virtual void* allocate(size_t size);
+  virtual size_t get_page_size() const;
+};
 
-}
+}  // namespace donkey

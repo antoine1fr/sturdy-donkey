@@ -17,36 +17,32 @@
 
 #pragma once
 
-#include "render/FramePacket.hpp"
-#include "render/CommandBucket.hpp"
 #include "ResourceManager.hpp"
+#include "render/CommandBucket.hpp"
+#include "render/FramePacket.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
-struct RenderPass
-{
+struct RenderPass {
   const StackFramePacket* frame_packet;
   uint32_t framebuffer_id;
   GLint clear_bits;
   glm::vec3 clear_color;
   bool depth_test;
-  bool lighting; // loop through lights if true
+  bool lighting;  // loop through lights if true
   bool blending;
 };
 
-void render_mesh_node(
-  const RenderPass& render_pass,
-  const MeshNode& mesh_node,
-  const CameraNode& camera_node,
-  const CameraNode* last_camera_node,
-  const DirectionalLightNode* light_node,
-  CommandBucket& render_commands,
-  ResourceManager* resource_manager,
-  GpuResourceManager* gpu_resource_manager);
+void render_mesh_node(const RenderPass& render_pass,
+                      const MeshNode& mesh_node,
+                      const CameraNode& camera_node,
+                      const CameraNode* last_camera_node,
+                      const DirectionalLightNode* light_node,
+                      CommandBucket& render_commands,
+                      ResourceManager* resource_manager,
+                      GpuResourceManager* gpu_resource_manager);
 
-}
-}
+}  // namespace render
+}  // namespace donkey

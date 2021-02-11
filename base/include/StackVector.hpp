@@ -18,10 +18,10 @@
 #pragma once
 
 #include <vector>
+
 #include "StackAllocator.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
 template <typename T, size_t alignment>
 using StackVector = std::vector<T, StackAllocator<T, alignment>>;

@@ -20,49 +20,47 @@
 #include <atomic>
 
 #include "Game.hpp"
-#include "ISimulationModule.hpp"
 #include "IResourceLoaderDelegate.hpp"
+#include "ISimulationModule.hpp"
 #include "render/DeferredRenderer.hpp"
-#include "render/Window.hpp"
 #include "render/ResourceManager.hpp"
+#include "render/Window.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-class GameManager
-{
-  private:
-    render::Window* window_;
-    render::gl::Driver* driver_;
-    render::DeferredRenderer* renderer_;
-    IResourceLoaderDelegate& resource_loader_;
-    std::atomic_bool run_;
-    std::atomic_size_t simulated_frame_count_;
-    std::atomic_size_t rendered_frame_count_;
-    render::ResourceManager* resource_manager_;
-    std::list<ISimulationModule*> simulation_modules_;
+class GameManager {
+ private:
+  render::Window* window_;
+  render::gl::Driver* driver_;
+  render::DeferredRenderer* renderer_;
+  IResourceLoaderDelegate& resource_loader_;
+  std::atomic_bool run_;
+  std::atomic_size_t simulated_frame_count_;
+  std::atomic_size_t rendered_frame_count_;
+  render::ResourceManager* resource_manager_;
+  std::list<ISimulationModule*> simulation_modules_;
 
-  private:
-    size_t wait_for_frame_packet_();
-    void wait_render_thread_() const;
-    void update_simulation_(Duration elapsed_time);
-    void prepare_frame_packet_(Game& game);
-    size_t get_rendered_frame_count_() const;
-    size_t get_simulated_frame_count_() const;
-    size_t get_simulated_frame_count_relaxed_() const;
-    void increment_rendered_frame_count_();
-    void increment_simulated_frame_count_();
+ private:
+  size_t wait_for_frame_packet_();
+  void wait_render_thread_() const;
+  void update_simulation_(Duration elapsed_time);
+  void prepare_frame_packet_(Game& game);
+  size_t get_rendered_frame_count_() const;
+  size_t get_simulated_frame_count_() const;
+  size_t get_simulated_frame_count_relaxed_() const;
+  void increment_rendered_frame_count_();
+  void increment_simulated_frame_count_();
 
-  public:
-    template <typename T>
-    using StackAllocator = render::StackAllocator<T>;
-    using FramePacket = render::StackFramePacket;
+ public:
+  template <typename T>
+  using StackAllocator = render::StackAllocator<T>;
+  using FramePacket = render::StackFramePacket;
 
-    GameManager(IResourceLoaderDelegate& resource_loader);
-    ~GameManager();
-    void run();
-    void render_loop();
-    void simulation_loop();
+  GameManager(IResourceLoaderDelegate& resource_loader);
+  ~GameManager();
+  void run();
+  void render_loop();
+  void simulation_loop();
 };
 
-}
+}  // namespace donkey

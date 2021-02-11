@@ -19,15 +19,11 @@
 
 #include <GL/gl3w.h>
 
-namespace donkey
-{
-namespace render
-{
-namespace gl
-{
+namespace donkey {
+namespace render {
+namespace gl {
 
-struct Mesh
-{
+struct Mesh {
   GLuint position_buffer;
   GLuint normal_buffer;
   GLuint uv_buffer;
@@ -36,16 +32,15 @@ struct Mesh
   GLuint index_buffer;
   GLuint vertex_array;
 
-  Mesh(
-      GLuint position_buffer,
-      GLuint normal_buffer,
-      GLuint uv_buffer,
-      GLuint tangent_buffer,
-      GLuint bitangent_buffer,
-      GLenum index_type,
-      GLuint vertex_array);
+  Mesh(GLuint position_buffer,
+       GLuint normal_buffer,
+       GLuint uv_buffer,
+       GLuint tangent_buffer,
+       GLuint bitangent_buffer,
+       GLenum index_type,
+       GLuint vertex_array);
 };
 
-}
-}
-}
+}  // namespace gl
+}  // namespace render
+}  // namespace donkey

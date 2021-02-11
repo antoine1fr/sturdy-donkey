@@ -16,27 +16,21 @@
  */
 
 #include "render/AMaterial.hpp"
+
 #include "render/gl/ResourceManager.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
-AMaterial::AMaterial(uint32_t program_id):
-  program_id(program_id)
-{
-}
+AMaterial::AMaterial(uint32_t program_id) : program_id(program_id) {}
 
-#define BIND_SLOTS(x) \
-  for (auto slot: x ## _slots_) \
-  { \
-    slot.bind(render_commands); \
+#define BIND_SLOTS(x)            \
+  for (auto slot : x##_slots_) { \
+    slot.bind(render_commands);  \
   }
 
-void AMaterial::bind_slots(CommandBucket& render_commands) const
-{
+void AMaterial::bind_slots(CommandBucket& render_commands) const {
   BIND_SLOTS(texture);
   BIND_SLOTS(float)
   BIND_SLOTS(vec2)
@@ -50,5 +44,5 @@ void AMaterial::bind_slots(CommandBucket& render_commands) const
 
 #undef BIND_SLOTS
 
-}
-}
+}  // namespace render
+}  // namespace donkey

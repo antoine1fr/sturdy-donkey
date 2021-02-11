@@ -17,18 +17,15 @@
 
 #pragma once
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
-struct RenderTarget
-{
+struct RenderTarget {
   GLenum format;
   GLsizei width;
   GLsizei height;
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey

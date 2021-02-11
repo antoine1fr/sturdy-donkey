@@ -26,54 +26,49 @@ struct SDL_Surface;
 namespace donkey {
 namespace render {
 
-class ResourceManager
-{
-  private:
-    GpuResourceManager& gpu_resource_manager_;
-    std::vector<GpuProgram> gpu_programs_;
-    std::vector<Mesh> meshes_;
-    std::vector<Texture> textures_;
-    std::vector<Material> materials_;
-    std::vector<State> states_;
+class ResourceManager {
+ private:
+  GpuResourceManager& gpu_resource_manager_;
+  std::vector<GpuProgram> gpu_programs_;
+  std::vector<Mesh> meshes_;
+  std::vector<Texture> textures_;
+  std::vector<Material> materials_;
+  std::vector<State> states_;
 
-  public:
-    ResourceManager(GpuResourceManager& gpu_resource_manager);
+ public:
+  ResourceManager(GpuResourceManager& gpu_resource_manager);
 
-    const GpuProgram& get_gpu_program(uint32_t id) const;
-    const Material& get_material(uint32_t id) const;
-    const Mesh& get_mesh(uint32_t id) const;
-    const Texture& get_texture(uint32_t id) const;
+  const GpuProgram& get_gpu_program(uint32_t id) const;
+  const Material& get_material(uint32_t id) const;
+  const Mesh& get_mesh(uint32_t id) const;
+  const Texture& get_texture(uint32_t id) const;
 
-    uint32_t register_material(Material&& material);
-    void cleanup();
-    uint32_t load_texture_from_file(const std::string& path);
-    uint32_t load_texture_from_memory(uint8_t* pixels, int width, int height);
+  uint32_t register_material(Material&& material);
+  void cleanup();
+  uint32_t load_texture_from_file(const std::string& path);
+  uint32_t load_texture_from_memory(uint8_t* pixels, int width, int height);
 
-    uint32_t load_gpu_program_from_file(
-      const std::string& vs_path,
-      const std::string& fs_path);
+  uint32_t load_gpu_program_from_file(const std::string& vs_path,
+                                      const std::string& fs_path);
 
-    uint32_t create_material(uint32_t gpu_program);
+  uint32_t create_material(uint32_t gpu_program);
 
-    uint32_t create_mesh(
-      const std::vector<float>& positions,
-      const std::vector<float>& normals,
-      const std::vector<float>& uvs,
-      const std::vector<float>& tangents,
-      const std::vector<float>& bitangents,
-      const std::vector<uint32_t>& indices);
+  uint32_t create_mesh(const std::vector<float>& positions,
+                       const std::vector<float>& normals,
+                       const std::vector<float>& uvs,
+                       const std::vector<float>& tangents,
+                       const std::vector<float>& bitangents,
+                       const std::vector<uint32_t>& indices);
 
-    uint32_t create_texture(
-        std::size_t width,
-        std::size_t height,
-        pixel::Format format,
-        pixel::InternalFormat internal_format,
-        pixel::ComponentType component_type);
-    GLuint load_texture_(uint8_t* pixels, int width, int height);
-    SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
+  uint32_t create_texture(std::size_t width, std::size_t height,
+                          pixel::Format format,
+                          pixel::InternalFormat internal_format,
+                          pixel::ComponentType component_type);
+  GLuint load_texture_(uint8_t* pixels, int width, int height);
+  SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 
-    uint32_t create_state(const State& state);
+  uint32_t create_state(const State& state);
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey

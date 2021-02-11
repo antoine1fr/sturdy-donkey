@@ -17,29 +17,26 @@
 
 #pragma once
 
-#include "common.hpp"
 #include "IResourceLoaderDelegate.hpp"
 #include "ISimulationModule.hpp"
 #include "Scene.hpp"
 #include "StackAllocator.hpp"
+#include "common.hpp"
 #include "render/DeferredRenderer.hpp"
 #include "render/FramePacket.hpp"
 
-namespace donkey
-{
+namespace donkey {
 
-class Game: public ISimulationModule
-{
-  private:
-    Scene scene_;
+class Game : public ISimulationModule {
+ private:
+  Scene scene_;
 
-  public:
-
-    Game(IResourceLoaderDelegate& resourceLoader);
-    ~Game();
-    virtual void prepare_frame_packet(FramePacket* frame_packet,
-        StackAllocator<FramePacket>& allocator);
-    virtual void update(Duration elapsed_time);
+ public:
+  Game(IResourceLoaderDelegate& resourceLoader);
+  ~Game();
+  virtual void prepare_frame_packet(FramePacket* frame_packet,
+                                    StackAllocator<FramePacket>& allocator);
+  virtual void update(Duration elapsed_time);
 };
 
-}
+}  // namespace donkey

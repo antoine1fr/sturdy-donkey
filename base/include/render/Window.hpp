@@ -23,34 +23,31 @@
 #pragma warning(pop)
 #include <string>
 
-namespace donkey
-{
+namespace donkey {
 
-namespace render
-{
+namespace render {
 
-class Window
-{
-  private:
-    SDL_Window* window_;
-    int width_;
-    int height_;
-    SDL_GLContext render_context_;
-    SDL_GLContext ancillary_context_;
+class Window {
+ private:
+  SDL_Window* window_;
+  int width_;
+  int height_;
+  SDL_GLContext render_context_;
+  SDL_GLContext ancillary_context_;
 
-  public:
-    typedef SDL_GLContext Context;
+ public:
+  typedef SDL_GLContext Context;
 
-    Window(const std::string& title, int width, int height);
-    ~Window();
-    Context get_render_context();
-    Context get_ancillary_context();
-    void make_current(Context context) const;
-    void free_context() const;
-    int get_width() const;
-    int get_height() const;
-    void swap();
+  Window(const std::string& title, int width, int height);
+  ~Window();
+  Context get_render_context();
+  Context get_ancillary_context();
+  void make_current(Context context) const;
+  void free_context() const;
+  int get_width() const;
+  int get_height() const;
+  void swap();
 };
 
-}
-}
+}  // namespace render
+}  // namespace donkey

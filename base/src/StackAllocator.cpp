@@ -16,6 +16,7 @@
  */
 
 #include <vector>
+
 #include "Buffer.hpp"
 
 namespace donkey {
@@ -25,4 +26,3 @@ thread_local std::vector<Buffer*> buffers_(
     nullptr);
 
 }
-

@@ -15,84 +15,72 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <GL/gl3w.h>
-#include <cassert>
-#include <iostream>
 #include "render/Window.hpp"
 
-namespace donkey
-{
+#include <GL/gl3w.h>
 
-namespace render
-{
+#include <cassert>
+#include <iostream>
 
-Window::Window(const std::string& title, int width, int height):
-  width_(width),
-  height_(height)
-{
+namespace donkey {
+
+namespace render {
+
+Window::Window(const std::string& title, int width, int height)
+    : width_(width), height_(height) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
-    SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+                      SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-    SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-  window_ = SDL_CreateWindow(title.c_str(), 0, 0, width,
-    height, SDL_WINDOW_OPENGL);
+  window_ =
+      SDL_CreateWindow(title.c_str(), 0, 0, width, height, SDL_WINDOW_OPENGL);
   assert(window_ != nullptr);
   render_context_ = SDL_GL_CreateContext(window_);
   ancillary_context_ = SDL_GL_CreateContext(window_);
 }
 
-Window::~Window()
-{
+Window::~Window() {
   SDL_GL_DeleteContext(render_context_);
   SDL_GL_DeleteContext(ancillary_context_);
   SDL_DestroyWindow(window_);
 }
 
-Window::Context Window::get_render_context()
-{
+Window::Context Window::get_render_context() {
   return render_context_;
 }
 
-Window::Context Window::get_ancillary_context()
-{
+Window::Context Window::get_ancillary_context() {
   return ancillary_context_;
 }
 
-int Window::get_width() const
-{
+int Window::get_width() const {
   return width_;
 }
 
-int Window::get_height() const
-{
+int Window::get_height() const {
   return height_;
 }
 
-void Window::make_current(SDL_GLContext context) const
-{
-  if (SDL_GL_MakeCurrent(window_, context))
-  {
+void Window::make_current(SDL_GLContext context) const {
+  if (SDL_GL_MakeCurrent(window_, context)) {
     const char* error = SDL_GetError();
     std::cerr << "Can't use GL context.\n" << error << '\n';
     assert(false);
   }
 }
 
-void Window::free_context() const
-{
+void Window::free_context() const {
   SDL_GL_MakeCurrent(window_, nullptr);
 }
 
-void Window::swap()
-{
+void Window::swap() {
   SDL_GL_SwapWindow(window_);
 }
 
-}
-}
+}  // namespace render
+}  // namespace donkey
