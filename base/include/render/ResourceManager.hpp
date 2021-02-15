@@ -20,6 +20,8 @@
 #include "render/GpuResourceManager.hpp"
 #include "render/Material.hpp"
 #include "render/State.hpp"
+#include "render/GpuBuffer.hpp"
+#include "render/UniformBlock.hpp"
 
 struct SDL_Surface;
 
@@ -34,6 +36,8 @@ class ResourceManager {
   std::vector<Texture> textures_;
   std::vector<Material> materials_;
   std::vector<State> states_;
+  std::vector<GpuBuffer> gpu_buffers_;
+  std::vector<UniformBlock> uniform_blocks_;
 
  public:
   ResourceManager(GpuResourceManager& gpu_resource_manager);
@@ -42,6 +46,7 @@ class ResourceManager {
   const Material& get_material(uint32_t id) const;
   const Mesh& get_mesh(uint32_t id) const;
   const Texture& get_texture(uint32_t id) const;
+  const GpuBuffer& get_gpu_buffer(uint32_t id) const;
 
   uint32_t register_material(Material&& material);
   void cleanup();
@@ -54,16 +59,13 @@ class ResourceManager {
   uint32_t create_material(uint32_t gpu_program);
 
   uint32_t create_mesh(const std::vector<float>& positions,
-                       const std::vector<float>& normals,
-                       const std::vector<float>& uvs,
-                       const std::vector<float>& tangents,
-                       const std::vector<float>& bitangents,
                        const std::vector<uint32_t>& indices);
 
   uint32_t create_texture(std::size_t width, std::size_t height,
                           pixel::Format format,
                           pixel::InternalFormat internal_format,
                           pixel::ComponentType component_type);
+  uint32_t create_gpu_buffer();
   GLuint load_texture_(uint8_t* pixels, int width, int height);
   SDL_Surface* create_mirror_surface_(SDL_Surface* surface);
 

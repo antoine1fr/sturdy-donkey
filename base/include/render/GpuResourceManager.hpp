@@ -40,11 +40,7 @@ class GpuResourceManager {
   virtual uint32_t load_gpu_program_from_file(const std::string& vs_path,
                                               const std::string& fs_path) = 0;
 
-  virtual uint32_t create_mesh(const std::vector<float>& positions,
-                               const std::vector<float>& normals,
-                               const std::vector<float>& uvs,
-                               const std::vector<float>& tangents,
-                               const std::vector<float>& bitangents,
+  virtual uint32_t create_mesh(const std::vector<float>& vertices,
                                const std::vector<uint32_t>& indices) = 0;
 
   virtual uint32_t create_material(uint32_t gpu_program) = 0;
@@ -63,6 +59,10 @@ class GpuResourceManager {
       const std::list<const donkey::render::Texture*>& rt_ids) = 0;
 
   virtual uint32_t create_state(const render::State& state) = 0;
+
+  virtual uint32_t create_buffer() = 0;
+
+  virtual uint32_t create_uniform_block() = 0;
 
   virtual AMaterial& get_material(std::uint32_t id) = 0;
 };

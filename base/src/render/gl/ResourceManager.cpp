@@ -15,6 +15,7 @@
  * Sturdy Donkey. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <function>
 #include <iostream>
 #pragma warning(push)
 #pragma warning(disable : 26812 26819)
@@ -53,8 +54,7 @@ void ResourceManager::cleanup() {
     glDeleteProgram(program.handle);
   }
   for (const auto& mesh : meshes_) {
-    glDeleteBuffers(1, &(mesh.position_buffer));
-    glDeleteBuffers(1, &(mesh.uv_buffer));
+    glDeleteBuffers(1, &(mesh.vertex_buffer));
     glDeleteBuffers(1, &(mesh.index_buffer));
     glDeleteVertexArrays(1, &(mesh.vertex_array));
   }
@@ -123,10 +123,33 @@ uint32_t ResourceManager::load_gpu_program_from_file(
 
   program.position_location = glGetAttribLocation(program_id, "position");
   program.uv_location = glGetAttribLocation(program_id, "uv");
+  fetch_gpu_program_infos_(program);
 
   uint32_t id = static_cast<uint32_t>(gpu_programs_.size());
   gpu_programs_.push_back(program);
   return id;
+}
+
+void ResourceManager::fetch_gpu_program_infos_(GpuProgram& program) {
+  GLint block_count;
+  GLuint handle = program.handle;
+  std::hash<std::string> hash;
+
+  glGetProgramiv(handle, GL_ACTIVE_UNIFORM_BLOCKS, &block_count);
+  program.uniform_blocks.reserve(block_count);
+  for (GLint block_index = 0; block_index < block_count; ++block_index) {
+    GLint name_length;
+    std::vector<GLchar> name_vec;
+    std::string name;
+
+    glGetActiveUniformBlockiv(handle, block_index,
+                              GL_UNIFORM_BLOCK_NAME_LENGTH, &name_length);
+    name_vec.resize(name_length);
+    glGetActiveUniformBlockName(handle, block_index, name_length, nullptr,
+                                name_vec.data());
+    name.assign(name_vec.begin(), name_vec.end() - 1);
+    program.uniform_blocks[hash(name)] = block_index;
+  }
 }
 
 GLenum ResourceManager::sdl_to_gl_pixel_format_(SDL_PixelFormat* format) {
@@ -198,45 +221,17 @@ uint32_t ResourceManager::load_texture_from_memory(uint8_t* pixels,
 }
 
 uint32_t ResourceManager::create_mesh(
-    const std::vector<float>& positions,
-    const std::vector<float>& normals,
-    const std::vector<float>& uvs,
-    const std::vector<float>& tangents,
-    const std::vector<float>& bitangents,
+    const std::vector<float>& vertices,
     const std::vector<unsigned int>& indices) {
   GLuint vertex_array;
   glGenVertexArrays(1, &vertex_array);
   glBindVertexArray(vertex_array);
 
-  GLuint position_buffer;
-  glGenBuffers(1, &position_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, position_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), &positions[0],
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0],
                GL_STATIC_DRAW);
-
-  GLuint normal_buffer;
-  glGenBuffers(1, &normal_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, normal_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size(), &normals[0],
-               GL_STATIC_DRAW);
-
-  GLuint uv_buffer;
-  glGenBuffers(1, &uv_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uvs.size(), &uvs[0],
-               GL_STATIC_DRAW);
-
-  GLuint tangent_buffer;
-  glGenBuffers(1, &tangent_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, tangent_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tangents.size(), &tangents[0],
-               GL_STATIC_DRAW);
-
-  GLuint bitangent_buffer;
-  glGenBuffers(1, &bitangent_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, bitangent_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bitangents.size(),
-               &bitangents[0], GL_STATIC_DRAW);
 
   GLuint index_buffer;
   glGenBuffers(1, &index_buffer);
@@ -245,9 +240,7 @@ uint32_t ResourceManager::create_mesh(
                &indices[0], GL_STATIC_DRAW);
 
   uint32_t id = static_cast<uint32_t>(meshes_.size());
-  meshes_.push_back(Mesh(position_buffer, normal_buffer, uv_buffer,
-                         tangent_buffer, bitangent_buffer, index_buffer,
-                         vertex_array));
+  meshes_.push_back(Mesh(vertex_buffer, index_buffer, vertex_array));
   return id;
 }
 
@@ -329,6 +322,14 @@ uint32_t ResourceManager::create_framebuffer(
 uint32_t ResourceManager::create_state(const render::State& state) {
   states_.push_back(State(state));
   return static_cast<uint32_t>(states_.size()) - 1;
+}
+
+uint32_t ResourceManager::create_buffer() {
+  uint32_t buffer;
+  uint32_t id = static_cast<uint32_t>(buffers_.size());
+  glGenBuffers(1, &buffer);
+  buffers_.push_back(buffer);
+  return id;
 }
 
 const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const {

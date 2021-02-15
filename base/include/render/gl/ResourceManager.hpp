@@ -51,6 +51,7 @@ class ResourceManager : public GpuResourceManager {
   std::vector<Framebuffer> framebuffers_;
   std::vector<Material> materials_;
   std::vector<State> states_;
+  std::vector<uint32_t> buffers_;
   static const std::array<GLenum, 4> pixel_internal_formats_;
   static const std::array<GLenum, 3> pixel_formats_;
   static const std::array<GLenum, 3> pixel_component_types_;
@@ -65,6 +66,7 @@ class ResourceManager : public GpuResourceManager {
   GLenum sdl_to_gl_pixel_format_(SDL_PixelFormat* format);
   GLenum sdl_to_gl_pixel_type_(SDL_PixelFormat* format);
   GLuint load_texture_(uint8_t* pixels, int width, int height);
+  void fetch_gpu_program_infos_(GpuProgram& program);
 
  public:
   ResourceManager();
@@ -75,11 +77,7 @@ class ResourceManager : public GpuResourceManager {
                                             int height);
   virtual uint32_t load_gpu_program_from_file(const std::string& vs_path,
                                               const std::string& fs_path);
-  virtual uint32_t create_mesh(const std::vector<float>& positions,
-                               const std::vector<float>& normals,
-                               const std::vector<float>& uvs,
-                               const std::vector<float>& tangents,
-                               const std::vector<float>& bitangents,
+  virtual uint32_t create_mesh(const std::vector<float>& vertices,
                                const std::vector<uint32_t>& indices);
   virtual uint32_t create_material(uint32_t gpu_program);
   virtual uint32_t create_texture(std::size_t width,
@@ -97,11 +95,14 @@ class ResourceManager : public GpuResourceManager {
 
   virtual AMaterial& get_material(std::uint32_t id);
 
+  virtual uint32_t create_buffer();
+
   const GpuProgram& get_gpu_program(uint32_t id) const;
   const Mesh& get_mesh(uint32_t id) const;
   const Texture& get_texture(uint32_t id) const;
   const Framebuffer& get_framebuffer(uint32_t id) const;
   const State& get_state(uint32_t id) const;
+  const uint32_t& get_buffer(uint32_t id) const;
 };
 
 template <GLenum type>

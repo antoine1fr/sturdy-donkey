@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <GL/gl3w.h>
+#include <array>
 #include <functional>
 #include <vector>
 
@@ -35,6 +37,7 @@ class Driver {
   const std::vector<RenderFunction> render_functions_;
 
   ResourceManager resource_manager_;
+  static const std::array<GLenum, 1> vertex_attribute_types_;
 
  public:
   Driver();
@@ -52,6 +55,7 @@ class Driver {
   void bind_uniform_mat2_(const Command& command);
   void bind_uniform_mat3_(const Command& command);
   void bind_uniform_mat4_(const Command& command);
+  void bind_uniform_block_(const Command& command);
   void bind_texture_(const Command& command);
   void bind_framebuffer_(const Command& command);
   void bind_gpu_program_(const Command& command);

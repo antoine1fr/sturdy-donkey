@@ -9,7 +9,7 @@ add_library(sturdy-donkey STATIC
   src/render/AMaterial.cpp
   src/render/AResourceManager.cpp
   src/render/CommandBucket.cpp
-  src/render/DeferredRenderer.cpp
+  #src/render/DeferredRenderer.cpp
   src/render/Mesh.cpp
   src/render/RenderPass.cpp
   src/render/ResourceManager.cpp
@@ -21,7 +21,9 @@ add_library(sturdy-donkey STATIC
   src/render/gl/ResourceManager.cpp
   src/render/gl/State.cpp
   src/render/gl/Texture.cpp
- "src/render/PipelineGenerator.cpp" "src/render/Pipeline.cpp")
+ #"src/render/PipelineGenerator.cpp"
+ #"src/render/Pipeline.cpp"
+ "src/render/core_renderer.cpp")
 
 # Platform-specific source files:
 if(MSVC)

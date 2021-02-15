@@ -23,19 +23,16 @@ namespace render {
 
 Command::Command(Type type) : type(type) {}
 
-BindMeshCommand::BindMeshCommand(uint32_t mesh_id,
-                                 unsigned int position_location,
-                                 unsigned int normal_location,
-                                 unsigned int uv_location,
-                                 unsigned int tangent_location,
-                                 unsigned int bitangent_location)
+BindMeshCommand::BindMeshCommand(
+    uint32_t mesh_id,
+    const Vector<VertexAttribute>& vertex_attributes,
+    const Vector<float>& vertices,
+    const Vector<uint32_t>& indices)
     : Command(Type::kBindMesh),
       mesh_id(mesh_id),
-      position_location(position_location),
-      normal_location(normal_location),
-      uv_location(uv_location),
-      tangent_location(tangent_location),
-      bitangent_location(bitangent_location) {}
+      vertex_attributes(vertex_attributes),
+      vertices(vertices),
+      indices(indices) {}
 
 BindUniformFloatCommand::BindUniformFloatCommand(int location, float uniform)
     : Command(Type::kBindUniformFloat), location(location), uniform(uniform) {}
@@ -100,15 +97,18 @@ BindGpuProgramCommand::BindGpuProgramCommand(uint32_t program_id)
 SetStateCommand::SetStateCommand(uint32_t state_id)
     : Command(Type::kSetState), state_id(state_id) {}
 
-void CommandBucket::bind_mesh(uint32_t mesh_id,
-                              unsigned int position_location,
-                              unsigned int normal_location,
-                              unsigned int uv_location,
-                              unsigned int tangent_location,
-                              unsigned int bitangent_location) {
+BindUniformBlockCommand::BindUniformBlockCommand(
+    const FramePacket::UniformBlock& block)
+    : Command(Type::kBindUniformBlock), block(block) {}
+
+void CommandBucket::bind_mesh(
+    uint32_t mesh_id,
+    const BindMeshCommand::Vector<BindMeshCommand::VertexAttribute>&
+        vertex_attributes,
+    const BindMeshCommand::Vector<float>& vertices,
+    const BindMeshCommand::Vector<uint32_t>& indices) {
   bind_mesh_commands_.push_back(
-      BindMeshCommand(mesh_id, position_location, normal_location, uv_location,
-                      tangent_location, bitangent_location));
+      BindMeshCommand(mesh_id, vertex_attributes, vertices, indices));
   sorted_commands_.push_back({0, bind_mesh_commands_.back()});
 }
 
@@ -169,6 +169,18 @@ void CommandBucket::bind_uniform(int location, const glm::mat4& uniform) {
                               bind_mat4_commands_.back()});
 }
 
+void CommandBucket::bind_uniform_block(const FramePacket::UniformBlock& block) {
+  bind_uniform_block_commands_.push_back(BindUniformBlockCommand(block));
+  sorted_commands_.push_back({make_sort_key_(Command::Type::kBindUniformBlock),
+                              bind_uniform_block_commands_.back()});
+}
+
+void CommandBucket::bind_framebuffer(uint32_t framebuffer_id) {
+  bind_framebuffer_commands_.push_back(BindFramebufferCommand(framebuffer_id));
+  sorted_commands_.push_back({make_sort_key_(Command::Type::kBindFramebuffer),
+                              bind_framebuffer_commands_.back()});
+}
+
 uint64_t CommandBucket::make_sort_key_(Command::Type type) {
   return static_cast<uint64_t>(type);
 }
@@ -180,12 +192,6 @@ void CommandBucket::bind_texture(int location,
       BindTextureCommand(location, texture_unit, texture_id));
   sorted_commands_.push_back({make_sort_key_(Command::Type::kBindTexture),
                               bind_texture_commands_.back()});
-}
-
-void CommandBucket::bind_framebuffer(uint32_t framebuffer_id) {
-  bind_framebuffer_commands_.push_back(BindFramebufferCommand(framebuffer_id));
-  sorted_commands_.push_back({make_sort_key_(Command::Type::kBindFramebuffer),
-                              bind_framebuffer_commands_.back()});
 }
 
 void CommandBucket::set_depth_test(bool enable) {

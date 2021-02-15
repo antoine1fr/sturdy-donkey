@@ -30,6 +30,10 @@ namespace gl {
 
 using namespace std::placeholders;
 
+// Following values MUST have same order than enum
+// donkey::render::FramePacket::VertexAttribute::Type.
+const std::array<GLenum, 1> vertex_attribute_types_ = {GL_FLOAT};
+
 Driver::Driver()
     : render_functions_({std::bind(&Driver::bind_mesh_, this, _1),
                          std::bind(&Driver::draw_elements_, this, _1),
@@ -48,7 +52,8 @@ Driver::Driver()
                          std::bind(&Driver::clear_framebuffer_, this, _1),
                          std::bind(&Driver::bind_gpu_program_, this, _1),
                          std::bind(&Driver::set_blending_, this, _1),
-                         std::bind(&Driver::set_state_, this, _1)}) {
+                         std::bind(&Driver::set_state_, this, _1),
+                         std::bind(&Driver::bind_uniform_block_, this, _1)}) {
   assert(gl3wInit() == 0);
   assert(gl3wIsSupported(4, 1) != 0);
   output_debug_info_();
@@ -75,36 +80,16 @@ void Driver::bind_mesh_(const Command& command) {
   const BindMeshCommand& bind_command =
       static_cast<const BindMeshCommand&>(command);
   const Mesh& mesh = resource_manager_.get_mesh(bind_command.mesh_id);
-  unsigned int position_location = bind_command.position_location;
-  unsigned int normal_location = bind_command.normal_location;
-  unsigned int uv_location = bind_command.uv_location;
-  unsigned int tangent_location = bind_command.tangent_location;
-  unsigned int bitangent_location = bind_command.bitangent_location;
 
   glBindVertexArray(mesh.vertex_array);
-  // vertex positions
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.position_buffer);
-  glVertexAttribPointer(position_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(position_location);
-  // vertex normals
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.normal_buffer);
-  glVertexAttribPointer(normal_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(normal_location);
-  // vertex UVs
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.uv_buffer);
-  glVertexAttribPointer(uv_location, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(uv_location);
-  // vertex tangents
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.tangent_buffer);
-  glVertexAttribPointer(tangent_location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(tangent_location);
-  // vertex bitangents
-  // glBindBuffer(GL_ARRAY_BUFFER, mesh.bitangent_buffer);
-  // glVertexAttribPointer(bitangent_location, 3, GL_FLOAT, GL_FALSE, 0,
-  //    nullptr);
-  // glEnableVertexAttribArray(bitangent_location);
-  // indices
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.vertex_buffer);
+  for (const auto& attribute : bind_command.vertex_attributes) {
+    glVertexAttribPointer(attribute.location, attribute.size,
+                          vertex_attribute_types_[attribute.type], GL_FALSE, 0,
+                          nullptr);
+    glEnableVertexAttribArray(attribute.location);
+  }
 }
 
 void Driver::draw_elements_(const Command& command) {
@@ -172,6 +157,17 @@ void Driver::bind_uniform_int_(const Command& command) {
   const BindUniformIntCommand& bind_command =
       static_cast<const BindUniformIntCommand&>(command);
   glUniform1i(bind_command.location, bind_command.uniform);
+}
+
+void Driver::bind_uniform_block_(const Command& command) {
+  assert(command.type == Command::Type::kBindUniformBlock);
+  const BindUniformBlockCommand& bind_command =
+      static_cast<const BindUniformBlockCommand&>(command);
+  const FramePacket::UniformBlock& block = bind_command.block;
+  glBindBuffer(GL_UNIFORM_BUFFER, block.buffer_id);
+  glBufferData(GL_UNIFORM_BUFFER, block.data.size(), block.data.data(),
+               GL_STREAM_DRAW);
+  glBindBufferBase(GL_UNIFORM_BUFFER, block.block_id, block.buffer_id);
 }
 
 void Driver::bind_texture_(const Command& command) {

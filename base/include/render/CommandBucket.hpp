@@ -25,6 +25,7 @@
 #include <glm/vec4.hpp>
 #include <list>
 
+#include "render/FramePacket.hpp"
 #include "render/Mesh.hpp"
 #include "render/Texture.hpp"
 
@@ -53,7 +54,8 @@ class Command {
     kClearFramebuffer,
     kBindGpuProgram,
     kSetBlending,
-    kSetState
+    kSetState,
+    kBindUniformBlock
   };
 
   Type type;
@@ -63,16 +65,18 @@ class Command {
 };
 
 struct BindMeshCommand : Command {
-  BindMeshCommand(uint32_t mesh_id, unsigned int position_location,
-                  unsigned int normal_location, unsigned int uv_location,
-                  unsigned int tangent_location,
-                  unsigned int bitangent_location);
+  template <typename T>
+  using Vector = FramePacket::Vector<T>;
+  typedef FramePacket::VertexAttribute VertexAttribute;
+
+  BindMeshCommand(uint32_t mesh_id,
+                  const Vector<VertexAttribute>& vertex_attributes,
+                  const Vector<float>& vertices,
+                  const Vector<uint32_t>& indices);
   uint32_t mesh_id;
-  unsigned int position_location;
-  unsigned int normal_location;
-  unsigned int uv_location;
-  unsigned int tangent_location;
-  unsigned int bitangent_location;
+  const Vector<VertexAttribute>& vertex_attributes;
+  const Vector<float>& vertices;
+  const Vector<uint32_t>& indices;
 };
 
 struct BindUniformFloatCommand : Command {
@@ -172,6 +176,11 @@ struct SetStateCommand : Command {
   uint32_t state_id;
 };
 
+struct BindUniformBlockCommand : Command {
+  BindUniformBlockCommand(const FramePacket::UniformBlock& block);
+  const FramePacket::UniformBlock& block;
+};
+
 struct SortedCommand {
   uint64_t sort_key;
   Command& command;
@@ -198,6 +207,7 @@ class CommandBucket {
   std::list<ClearFramebufferCommand> clear_framebuffer_commands_;
   std::list<BindGpuProgramCommand> bind_gpu_program_commands_;
   std::list<SetStateCommand> set_state_commands_;
+  std::list<BindUniformBlockCommand> bind_uniform_block_commands_;
 
  private:
   uint64_t make_sort_key_(Command::Type type);
@@ -211,12 +221,16 @@ class CommandBucket {
   void bind_uniform(int location, const glm::mat2& uniform);
   void bind_uniform(int location, const glm::mat3& uniform);
   void bind_uniform(int location, const glm::mat4& uniform);
-  void bind_texture(int location, unsigned int texture_unit,
+  void bind_uniform_block(const FramePacket::UniformBlock& block);
+  void bind_texture(int location,
+                    unsigned int texture_unit,
                     uint32_t texture_id);
-  void bind_mesh(uint32_t mesh_id, unsigned int position_location,
-                 unsigned int normal_location, unsigned int uv_location,
-                 unsigned int tangent_location,
-                 unsigned int bitangent_location);
+  void bind_mesh(
+      uint32_t mesh_id,
+      const BindMeshCommand::Vector<BindMeshCommand::VertexAttribute>&
+          vertex_attributes,
+      const BindMeshCommand::Vector<float>& vertices,
+      const BindMeshCommand::Vector<uint32_t>& indices);
   void bind_framebuffer(uint32_t framebuffer_id);
   void bind_gpu_program(uint32_t program_id);
   void draw_elements(size_t count);

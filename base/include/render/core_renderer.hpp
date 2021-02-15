@@ -17,20 +17,14 @@
 
 #pragma once
 
-#include <GL/gl3w.h>
-#include <unordered_map>
+#include "render/CommandBucket.hpp"
+#include "render/FramePacket.hpp"
+#include "render/ResourceManager.hpp"
 
 namespace donkey {
 namespace render {
-namespace gl {
-
-struct GpuProgram {
-  GLuint handle;
-  int position_location;
-  int uv_location;
-  std::unordered_map<size_t, uint32_t> uniform_blocks;
-};
-
-}  // namespace gl
-}  // namespace render
+void render(const FramePacket& frame_packet,
+            const ResourceManager& resource_manager,
+            CommandBucket& bucket);
+}
 }  // namespace donkey

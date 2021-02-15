@@ -17,20 +17,12 @@
 
 #pragma once
 
-#include <GL/gl3w.h>
-#include <unordered_map>
+#include "render/Resource.hpp"
 
 namespace donkey {
 namespace render {
-namespace gl {
-
-struct GpuProgram {
-  GLuint handle;
-  int position_location;
-  int uv_location;
-  std::unordered_map<size_t, uint32_t> uniform_blocks;
+struct UniformBlock : public Resource {
+  UniformBlock(uint32_t id) : Resource(id) {}
 };
-
-}  // namespace gl
 }  // namespace render
 }  // namespace donkey

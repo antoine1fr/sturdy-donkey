@@ -39,12 +39,8 @@ class MeshLoader {
   void consolidate_indices_(
       const tinyobj::attrib_t& attributes,
       const std::vector<tinyobj::index_t>& tinyobj_indices,
-      std::vector<uint32_t>& indices,
-      std::vector<float>& positions,
-      std::vector<float>& normals,
-      std::vector<float>& uvs,
-      std::vector<float>& tangents,
-      std::vector<float>& bitangents) const;
+      std::vector<float>& vertices,
+      std::vector<uint32_t>& indices) const;
 
   void compute_vectors_(std::vector<Vertex>& vertices) const;
 

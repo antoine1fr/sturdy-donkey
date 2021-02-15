@@ -99,34 +99,24 @@ uint32_t MeshLoader::load(render::ResourceManager* resource_manager,
   tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error,
                    path.c_str());
   // TODO: implement support for sub-meshes.
+  std::vector<float> vertices;
   std::vector<uint32_t> indices;
-  std::vector<float> positions;
-  std::vector<float> normals;
-  std::vector<float> uvs;
-  std::vector<float> tangents;
-  std::vector<float> bitangents;
-  consolidate_indices_(attributes, shapes[0].mesh.indices, indices, positions,
-                       normals, uvs, tangents, bitangents);
-  return resource_manager->create_mesh(positions, normals, uvs, tangents,
-                                       bitangents, indices);
+  consolidate_indices_(attributes, shapes[0].mesh.indices, vertices, indices);
+  return resource_manager->create_mesh(vertices, indices);
 }
 
 void MeshLoader::consolidate_indices_(
     const tinyobj::attrib_t& attributes,
     const std::vector<tinyobj::index_t>& tinyobj_indices,
-    std::vector<uint32_t>& indices,
-    std::vector<float>& positions,
-    std::vector<float>& normals,
-    std::vector<float>& uvs,
-    std::vector<float>& tangents,
-    std::vector<float>& bitangents) const {
+    std::vector<float>& vertices,
+    std::vector<uint32_t>& indices) const {
   // 1. expand vertices
   std::vector<Vertex> expanded_vertices;
   expanded_vertices.reserve(tinyobj_indices.size());
   for (const tinyobj::index_t& index : tinyobj_indices) {
-    uint32_t vertex_index = index.vertex_index * 3;
-    uint32_t normal_index = index.normal_index * 3;
-    uint32_t texcoord_index = index.texcoord_index * 2;
+    size_t vertex_index = static_cast<size_t>(index.vertex_index) * 3;
+    size_t normal_index = static_cast<size_t>(index.normal_index) * 3;
+    size_t texcoord_index = static_cast<size_t>(index.texcoord_index) * 2;
     expanded_vertices.push_back({{attributes.vertices[vertex_index + 0],
                                   attributes.vertices[vertex_index + 1],
                                   attributes.vertices[vertex_index + 2]},
@@ -182,34 +172,34 @@ void MeshLoader::consolidate_indices_(
   }
 
   // 6. copy vertex attributes in correct order
-  positions.resize(index.size() * 3);
-  normals.resize(index.size() * 3);
-  uvs.resize(index.size() * 2);
-  tangents.resize(index.size() * 3);
-  bitangents.resize(index.size() * 3);
+  size_t positions_size = index.size() * 3;
+  size_t normals_size = index.size() * 3;
+  size_t uvs_size = index.size() * 2;
+  size_t tangents_size = index.size() * 3;
+  size_t bitangents_size = index.size() * 3;
+  vertices.resize(positions_size + normals_size + uvs_size + tangents_size +
+                  bitangents_size);
   for (const Vertex& vertex : expanded_vertices) {
     // find the vertex' id in the index
-    uint32_t i = (index.find(vertex))->second;
-    positions[i * 3] = vertex.position.x;
-    positions[(i * 3) + 1] = vertex.position.y;
-    positions[(i * 3) + 2] = vertex.position.z;
-    normals[i * 3] = vertex.normal.x;
-    normals[(i * 3) + 1] = vertex.normal.y;
-    normals[(i * 3) + 2] = vertex.normal.z;
-    uvs[i * 2] = vertex.uv.x;
-    uvs[(i * 2) + 1] = vertex.uv.y;
-    tangents[i * 3] = vertex.tangent.x;
-    tangents[(i * 3) + 1] = vertex.tangent.y;
-    tangents[(i * 3) + 2] = vertex.tangent.z;
-    bitangents[i * 3] = vertex.bitangent.x;
-    bitangents[(i * 3) + 1] = vertex.bitangent.y;
-    bitangents[(i * 3) + 2] = vertex.bitangent.z;
+    size_t i = 5 * static_cast<size_t>((index.find(vertex))->second);
+    vertices[i] = vertex.position.x;
+    vertices[i + 1] = vertex.position.y;
+    vertices[i + 2] = vertex.position.z;
+    vertices[i + 3] = vertex.normal.x;
+    vertices[i + 4] = vertex.normal.y;
+    vertices[i + 5] = vertex.normal.z;
+    vertices[i + 6] = vertex.uv.x;
+    vertices[i + 7] = vertex.uv.y;
+    vertices[i + 8] = vertex.tangent.x;
+    vertices[i + 9] = vertex.tangent.y;
+    vertices[i + 10] = vertex.tangent.z;
+    vertices[i + 11] = vertex.bitangent.x;
+    vertices[i + 12] = vertex.bitangent.y;
+    vertices[i + 13] = vertex.bitangent.z;
   }
 
   // debug traces
-  std::cout << "\tpositions: " << positions.size() << '\n';
-  std::cout << "\tnormals: " << normals.size() << '\n';
-  std::cout << "\tuvs: " << uvs.size() << '\n';
+  std::cout << "\tvertices: " << expanded_vertices.size() << '\n';
   std::cout << "\tindices: " << indices.size() << '\n';
 }
 

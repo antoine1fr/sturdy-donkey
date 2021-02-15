@@ -45,6 +45,10 @@ const Texture& ResourceManager::get_texture(uint32_t id) const {
   return textures_[id];
 }
 
+const GpuBuffer& ResourceManager::get_gpu_buffer(uint32_t id) const {
+  return gpu_buffers_[id];
+}
+
 void ResourceManager::cleanup() {
   gpu_resource_manager_.cleanup();
 }
@@ -131,14 +135,9 @@ uint32_t ResourceManager::create_material(uint32_t gpu_program) {
   return static_cast<uint32_t>(materials_.size()) - 1;
 }
 
-uint32_t ResourceManager::create_mesh(const std::vector<float>& positions,
-                                      const std::vector<float>& normals,
-                                      const std::vector<float>& uvs,
-                                      const std::vector<float>& tangents,
-                                      const std::vector<float>& bitangents,
+uint32_t ResourceManager::create_mesh(const std::vector<float>& vertices,
                                       const std::vector<uint32_t>& indices) {
-  uint32_t id = gpu_resource_manager_.create_mesh(
-      positions, normals, uvs, tangents, bitangents, indices);
+  uint32_t id = gpu_resource_manager_.create_mesh(vertices, indices);
   meshes_.push_back(Mesh(id, indices.size()));
   return static_cast<uint32_t>(meshes_.size()) - 1;
 }
@@ -152,6 +151,12 @@ uint32_t ResourceManager::create_texture(std::size_t width,
       width, height, format, internal_format, component_type);
   textures_.push_back(Texture(id, format, internal_format, component_type));
   return static_cast<uint32_t>(textures_.size()) - 1;
+}
+
+uint32_t ResourceManager::create_gpu_buffer() {
+  uint32_t id = gpu_resource_manager_.create_buffer();
+  gpu_buffers_.push_back(GpuBuffer(id));
+  return static_cast<uint32_t>(gpu_buffers_.size()) - 1;
 }
 
 uint32_t ResourceManager::create_state(const State& state) {
