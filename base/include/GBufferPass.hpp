@@ -17,31 +17,17 @@
 
 #pragma once
 
-#include "render/RenderPass.hpp"
+#include "IRenderPass.hpp"
+#include "render/FramePacket.hpp"
 #include "render/ResourceManager.hpp"
-#include "render/Window.hpp"
-#include "render/gl/Driver.hpp"
 
 namespace donkey {
 namespace render {
 
-class Pipeline {
+class GBufferPass : public IRenderPass {
  public:
-  Pipeline(ResourceManager& resource_manager);
-  void register_texture(const std::string& name,
-                        int width,
-                        int height,
-                        pixel::Format format,
-                        pixel::InternalFormat internal_format,
-                        pixel::ComponentType component_type);
-  void register_pass(const std::list<std::string>& input_textures,
-                     const std::list<std::string>& render_targets,
-                     const std::string& vertex_shader_path,
-                     const std::string& fragment_shader_path);
-  void register_pass(const std::list<std::string>& render_targets);
-
- private:
-  ResourceManager& resource_manager;
+  virtual void register_pass(Pipeline& pipeline, int width, int height);
+  virtual void prepare_frame_packet(render::FramePacket& frame_packet);
 };
 
 }  // namespace render

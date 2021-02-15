@@ -48,11 +48,7 @@ class DeferredRenderer {
  private:
   Window* window_;
   gl::Driver* driver_;
-  GpuResourceManager& gpu_resource_manager_;
   ResourceManager* resource_manager_;
-
-  typedef std::list<StackFramePacket> FramePacketList;
-  std::list<StackFramePacket> frame_packets_;
 
   Pipeline pipeline_;
   PipelineGenerator pipeline_generator_;

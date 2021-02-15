@@ -17,15 +17,16 @@
 
 #pragma once
 
-#include "StackAllocator.hpp"
-#include "common.hpp"
 #include "render/FramePacket.hpp"
+#include "render/Pipeline.hpp"
 
 namespace donkey {
+namespace render {
 
-struct ISimulationModule {
-  virtual void update(Duration elapsed_time) = 0;
+struct IRenderPass {
+  virtual void register_pass(Pipeline& pipeline, int width, int height) = 0;
   virtual void prepare_frame_packet(render::FramePacket& frame_packet) = 0;
 };
 
+}  // namespace render
 }  // namespace donkey

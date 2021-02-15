@@ -50,10 +50,12 @@ struct FramePacket {
   };
 
   struct RenderObject {
+    uint32_t gpu_program_id;
     uint32_t mesh_id;
     Vector<float> vertices;
     Vector<uint32_t> indices;
     Vector<VertexAttribute> vertex_attributes;
+    Vector<uint32_t> texture_ids;
     UniformBlock uniform_block;
   };
 
