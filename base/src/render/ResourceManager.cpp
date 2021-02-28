@@ -28,6 +28,10 @@ namespace render {
 ResourceManager::ResourceManager(GpuResourceManager& gpu_resource_manager)
     : gpu_resource_manager_(gpu_resource_manager) {}
 
+const Framebuffer& ResourceManager::get_framebuffer(uint32_t id) const {
+  return framebuffers_[id];
+}
+
 const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const {
   return gpu_programs_[id];
 }
@@ -113,8 +117,22 @@ uint32_t ResourceManager::load_gpu_program_from_file(
     const std::string& fs_path) {
   std::uint32_t id =
       gpu_resource_manager_.load_gpu_program_from_file(vs_path, fs_path);
+  std::hash<std::string> hash;
   gpu_programs_.push_back(GpuProgram(id));
+  GpuProgram& program = gpu_programs_.back();
+  program.object_uniform_block_id = hash("object_uniform_block");
+  program.pass_uniform_block_id = hash("pass_uniform_block");
   return static_cast<uint32_t>(gpu_programs_.size()) - 1;
+}
+
+uint32_t ResourceManager::create_framebuffer(
+    const std::list<uint32_t>& texture_ids) {
+  std::list<const Texture*> textures;
+  for (auto texture_id : texture_ids) {
+    const Texture& texture = get_texture(texture_id);
+    textures.push_back(&texture);
+  }
+  gpu_resource_manager_.create_framebuffer(textures);
 }
 
 uint32_t ResourceManager::create_material(uint32_t gpu_program) {

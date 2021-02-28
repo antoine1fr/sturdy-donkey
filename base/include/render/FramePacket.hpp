@@ -33,6 +33,11 @@ struct FramePacket {
   template <typename T>
   using Vector = StackVector<T, 4>;
 
+  enum ClearFlag {
+    kColorBuffer = 0,
+    kDepthBuffer = 1
+  };
+
   struct UniformBlock {
     uint32_t block_id;
     uint32_t buffer_id;
@@ -50,7 +55,6 @@ struct FramePacket {
   };
 
   struct RenderObject {
-    uint32_t gpu_program_id;
     uint32_t mesh_id;
     Vector<float> vertices;
     Vector<uint32_t> indices;
@@ -60,6 +64,9 @@ struct FramePacket {
   };
 
   struct Pass {
+    uint32_t gpu_program_id;
+    uint32_t pass_uniform_buffer_id;
+    uint32_t object_uniform_buffer_id;
     uint32_t framebuffer_id;
     uint32_t clear_bits;
     glm::vec3 clear_color;

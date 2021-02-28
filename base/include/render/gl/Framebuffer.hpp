@@ -19,6 +19,7 @@
 
 namespace donkey {
 namespace render {
+namespace gl {
 
 struct Framebuffer {
   GLuint handle;
@@ -31,6 +32,8 @@ struct Framebuffer {
     }
   }
 };
+
+}  // namespace gl
 
 }  // namespace render
 }  // namespace donkey

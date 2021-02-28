@@ -17,10 +17,13 @@
 
 #pragma once
 
+#include <list>
+
+#include "render/Framebuffer.hpp"
+#include "render/GpuBuffer.hpp"
 #include "render/GpuResourceManager.hpp"
 #include "render/Material.hpp"
 #include "render/State.hpp"
-#include "render/GpuBuffer.hpp"
 #include "render/UniformBlock.hpp"
 
 struct SDL_Surface;
@@ -31,6 +34,7 @@ namespace render {
 class ResourceManager {
  private:
   GpuResourceManager& gpu_resource_manager_;
+  std::vector<Framebuffer> framebuffers_;
   std::vector<GpuProgram> gpu_programs_;
   std::vector<Mesh> meshes_;
   std::vector<Texture> textures_;
@@ -42,6 +46,7 @@ class ResourceManager {
  public:
   ResourceManager(GpuResourceManager& gpu_resource_manager);
 
+  const Framebuffer& get_framebuffer(uint32_t id) const;
   const GpuProgram& get_gpu_program(uint32_t id) const;
   const Material& get_material(uint32_t id) const;
   const Mesh& get_mesh(uint32_t id) const;
@@ -56,12 +61,14 @@ class ResourceManager {
   uint32_t load_gpu_program_from_file(const std::string& vs_path,
                                       const std::string& fs_path);
 
+  uint32_t create_framebuffer(const std::list<uint32_t>& texture_ids);
   uint32_t create_material(uint32_t gpu_program);
 
   uint32_t create_mesh(const std::vector<float>& positions,
                        const std::vector<uint32_t>& indices);
 
-  uint32_t create_texture(std::size_t width, std::size_t height,
+  uint32_t create_texture(std::size_t width,
+                          std::size_t height,
                           pixel::Format format,
                           pixel::InternalFormat internal_format,
                           pixel::ComponentType component_type);

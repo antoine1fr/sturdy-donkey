@@ -26,14 +26,18 @@ static void render_object_(const FramePacket::RenderObject& render_object,
                    render_object.vertices, render_object.indices);
 }
 
-static void render_pass_(const FramePacket::Pass& pass, CommandBucket& bucket) {
+static void render_pass_(const ResourceManager& resource_manager,
+                         const FramePacket::Pass& pass,
+                         CommandBucket& bucket) {
+  const Framebuffer& framebuffer =
+      resource_manager.get_framebuffer(pass.framebuffer_id);
   for (const auto& render_object : pass.render_objects) {
-    bucket.bind_framebuffer(pass.framebuffer_id);
+    bucket.bind_framebuffer(framebuffer.gpu_resource_id);
     bucket.set_blending(pass.blending);
     bucket.set_depth_test(pass.depth_test);
     bucket.set_state(pass.clear_bits);
     bucket.clear_framebuffer(pass.clear_color);
-    bucket.bind_uniform_block(pass.uniform_block);
+    bucket.bind_uniform_block(uniform_block.gpu_resource_id);
     render_object_(render_object);
   }
 }

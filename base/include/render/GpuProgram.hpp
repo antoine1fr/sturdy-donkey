@@ -23,6 +23,10 @@ namespace donkey {
 namespace render {
 
 struct GpuProgram : Resource {
+  // for uniforms changing once every render pass
+  uint32_t pass_uniform_block_id;
+  // for uniforms changing once every render object
+  uint32_t object_uniform_block_id;
   GpuProgram(std::uint32_t id) : Resource(id) {}
 };
 

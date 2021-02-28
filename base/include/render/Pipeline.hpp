@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "render/RenderPass.hpp"
 #include "render/ResourceManager.hpp"
 #include "render/Window.hpp"
 #include "render/gl/Driver.hpp"
@@ -38,10 +37,13 @@ class Pipeline {
                      const std::list<std::string>& render_targets,
                      const std::string& vertex_shader_path,
                      const std::string& fragment_shader_path);
-  void register_pass(const std::list<std::string>& render_targets);
+  uint32_t register_pass(const std::list<std::string>& render_targets);
 
  private:
   ResourceManager& resource_manager;
+  std::unordered_map<std::string, uint32_t> id_map_;
+  donkey::CameraNode camera_node_;
+  uint32_t screen_mesh_id_;
 };
 
 }  // namespace render
