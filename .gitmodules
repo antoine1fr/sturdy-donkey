@@ -6,3 +6,7 @@
 	path = lib/imgui
   url=git@github.com:antoine1fr/imgui.git
 	branch = cmake
+[submodule "lib/gl3w"]
+	path = lib/gl3w
+  url=git@github.com:antoine1fr/gl3w.git
+	branch = customize-cmake
