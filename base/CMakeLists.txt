@@ -28,7 +28,7 @@ if(MSVC)
     "src/WindowsPageAllocator.cpp")
 else()
   target_sources(sturdy-donkey PRIVATE
-	"src/UnixPageAllocator.cpp")
+	  "src/UnixPageAllocator.cpp")
 endif()
 
 if(MSVC)
