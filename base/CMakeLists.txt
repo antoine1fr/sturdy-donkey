@@ -20,7 +20,7 @@ add_library(sturdy-donkey STATIC
   src/render/gl/State.cpp
   src/render/gl/Texture.cpp
  "src/render/core_renderer.cpp"
- "src/GBufferPass.cpp")
+ "src/render/GBufferPass.cpp")
 
 # Platform-specific source files:
 if(MSVC)
