@@ -30,7 +30,11 @@
 #include "ResourceLoaderDelegate.hpp"
 
 int main() {
+#if defined(MSVC)
   const char* cwd = _getcwd(nullptr, 0);
+#else
+  const char* cwd = getcwd(nullptr, 0);
+#endif
   std::cout << "CWD: '" << cwd << "'\n";
   delete cwd;
 
