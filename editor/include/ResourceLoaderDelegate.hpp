@@ -46,8 +46,6 @@ class ResourceLoaderDelegate: public donkey::IResourceLoaderDelegate
     //    std::vector<float>& uvs) const;
 
   private:
-    uint32_t boulder_mesh_id_;
-    uint32_t boulder_material_id_;
     int width_;
     int height_;
 };
