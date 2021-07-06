@@ -79,7 +79,6 @@ void Driver::bind_mesh_(const Command& command) {
   unsigned int normal_location = bind_command.normal_location;
   unsigned int uv_location = bind_command.uv_location;
   unsigned int tangent_location = bind_command.tangent_location;
-  unsigned int bitangent_location = bind_command.bitangent_location;
 
   glBindVertexArray(mesh.vertex_array);
   // vertex positions
