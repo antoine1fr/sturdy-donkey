@@ -28,6 +28,7 @@ struct ISimulationModule {
   using StackAllocator = render::StackAllocator<T>;
   using FramePacket = render::StackFramePacket;
 
+  virtual ~ISimulationModule() {}
   virtual void update(Duration elapsed_time) = 0;
   virtual void prepare_frame_packet(FramePacket* frame_packet,
                                     StackAllocator<FramePacket>& allocator) = 0;

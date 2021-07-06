@@ -20,6 +20,7 @@
 namespace donkey {
 
 struct IPageAllocator {
+  virtual ~IPageAllocator() {}
   virtual void* allocate(size_t size) = 0;
   virtual size_t get_page_size() const = 0;
 };
