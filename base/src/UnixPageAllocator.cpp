@@ -39,7 +39,7 @@ void* UnixPageAllocator::allocate(size_t size) {
   return ptr;
 }
 
-size_t WindowsPageAllocator::get_page_size() const {
+size_t UnixPageAllocator::get_page_size() const {
   return getpagesize();
 }
 
