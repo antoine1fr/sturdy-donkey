@@ -55,3 +55,5 @@ target_link_libraries(sturdy-donkey
   tinyobjloader
   imgui
 )
+
+message("[base] CMAKE_C_COMPILE_OBJECT: ${CMAKE_C_COMPILE_OBJECT}")

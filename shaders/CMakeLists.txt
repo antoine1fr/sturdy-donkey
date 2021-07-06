@@ -19,3 +19,5 @@ set(SHADER_FILES
 
 #add_custom_target(shaders ALL
 #  DEPENDS ${SHADER_FILES})
+
+message("[shaders] CMAKE_C_COMPILE_OBJECT: ${CMAKE_C_COMPILE_OBJECT}")

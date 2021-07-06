@@ -27,8 +27,8 @@ namespace render {
 
 class GBufferPass : public IRenderPass {
  public:
-  virtual void register_textures(Pipeline& pipeline, int width, int height);
-  virtual void register_pass(Pipeline& pipeline);
+  virtual void register_input_textures(Pipeline& pipeline, int width, int height);
+  // virtual void register_pass(Pipeline& pipeline);
   virtual void prepare_frame_packet(const ResourceManager& resource_manager,
                                     const Scene& scene,
                                     render::FramePacket& frame_packet);

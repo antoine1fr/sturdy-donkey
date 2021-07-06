@@ -2,6 +2,10 @@ find_path(gl3w_INCLUDE_DIR
   NAMES GL/gl3w.h
   PATHS "${gl3w_ROOT}/include" "$ENV{gl3w_ROOT}/include"
 )
+# find_path(gl3w_SRC_DIR
+#   NAMES gl3w.c
+#   PATHS "${gl3w_ROOT}/src" "$ENV{gl3w_ROOT}/src"
+# )
 find_library(gl3w_LIBRARY
   NAMES gl3w
 )
@@ -26,4 +30,8 @@ if(gl3w_FOUND AND NOT TARGET gl3w::gl3w)
     INTERFACE_INCLUDE_DIRECTORIES "${gl3w_INCLUDE_DIRS}"
     IMPORTED_LOCATION "${gl3w_LIBRARY}"
   )
+  # target_sources(gl3w::gl3w
+  #   INTERFACE
+  #   "${gl3w_SRC_DIR}/gl3w.c"
+  # )
 endif()

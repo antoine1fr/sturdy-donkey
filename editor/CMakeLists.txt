@@ -12,3 +12,5 @@ if(MSVC)
 else()
 	target_compile_options(editor PRIVATE -Werror -Wall -pedantic)
 endif()
+
+message("[editor] CMAKE_C_COMPILE_OBJECT: ${CMAKE_C_COMPILE_OBJECT}")

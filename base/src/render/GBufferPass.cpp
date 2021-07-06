@@ -19,7 +19,7 @@
 
 namespace donkey {
 namespace render {
-void GBufferPass::register_textures(Pipeline& pipeline, int width, int height) {
+void GBufferPass::register_input_textures(Pipeline& pipeline, int width, int height) {
   pipeline.register_texture("albedo_texture", width, height,
                             pixel::Format::kRGBA, pixel::InternalFormat::kRGBA8,
                             pixel::ComponentType::kUnsignedByte);

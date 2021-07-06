@@ -18,13 +18,13 @@
 #pragma once
 
 #include "render/FramePacket.hpp"
-#include "render/Pipeline.hpp"
 
 namespace donkey {
 namespace render {
 
 struct IRenderPass {
-  virtual void register_textures(Pipeline& pipeline, int width, int height) = 0;
+  virtual void prepare
+  virtual void register_input_textures(Pipeline& pipeline, int width, int height) = 0;
   virtual void register_pass(Pipeline& pipeline) = 0;
   virtual void prepare_frame_packet(render::FramePacket& frame_packet) = 0;
 };
