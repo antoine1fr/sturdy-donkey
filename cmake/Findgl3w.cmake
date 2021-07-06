@@ -22,7 +22,6 @@ endif()
 
 if(gl3w_FOUND AND NOT TARGET gl3w::gl3w)
   add_library(gl3w::gl3w INTERFACE IMPORTED)
-  message("gl3w_INCLUDE_DIRS: ${gl3w_INCLUDE_DIRS}")
   set_target_properties(gl3w::gl3w PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${gl3w_INCLUDE_DIRS}"
   )
