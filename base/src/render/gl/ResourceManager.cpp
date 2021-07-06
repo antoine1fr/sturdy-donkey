@@ -16,10 +16,17 @@
  */
 
 #include <iostream>
-#pragma warning(push)
-#pragma warning(disable : 26812 26819)
+
+#if defined(MSVC)
+# pragma warning(push)
+# pragma warning(disable : 26812 26819)
+#endif
+
 #include <SDL_image.h>
-#pragma warning(pop)
+
+#if defined(MSVC)
+# pragma warning(pop)
+#endif
 
 #include "render/gl/Material.hpp"
 #include "render/gl/ResourceManager.hpp"

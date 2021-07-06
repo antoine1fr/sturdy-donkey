@@ -17,7 +17,11 @@
 
 #define SDL_MAIN_HANDLED
 
-#include <direct.h>
+#if defined(MSVC)
+# include <direct.h>
+#else
+# include <unistd.h>
+#endif
 
 #include <Game.hpp>
 #include <GameManager.hpp>

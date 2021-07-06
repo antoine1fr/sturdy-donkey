@@ -21,10 +21,18 @@
 #include <atomic>
 #include <condition_variable>
 #include <thread>
-#pragma warning(push)
-#pragma warning(disable : 26812 26819)
+
+#if defined(MSVC)
+# pragma warning(push)
+# pragma warning(disable : 26812 26819)
+#endif
+
 #include <SDL.h>
-#pragma warning(pop)
+
+#if defined(MSVC)
+# pragma warning(pop)
+#endif
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
