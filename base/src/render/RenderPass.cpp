@@ -89,7 +89,7 @@ void render_mesh_node(const RenderPass& render_pass,
       gpu_resource_manager->get_material(material.gpu_resource_id);
 
   if (last_material_id != mesh_node.material_id) {
-    render_commands.bind_gpu_program(material.program_id);
+    render_commands.bind_gpu_program(gpu_material.program_id);
     gpu_material.bind_slots(render_commands);
     last_material_id = mesh_node.material_id;
   }

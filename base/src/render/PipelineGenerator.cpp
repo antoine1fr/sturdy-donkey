@@ -112,7 +112,7 @@ uint32_t PipelineGenerator::register_material_(
     const std::list<std::string>& input_textures,
     const std::string& vertex_shader_path,
     const std::string& fragment_shader_path) {
-  uint32_t ambient_program_id_ = resource_manager_.load_gpu_program_from_file(
+  ResourceManager::Id ambient_program_id_ = resource_manager_.load_gpu_program_from_file(
       vertex_shader_path, fragment_shader_path);
   std::uint32_t id = resource_manager_.create_material(ambient_program_id_);
   const render::Material& material = resource_manager_.get_material(id);

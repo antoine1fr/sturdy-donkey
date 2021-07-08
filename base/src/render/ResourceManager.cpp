@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <tuple>
 
 #if defined(MSVC)
 # pragma warning(push)
@@ -30,14 +31,29 @@
 
 #include "render/ResourceManager.hpp"
 
+namespace std
+{
+  template<>
+  struct hash<std::tuple<std::string, std::string>>
+  {
+    std::size_t operator() (const std::tuple<std::string, std::string>& tuple) const noexcept
+      {
+        std::hash<std::string> hash {};
+        std::size_t h1 = hash(std::get<0>(tuple));
+        std::size_t h2 = hash(std::get<1>(tuple));
+        return h1 ^ (h2 << 1);
+      }
+  };
+}
+
 namespace donkey {
 namespace render {
 
 ResourceManager::ResourceManager(GpuResourceManager& gpu_resource_manager)
     : gpu_resource_manager_(gpu_resource_manager) {}
 
-const GpuProgram& ResourceManager::get_gpu_program(uint32_t id) const {
-  return gpu_programs_[id];
+const GpuProgram& ResourceManager::get_gpu_program(Id id) const {
+  return gpu_programs_.at(id);
 }
 
 const Material& ResourceManager::get_material(uint32_t id) const {
@@ -112,20 +128,27 @@ uint32_t ResourceManager::load_texture_from_memory(uint8_t* pixels,
   return static_cast<uint32_t>(textures_.size()) - 1;
 }
 
-uint32_t ResourceManager::load_gpu_program_from_file(
+ResourceManager::Id ResourceManager::load_gpu_program_from_file(
     const std::string& vs_path,
     const std::string& fs_path) {
-  std::uint32_t id =
+  using Key = std::tuple<std::string, std::string>;
+  std::hash<Key> hash {};
+  size_t final_id = hash(std::make_tuple(vs_path, fs_path));
+  if (gpu_programs_.find(final_id) == gpu_programs_.end())
+  {
+    std::uint32_t id =
       gpu_resource_manager_.load_gpu_program_from_file(vs_path, fs_path);
-  gpu_programs_.push_back(GpuProgram(id));
-  return static_cast<uint32_t>(gpu_programs_.size()) - 1;
+    gpu_programs_.emplace(std::make_pair(final_id, GpuProgram(id)));
+  }
+  return final_id;
 }
 
-uint32_t ResourceManager::create_material(uint32_t gpu_program) {
-  std::uint32_t id = gpu_resource_manager_.create_material(gpu_program);
-  const AMaterial& gpu_material = gpu_resource_manager_.get_material(id);
+uint32_t ResourceManager::create_material(Id cpu_side_gpu_program_id) {
+  const GpuProgram& cpu_side_gpu_program = gpu_programs_.at(cpu_side_gpu_program_id);
+  std::uint32_t gpu_program_id = gpu_resource_manager_.create_material(cpu_side_gpu_program.gpu_resource_id);
+  const AMaterial& gpu_material = gpu_resource_manager_.get_material(gpu_program_id);
   materials_.push_back(Material(
-      id, gpu_program, gpu_material.position_location,
+      gpu_program_id, cpu_side_gpu_program_id, gpu_material.position_location,
       gpu_material.normal_location, gpu_material.uv_location,
       gpu_material.tangent_location, gpu_material.bitangent_location,
       gpu_material.model_location, gpu_material.view_location,

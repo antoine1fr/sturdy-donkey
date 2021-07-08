@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <unordered_map>
 #include "render/GpuResourceManager.hpp"
 #include "render/Material.hpp"
 #include "render/State.hpp"
@@ -27,9 +28,14 @@ namespace donkey {
 namespace render {
 
 class ResourceManager {
+public:
+  typedef size_t Id;
+  template <typename T>
+  using Container = std::unordered_map<Id, T>;
+
  private:
   GpuResourceManager& gpu_resource_manager_;
-  std::vector<GpuProgram> gpu_programs_;
+  Container<GpuProgram> gpu_programs_;
   std::vector<Mesh> meshes_;
   std::vector<Texture> textures_;
   std::vector<Material> materials_;
@@ -38,7 +44,7 @@ class ResourceManager {
  public:
   ResourceManager(GpuResourceManager& gpu_resource_manager);
 
-  const GpuProgram& get_gpu_program(uint32_t id) const;
+  const GpuProgram& get_gpu_program(Id id) const;
   const Material& get_material(uint32_t id) const;
   const Mesh& get_mesh(uint32_t id) const;
   const Texture& get_texture(uint32_t id) const;
@@ -48,10 +54,10 @@ class ResourceManager {
   uint32_t load_texture_from_file(const std::string& path);
   uint32_t load_texture_from_memory(uint8_t* pixels, int width, int height);
 
-  uint32_t load_gpu_program_from_file(const std::string& vs_path,
-                                      const std::string& fs_path);
+  Id load_gpu_program_from_file(const std::string& vs_path,
+                                const std::string& fs_path);
 
-  uint32_t create_material(uint32_t gpu_program);
+  uint32_t create_material(Id gpu_program_id);
 
   uint32_t create_mesh(const std::vector<float>& positions,
                        const std::vector<float>& normals,

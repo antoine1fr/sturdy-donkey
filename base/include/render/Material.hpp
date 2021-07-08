@@ -23,7 +23,7 @@ namespace donkey {
 namespace render {
 
 struct Material : Resource {
-  std::uint32_t program_id;
+  std::size_t program_id;
   unsigned int position_location;
   unsigned int normal_location;
   unsigned int uv_location;
@@ -42,7 +42,7 @@ struct Material : Resource {
   unsigned int camera_position_location;
 
   Material(std::uint32_t id,
-           std::uint32_t program_id,
+           std::size_t program_id,
            int position_location,
            int normal_location,
            int uv_location,
